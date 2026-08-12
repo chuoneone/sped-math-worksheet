@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>差異化學習單生成系統</title>
+    <!-- Tailwind CSS for adaptive modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for gorgeous icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Marked JS for seamless Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- FileSaver JS for handling client-side downloads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- docx.js library for building native beautifully-structured Office Word docs -->
+    <script src="https://cdn.jsdelivr.net/npm/docx@7.1.0/build/index.js"></script>
+    <!-- Google Fonts integration for beautiful Taiwanese and multilingual typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Noto+Serif+TC:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { DEFAULT: '#5F8F8B', hover: '#4A7471', light: '#EBF2F1', border: '#C8DEDC', dark: '#3D5C59' },
+                        secondary: '#8AAEA9',
+                    },
+                    fontFamily: { sans: ['"Noto Sans TC"', 'Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Noto Sans TC', 'Inter', sans-serif; background-color: #D8DFE3; }
+
+        /* Custom Scrollbar for better UI feel */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+
+        /* Loader Animation */
+        .loader { border: 4px solid #f3f3f3; border-radius: 50%; border-top: 4px solid #5F8F8B; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Checkbox Custom Theme styling */
+        .checkbox-container input:checked + div { background-color: #EBF2F1; border-color: #5F8F8B; }
+        .checkbox-container input:checked + div i.fa-check { display: block; }
+
+        /* A4 PAPER DISPLAY CONTAINER STYLE */
+        #a4Paper {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            background: #fff;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .workspace-stack { max-width: 1100px; }
+        .settings-panel { width: 100%; }
+        .preview-panel { width: 100%; }
+
+        /* Double border worksheet banner style (No large green block) */
+        .ws-banner {
+            border-bottom: 5px double #5F8F8B;
+            padding: 24px 32px 14px;
+            color: #2C4D4A;
+            text-align: center;
+        }
+        .ws-banner-title {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 20pt; font-weight: 700;
+            letter-spacing: 0.06em; line-height: 1.3;
+        }
+        .ws-banner-sub {
+            font-size: 9.5pt; color: #666; margin-top: 4px;
+        }
+        .ws-meta-row {
+            display: flex; justify-content: space-between; margin-top: 16px;
+        }
+        .ws-field {
+            font-size: 11pt; display: flex; align-items: flex-end; gap: 5px; color: #333; font-weight: 500;
+        }
+        .ws-line {
+            border-bottom: 1.5px solid #333;
+            width: 90px; display: inline-block;
+        }
+
+        /* Sheet Body Container */
+        .ws-body { padding: 28px 36px 44px; }
+
+        /* Native markdown content style rules */
+        .prose h1 {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 17pt; font-weight: 700;
+            color: #2C4D4A;
+            margin: 2rem 0 1rem;
+            padding-bottom: 7px;
+            border-bottom: 3px solid #5F8F8B;
+        }
+        .prose h2 {
+            font-size: 13pt; font-weight: 700;
+            color: #2C4D4A;
+            margin: 1.8rem 0 0.7rem;
+            padding: 7px 14px 7px 16px;
+            background: #EBF2F1;
+            border-left: 5px solid #5F8F8B;
+            border-radius: 0 6px 6px 0;
+        }
+        .prose h3 {
+            font-size: 11.5pt; font-weight: 700;
+            color: #3D5C59;
+            margin: 1.4rem 0 0.5rem;
+        }
+        .prose h3::before {
+            content: '◆';
+            color: #5F8F8B;
+            margin-right: 6px;
+            font-size: 0.75em;
+        }
+
+        .prose p { font-size: 11pt; line-height: 1.95; color: #1a1a1a; margin-bottom: 0.85rem; }
+        .prose strong { color: #1a1a1a; font-weight: 700; }
+        .prose em { color: #555; font-style: italic; }
+
+        /* Beautiful Clean Lists */
+        .prose ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .prose ul > li {
+            font-size: 11pt; line-height: 1.85; color: #1a1a1a;
+            margin-bottom: 0.4rem; padding-left: 1.5em; position: relative;
+        }
+        .prose ul > li::before {
+            content: '▸'; position: absolute; left: 0;
+            color: #5F8F8B; font-size: 0.9em; top: 0.05em;
+        }
+        .prose ol { padding-left: 0; margin-bottom: 1rem; counter-reset: ol-c; list-style: none; }
+        .prose ol > li {
+            font-size: 11pt; line-height: 1.85; color: #1a1a1a;
+            margin-bottom: 0.4rem; padding-left: 2em; position: relative;
+            counter-increment: ol-c;
+        }
+        .prose ol > li::before {
+            content: counter(ol-c) '.';
+            position: absolute; left: 0;
+            color: #5F8F8B; font-weight: 700;
+        }
+        .prose ol > li ul { padding-left: 1em; margin-top: 0.3rem; }
+
+        /* Blockquotes */
+        .prose blockquote {
+            border-left: 5px solid #C8DEDC; background: #EBF2F1;
+            padding: 10px 16px; border-radius: 0 8px 8px 0; margin: 1rem 0;
+            color: #444; font-style: italic;
+        }
+
+        /* Beautiful Responsive Table Styling */
+        .prose table {
+            width: 100%; border-collapse: collapse; margin: 1.5rem 0;
+            font-size: 10.5pt; border-radius: 8px; overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+        }
+        .prose th { background: #3D5C59; color: white; text-align: left; padding: 10px 14px; font-weight: 700; font-size: 10pt; }
+        .prose td { padding: 9px 14px; border-bottom: 1px solid #e8e8e8; color: #222; line-height: 1.65; }
+        .prose tr:nth-child(even) td { background: #F6FAF9; }
+        .prose tr:last-child td { border-bottom: none; }
+        .prose tr:hover td { background: #EBF2F1; transition: background 0.15s; }
+
+        /* SPECIAL CONTAINER PANELS FOR LEARNING BLOCKS */
+        /* ── Quiz Section ── */
+        .section-quiz {
+            background: #EFF6FF;
+            border: 1.5px solid #93C5FD;
+            border-radius: 12px;
+            padding: 22px 26px;
+            margin: 1.6rem 0;
+            position: relative;
+        }
+        .section-quiz > h2 {
+            background: none; border-left: none; padding: 0; margin: 0 0 16px 0;
+            font-size: 13pt; color: #1D4ED8;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .section-quiz > h2::before {
+            content: '';
+            display: inline-block;
+            width: 28px; height: 28px;
+            background: #3B82F6;
+            border-radius: 6px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z'/%3E%3C/svg%3E");
+            background-size: 60%; background-repeat: no-repeat; background-position: center;
+            flex-shrink: 0;
+        }
+
+        /* Quiz question block */
+        .quiz-q {
+            background: white;
+            border: 1px solid #BFDBFE;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin: 12px 0;
+        }
+        .quiz-q-stem {
+            font-size: 11pt; font-weight: 500; color: #1a1a1a; line-height: 1.8;
+            margin-bottom: 10px;
+        }
+        /* answer blank inside quiz */
+        .answer-blank {
+            display: inline-block;
+            border-bottom: 2px solid #3B82F6;
+            min-width: 90px; height: 1.3em;
+            margin: 0 3px; vertical-align: bottom;
+        }
+        /* choice option rows */
+        .choice-row {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 5px 8px; border-radius: 6px;
+            font-size: 10.5pt; color: #222; line-height: 1.7; margin: 2px 0;
+        }
+        .choice-row:hover { background: #DBEAFE; }
+        .choice-letter {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 22px; height: 22px; min-width: 22px;
+            border: 2px solid #93C5FD; border-radius: 50%;
+            font-size: 9.5pt; font-weight: 700; color: #3B82F6;
+        }
+        /* fill-in answer box at start of item */
+        .answer-box {
+            display: inline-flex; align-items: center; justify-content: center;
+            border: 1.5px solid #93C5FD; border-radius: 4px;
+            min-width: 32px; height: 22px;
+            margin-right: 6px; font-size: 9.5pt; color: #1D4ED8; font-weight: 700;
+        }
+
+        /* ── Vocab Section ── */
+        .section-vocab {
+            background: #F5F3FF;
+            border: 1.5px solid #C4B5FD;
+            border-radius: 12px;
+            padding: 22px 26px;
+            margin: 1.6rem 0;
+        }
+        .section-vocab > h2 {
+            background: none; border-left: none; padding: 0; margin: 0 0 14px 0;
+            font-size: 13pt; color: #5B21B6;
+        }
+        .vocab-term {
+            display: flex; gap: 10px; align-items: flex-start;
+            padding: 8px 0; border-bottom: 1px dashed #DDD6FE;
+            font-size: 11pt; line-height: 1.75;
+        }
+        .vocab-term:last-child { border-bottom: none; }
+        .vocab-word { font-weight: 700; color: #5B21B6; min-width: 80px; }
+
+        /* ── Answer Section ── */
+        .section-answer {
+            background: #FFFBEB;
+            border: 1.5px solid #FCD34D;
+            border-radius: 12px;
+
+        /* Answer Sheet Styling */
+        .section-answer {
+            background: #FFFBEB;
+            border: 1.5px solid #FCD34D;
+            border-radius: 12px;
+            padding: 22px 26px;
+            margin: 1.6rem 0;
+        }
+        .section-answer > h2 {
+            background: none; border-left: none; padding: 0; margin: 0 0 14px 0;
+            font-size: 13pt; color: #92400E;
+        }
+        .ans-item {
+            border-bottom: 1px dashed #FDE68A;
+            padding: 10px 0;
+            font-size: 11pt; line-height: 1.85; color: #1a1a1a;
+        }
+        .ans-item:last-child { border-bottom: none; }
+        .ans-letter {
+            display: inline-block;
+            background: #3D5C59; color: white;
+            border-radius: 4px; padding: 1px 8px;
+            font-weight: 700; font-size: 10.5pt;
+            margin-right: 6px;
+        }
+
+        /* Footer line */
+        .ws-footer {
+            border-top: 2px dashed #C8DEDC;
+            margin-top: 32px; padding-top: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 8.5pt; color: #AAA;
+        }
+
+        /* Student fill-in style runs (HTML preview) */
+        .ans-highlight-teacher {
+            color: #E11D48;
+            font-weight: 700;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+        .ans-highlight-student {
+            display: inline-block;
+            border-bottom: 1.5px solid #4B5563;
+            min-width: 80px;
+            text-align: center;
+            color: transparent;
+        }
+
+        /* PRINT STYLING SHEET OPTIMIZATIONS (Completely cuts out overflow or page breakage) */
+        @media print {
+            html, body { width: 210mm; height: auto; background: white !important; }
+            header, main > section:first-child, #outputHeader,
+            #actionButtonsContainer, #toast { display: none !important; }
+            main { margin: 0 !important; padding: 0 !important; max-width: none !important; display: block !important; }
+            .preview-panel { width: 100% !important; max-width: none !important; display: block !important; }
+            .bg-white.rounded-2xl { border: none !important; box-shadow: none !important; border-radius: 0 !important; }
+            #outputContainer { background: transparent !important; padding: 0 !important; overflow: visible !important; }
+            #a4Paper { width: 194mm !important; min-height: 281mm !important; margin: 0 auto !important; box-shadow: none !important; border-radius: 0 !important; overflow: visible !important; }
+            @page { size: A4 portrait; margin: 8mm; }
+            .ws-banner { break-inside: avoid; }
+            .prose h1, .prose h2, .prose h3 { break-after: avoid; page-break-after: avoid; }
+.prose li, .prose tr, .quiz-q-item, .quiz-q, blockquote, .section-quiz, .section-vocab { break-inside: avoid; page-break-inside: avoid; }
+            .section-answer { break-before: page !important; page-break-before: always !important; break-inside: auto; page-break-inside: auto; }
+.prose p, .prose li, .prose td, .prose th, .quiz-q-item, .quiz-q { overflow-wrap: anywhere; word-break: break-word; }
+            .prose table { width: 100% !important; table-layout: fixed; }
+            .prose img { max-width: 100% !important; height: auto !important; }
+            .ws-banner, .section-quiz, .section-answer, .section-vocab {
+                -webkit-print-color-adjust: exact; print-color-adjust: exact;
+            }
+            .prose th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen flex flex-col">
+
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-primary-light p-2 rounded-lg text-primary">
+                    <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900 leading-tight">差異化學習單生成系統</h1>
+                    <p class="text-xs text-gray-500">AI Differentiated Worksheet System</p>
+                </div>
+            </div>
+            <div class="hidden sm:block text-sm text-gray-500 bg-gray-100 px-3 py-1.5 rounded-full font-medium">
+                <i class="fa-solid fa-robot mr-1"></i> Powered by Gemini AI (Unicode Native)
+            </div>
+        </div>
+    </header>
+
+    <main class="workspace-stack flex-grow mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex flex-col gap-6">
+        
+        <!-- Setting configurations panel -->
+        <section class="settings-panel flex flex-col gap-4">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 flex flex-col gap-4">
+                <h2 class="text-sm font-bold text-gray-700 flex items-center gap-2 pb-2 border-b border-gray-100">
+                    <i class="fa-solid fa-gear text-primary"></i> 教材與對象設定
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="learningGrade" class="block text-xs font-semibold text-gray-500 mb-1">對象年級</label>
+                        <select id="learningGrade" class="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm focus:ring-2 focus:ring-primary transition-all">
+                            <option value="國小低年級 (一、二年級)">國小低年級 (一、二年級)</option>
+                            <option value="國小中年級 (三、四年級)">國小中年級 (三、四年級)</option>
+                            <option value="國小高年級 (五、六年級)">國小高年級 (五、六年級)</option>
+                            <option value="國中一年級 (七年級)" selected>國中一年級 (七年級)</option>
+                            <option value="國中二年級 (八年級)">國中二年級 (八年級)</option>
+                            <option value="國中三年級 (九年級)">國中三年級 (九年級)</option>
+                            <option value="高中生">高中生</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="simplificationLevel" class="block text-xs font-semibold text-gray-500 mb-1">簡化幅度 (由 AI 自動降載改寫)</label>
+                        <select id="simplificationLevel" class="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm focus:ring-2 focus:ring-primary transition-all">
+                            <option value="不簡化：完全保留原始課文文字與詳細內容，不進行任何語句改寫、降載或字詞替換，僅重新排版。">不簡化 (保留原文)</option>
+                            <option value="微幅簡化：保留原文的大部分細節與描述，僅針對生難字詞或長難句進行微調替換。" selected>微幅簡化 (保留細節)</option>
+                            <option value="中度簡化：適當刪除冗長字句，重新組織結構，使文句通順易懂、重點清晰。">中度簡化 (通順易懂)</option>
+                            <option value="高度簡化：大幅降載與重構，使用極短的句子與最生活化的基礎字詞，極大化降低閱讀負擔。">高度簡化 (大幅降載)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="originalText" class="flex items-end justify-between text-xs font-semibold text-gray-500 mb-1">
+                        <span>輸入原始教材內容</span>
+                        <span class="font-normal text-gray-400"><i class="fa-solid fa-circle-info mr-1"></i>支援數理化公式，AI 將自動以 Unicode 完美生成</span>
+                    </label>
+                    <textarea id="originalText" rows="6" class="w-full rounded-lg border border-gray-300 bg-gray-50 p-3 text-sm focus:ring-2 focus:ring-primary transition-all resize-none" placeholder="請在此貼上課文或教材內容..."></textarea>
+                    <div class="mt-2 flex gap-1.5 flex-wrap">
+                        <button onclick="loadExample(1)" class="text-xs text-primary-dark hover:text-white hover:bg-primary bg-primary-light px-2.5 py-1 rounded-full border border-primary-border transition-all">範例：科學知識 (光合作用)</button>
+                        <button onclick="loadExample(2)" class="text-xs text-primary-dark hover:text-white hover:bg-primary bg-primary-light px-2.5 py-1 rounded-full border border-primary-border transition-all">範例：歷史人文 (文藝復興)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Structure Options Panel -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+                <h2 class="text-sm font-bold text-gray-700 flex items-center gap-2 pb-2 border-b border-gray-100 mb-3">
+                    <i class="fa-solid fa-list-check text-primary"></i> 產出學習單架構
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+
+                    <label class="checkbox-container cursor-pointer">
+                        <input type="checkbox" id="optComic" class="peer sr-only">
+                        <div class="rounded-lg border border-gray-200 p-2.5 h-full hover:bg-gray-50 transition-colors flex items-center gap-2">
+                            <div class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center bg-white flex-shrink-0">
+                                <i class="fa-solid fa-check text-primary text-xs hidden"></i>
+                            </div>
+                            <span class="text-sm text-gray-800">🎭 情境五格漫畫</span>
+                        </div>
+                    </label>
+
+                    <label class="checkbox-container cursor-pointer">
+                        <input type="checkbox" id="optPara" class="peer sr-only" value="以平鋪直敘的簡化文章呈現，適合循序閱讀。">
+                        <div class="rounded-lg border border-gray-200 p-2.5 h-full hover:bg-gray-50 transition-colors flex items-center gap-2">
+                            <div class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center bg-white flex-shrink-0">
+                                <i class="fa-solid fa-check text-primary text-xs hidden"></i>
+                            </div>
+                            <span class="text-sm text-gray-800">📄 簡化核心短文</span>
+                        </div>
+                    </label>
+
+                    <label class="checkbox-container cursor-pointer">
+                        <input type="checkbox" id="optBullet" class="peer sr-only" value="以精簡的條列式重點呈現，有條理且清晰。" checked>
+                        <div class="rounded-lg border border-gray-200 p-2.5 h-full hover:bg-gray-50 transition-colors flex items-center gap-2">
+                            <div class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center bg-white flex-shrink-0">
+                                <i class="fa-solid fa-check text-primary text-xs hidden"></i>
+                            </div>
+                            <span class="text-sm text-gray-800">📌 條列式重點整理</span>
+                        </div>
+                    </label>
+
+                    <label class="checkbox-container cursor-pointer">
+                        <input type="checkbox" id="optTable" class="peer sr-only" value="以簡明易懂的 Markdown 表格形式比較或整理核心觀念。">
+                        <div class="rounded-lg border border-gray-200 p-2.5 h-full hover:bg-gray-50 transition-colors flex items-center gap-2">
+                            <div class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center bg-white flex-shrink-0">
+                                <i class="fa-solid fa-check text-primary text-xs hidden"></i>
+                            </div>
+                            <span class="text-sm text-gray-800">📊 重點架構表格</span>
+                        </div>
+                    </label>
+
+                    <label class="checkbox-container cursor-pointer">
+                        <input type="checkbox" id="optQA" class="peer sr-only" value="迷思問答：針對本單元常見的迷思，設計 Q&A 進行觀念釐清。格式規定：「問」與「答」必須各自獨立換行。">
+                        <div class="rounded-lg border border-gray-200 p-2.5 h-full hover:bg-gray-50 transition-colors flex items-center gap-2">
+                            <div class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center bg-white flex-shrink-0">
+                                <i class="fa-solid fa-check text-primary text-xs hidden"></i>
+                            </div>
+                            <span class="text-sm text-gray-800">💬 常見迷思釐清</span>
+                        </div>
+                    </label>
+
+                    <label class="checkbox-container cursor-pointer">
+                        <input type="checkbox" id="optVocab" class="peer sr-only" checked>
+                        <div class="rounded-lg border border-gray-200 p-2.5 h-full hover:bg-gray-50 transition-colors flex items-center gap-2">
+                            <div class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center bg-white flex-shrink-0">
+                                <i class="fa-solid fa-check text-primary text-xs hidden"></i>
+                            </div>
+                            <span class="text-sm text-gray-800">📖 生字與學術詞彙小辭典</span>
+                        </div>
+                    </label>
+
+                    <label class="checkbox-container cursor-pointer">
+                        <input type="checkbox" id="optQuiz" class="peer sr-only" checked onchange="document.getElementById('quizSettings').classList.toggle('hidden', !this.checked)">
+                        <div class="rounded-lg border border-gray-200 p-2.5 h-full hover:bg-gray-50 transition-colors flex items-center gap-2">
+                            <div class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center bg-white flex-shrink-0">
+                                <i class="fa-solid fa-check text-primary text-xs hidden"></i>
+                            </div>
+                            <span class="text-sm text-gray-800">✏️ 隨堂小測驗</span>
+                        </div>
+                    </label>
+
+                    <label class="checkbox-container cursor-pointer">
+                        <input type="checkbox" id="optAnswer" class="peer sr-only" checked>
+                        <div class="rounded-lg border border-gray-200 p-2.5 h-full hover:bg-gray-50 transition-colors flex items-center gap-2">
+                            <div class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center bg-white flex-shrink-0">
+                                <i class="fa-solid fa-check text-primary text-xs hidden"></i>
+                            </div>
+                            <span class="text-sm text-gray-800">💡 參考解答與說明</span>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Quiz options inside panel -->
+                <div id="quizSettings" class="mt-3 p-3 bg-blue-50 border border-blue-100 rounded-lg grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs text-gray-600 w-16 flex-shrink-0">填充題數</label>
+                        <input type="number" id="quizFillCount" value="3" min="0" max="10" class="w-full rounded border border-gray-300 p-1 text-sm bg-white">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs text-gray-600 w-16 flex-shrink-0">選擇題數</label>
+                        <input type="number" id="quizChoiceCount" value="3" min="0" max="10" class="w-full rounded border border-gray-300 p-1 text-sm bg-white">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs text-gray-600 w-16 flex-shrink-0">素養題數</label>
+                        <input type="number" id="quizEssayCount" value="1" min="0" max="5" class="w-full rounded border border-gray-300 p-1 text-sm bg-white">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs text-gray-600 w-16 flex-shrink-0">測驗難度</label>
+                        <select id="quizDifficulty" class="w-full rounded border border-gray-300 p-1 text-xs bg-white">
+                            <option value="不簡化 (依原文程度出題)">不簡化 (維持難度)</option>
+                            <option value="微幅簡化 (稍微降低題目敘述複雜度)" selected>微幅簡化 (預設)</option>
+                            <option value="中度簡化 (適合中後段與特教抽離生)">中度簡化</option>
+                            <option value="高度簡化 (適用重度降載與補救教學)">高度簡化</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="generateBtn" class="w-full mt-4 bg-primary hover:bg-primary-hover text-white font-semibold py-3 px-4 rounded-xl shadow-sm transition-all transform hover:-translate-y-0.5 flex justify-center items-center gap-2 text-sm">
+                    <i class="fa-solid fa-sparkles"></i> 開始自動生成差異化教材
+                </button>
+            </div>
+        </section>
+
+        <!-- Preview worksheet Section -->
+        <section class="preview-panel flex flex-col">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col overflow-hidden flex-grow" style="min-height: 640px;">
+                
+                <div id="outputHeader" class="px-5 py-2.5 border-b border-gray-100 flex justify-between items-center bg-gray-50 flex-shrink-0">
+                    <h3 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                        <i class="fa-solid fa-file-alt text-secondary"></i> A4 學習單預覽
+                    </h3>
+                    <div class="flex items-center gap-3">
+                        <label class="text-xs text-gray-500 flex items-center gap-1.5 cursor-pointer">
+                            <input type="checkbox" id="toggleSolutionMode" class="rounded text-primary border-gray-300 focus:ring-primary" checked>
+                            <span>顯示解答 (教師版)</span>
+                        </label>
+                        <span class="text-xs text-gray-400">支援 Ctrl+P 直接列印</span>
+                    </div>
+                </div>
+
+                <div class="relative flex-grow overflow-y-auto bg-slate-300 p-6" id="outputContainer">
+                    
+                    <!-- Empty State -->
+                    <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 bg-slate-300">
+                        <div class="w-24 h-24 mb-4 bg-white rounded-full flex items-center justify-center border-2 border-dashed border-gray-300">
+                            <i class="fa-solid fa-file-lines text-3xl text-gray-300"></i>
+                        </div>
+                        <p class="text-sm">在上方設定參數並貼上文本，點擊「開始自動生成差異化教材」</p>
+                    </div>
+
+                    <!-- Loading state indicator -->
+                    <div id="loadingState" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-300/90 z-10 hidden">
+                        <div class="loader mb-4"></div>
+                        <p class="text-primary-dark font-semibold text-sm">AI 正在為您重構且適性降載此份教材...</p>
+                        <p class="text-xs text-gray-500 mt-1">此作業將完全採用 Unicode 原生數理與化學格式呈現，請稍候</p>
+                    </div>
+
+                    <!-- A4 Paper Sheet (Visual representation on web view) -->
+                    <div id="a4Paper" class="hidden">
+                        <div class="ws-banner">
+                            <div class="ws-banner-title" id="worksheetTitle">AI 差異化學習單</div>
+                            <div class="ws-banner-sub" id="worksheetSubtitle">Differentiated Worksheet · Powered by Gemini AI</div>
+                            <div class="ws-meta-row">
+                                <span class="ws-field">班級：<span class="ws-line"></span></span>
+                                <span class="ws-field">姓名：<span class="ws-line"></span></span>
+                                <span class="ws-field">座號：<span class="ws-line" style="width:50px"></span></span>
+                                <span class="ws-field">分數：<span class="ws-line" style="width:60px"></span></span>
+                            </div>
+                        </div>
+                        <div class="ws-body">
+                            <div id="resultContent" class="prose max-w-none"></div>
+                            <div class="ws-footer">
+                                <span id="footerLeft">差異化學習單</span>
+                                <span id="footerRight"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action buttons for downloading beautiful Word docs -->
+                    <div id="actionButtonsContainer" class="mt-4 flex justify-end gap-2 flex-wrap hidden">
+                        <button id="downloadWordStudentBtn" class="hidden bg-primary hover:bg-primary-hover text-white flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl shadow-sm transition-colors">
+                            <i class="fa-solid fa-file-word"></i> 匯出 Word (學生練習版)
+                        </button>
+                        <button id="downloadWordTeacherBtn" class="hidden bg-primary hover:bg-primary-hover text-white flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl shadow-sm transition-colors">
+                            <i class="fa-solid fa-file-word"></i> 匯出 Word (教師解答版)
+                        </button>
+                        <button id="copyBtn" class="hidden bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl transition-colors">
+                            <i class="fa-regular fa-copy"></i> 複製教材純文字
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating toast alerts -->
+    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none z-50 flex items-center gap-2 text-sm">
+        <i class="fa-solid fa-circle-check text-secondary"></i> <span id="toastMsg">成功</span>
+    </div>
+
+    <script>
+    // ══════════════════════════════════
+    // DEMO EXAMPLES LIBRARY
+    // ══════════════════════════════════
+    const examples = {
+        1: "光合作用是植物、藻類和某些細菌利用光能將二氧化碳和水轉化為有機物（主要是[[葡萄糖]]），並釋放氧氣的生化過程。此過程發生在[[葉綠體]]內，其中[[葉綠素]]扮演捕捉光能的關鍵角色。光合作用可分為[[光反應]]和[[碳反應]]（暗反應）兩個階段：光反應在[[類囊體膜]]上進行，需要光參與，產生ATP和NADPH；碳反應則在[[基質]]中進行，利用前述產物將二氧化碳還原成醣類。",
+        2: "文藝復興（Renaissance）是14世紀至17世紀在歐洲發生的一場文化運動，起源於義大利中部的佛羅倫斯，隨後蔓延至全歐洲。其核心思想為「[[人文主義]]」（Humanism），主張以「人」為本，強調人類的理性、尊嚴與價值，並重新發掘與研究古希臘、羅馬的[[古典文化]]。"
+    };
+
+    // ══════════════════════════════════
+    // DOM CACHE DOCK
+    // ══════════════════════════════════
+    const learningGradeEl       = document.getElementById('learningGrade');
+    const originalTextEl        = document.getElementById('originalText');
+    const simplificationLevelEl = document.getElementById('simplificationLevel');
+    const optComicEl    = document.getElementById('optComic');
+    const optParaEl     = document.getElementById('optPara');
+    const optBulletEl   = document.getElementById('optBullet');
+    const optTableEl    = document.getElementById('optTable');
+    const optQAEl       = document.getElementById('optQA');
+    const optVocabEl    = document.getElementById('optVocab');
+    const optQuizEl     = document.getElementById('optQuiz');
+    const optAnswerEl   = document.getElementById('optAnswer');
+    const generateBtn            = document.getElementById('generateBtn');
+    const actionButtonsContainer = document.getElementById('actionButtonsContainer');
+    const copyBtn               = document.getElementById('copyBtn');
+    const downloadWordStudentBtn = document.getElementById('downloadWordStudentBtn');
+    const downloadWordTeacherBtn = document.getElementById('downloadWordTeacherBtn');
+    const toggleSolutionMode     = document.getElementById('toggleSolutionMode');
+    const emptyState    = document.getElementById('emptyState');
+    const loadingState  = document.getElementById('loadingState');
+    const a4Paper       = document.getElementById('a4Paper');
+    const resultContent = document.getElementById('resultContent');
+    const toast         = document.getElementById('toast');
+    const toastMsg      = document.getElementById('toastMsg');
+    const worksheetTitle    = document.getElementById('worksheetTitle');
+    const worksheetSubtitle = document.getElementById('worksheetSubtitle');
+    const footerLeft    = document.getElementById('footerLeft');
+    const footerRight   = document.getElementById('footerRight');
+
+    function loadExample(id) {
+        originalTextEl.value = examples[id];
+        originalTextEl.classList.add('ring-2', 'ring-primary');
+        setTimeout(() => originalTextEl.classList.remove('ring-2', 'ring-primary'), 500);
+    }
+
+    function showToast(msg) {
+        toastMsg.textContent = msg;
+        toast.classList.remove('opacity-0');
+        setTimeout(() => toast.classList.add('opacity-0'), 3000);
+    }
+
+    // ══════════════════════════════════
+    // HTML RENDERING POST-PROCESS
+    // ══════════════════════════════════
+    function postProcessDOM(container) {
+        // ── 1. Replace double-bracket annotations [[重點]] to styled spans
+        function walkText(node, fn) {
+            if (node.nodeType === 3) { fn(node); return; }
+            if (node.nodeName === 'SCRIPT' || node.nodeName === 'STYLE') return;
+            [...node.childNodes].forEach(c => walkText(c, fn));
+        }
+
+        const annotationsToReplace = [];
+        walkText(container, n => {
+            if (/\[\[(.*?)\]\]/.test(n.textContent)) {
+                annotationsToReplace.push(n);
+            }
+        });
+
+        annotationsToReplace.forEach(n => {
+            const span = document.createElement('span');
+            span.innerHTML = n.textContent.replace(/\[\[(.*?)\]\]/g, (m, p) => {
+                const solutionStateClass = toggleSolutionMode.checked ? 'ans-highlight-teacher' : 'ans-highlight-student';
+                return `<span class="ans-wrapper" data-ans="${p}"><span class="${solutionStateClass}">${p}</span></span>`;
+            });
+            n.parentNode.replaceChild(span, n);
+        });
+
+        // ── 2. Replace empty full-width parentheses to standard blank placeholders
+        const blanksToReplace = [];
+        walkText(container, n => {
+            if (/（[　\s]{2,}）/.test(n.textContent)) blanksToReplace.push(n);
+        });
+        blanksToReplace.forEach(n => {
+            const span = document.createElement('span');
+            span.innerHTML = n.textContent.replace(/（[　\s]{2,}）/g, '<span class="answer-blank"></span>');
+            n.parentNode.replaceChild(span, n);
+        });
+
+        // ── 3. Wrap structural panels into gorgeous card blocks
+        const headings = [...container.querySelectorAll('h1,h2,h3')];
+        headings.forEach(h => {
+            const t = h.textContent;
+            let cls = '';
+            if (/測驗|quiz|小測/.test(t))             cls = 'section-quiz';
+            else if (/答案|解析|參考/.test(t))         cls = 'section-answer';
+            else if (/辭典|字典|詞彙|生字/.test(t))   cls = 'section-vocab';
+            if (!cls) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = cls;
+            h.parentNode.insertBefore(wrapper, h);
+            wrapper.appendChild(h);
+
+            const hLevel = parseInt(h.tagName[1]);
+            let next = wrapper.nextSibling;
+            while (next) {
+                const after = next.nextSibling;
+                const isHigherHeading = next.nodeType === 1 &&
+                    /^H[1-6]$/.test(next.tagName) &&
+                    parseInt(next.tagName[1]) <= hLevel;
+                if (isHigherHeading) break;
+                wrapper.appendChild(next);
+                next = after;
+            }
+        });
+
+        const quizSection = container.querySelector('.section-quiz');
+        if (quizSection) {
+            styleQuizSection(quizSection);
+        }
+
+        const ansSection = container.querySelector('.section-answer');
+        if (ansSection) {
+            styleAnswerSection(ansSection);
+        }
+    }
+
+    function styleQuizSection(section) {
+        // Find all <li> elements and wrap their content nicely
+        // Choice lines start with (A)(B)(C)(D) — convert them to .choice-row
+        const ols = section.querySelectorAll('ol, ul');
+        ols.forEach(list => {
+            list.querySelectorAll('li').forEach(li => {
+                // Check if this li contains choice option lines
+                const html = li.innerHTML;
+                // Split on choice pattern to build choice rows
+                const parts = html.split(/(<br\s*\/?>|\n)?\s*(\([A-Da-d]\))/g);
+                if (parts.length > 1) {
+                    // This li has choice options
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'quiz-q';
+
+                    // Stem: everything before first choice
+                    let stemHtml = '';
+                    let i = 0;
+                    while (i < parts.length && !/^\([A-Da-d]\)$/.test(parts[i])) {
+                        stemHtml += (parts[i] || '');
+                        i++;
+                    }
+                    // Clean up stem
+                    stemHtml = stemHtml.replace(/<br\s*\/?>/gi, '').trim();
+
+                    // Build stem div
+                    const stemDiv = document.createElement('div');
+                    stemDiv.className = 'quiz-q-stem';
+                    stemDiv.innerHTML = stemHtml;
+                    wrapper.appendChild(stemDiv);
+
+                    // Build choice rows
+                    let choiceHtml = '';
+                    while (i < parts.length) {
+                        const part = parts[i] || '';
+                        if (/^\([A-Da-d]\)$/.test(part)) {
+                            // This is a choice letter
+                            const letter = part.replace(/[()]/g, '');
+                            const nextContent = parts[i + 1] || '';
+                            choiceHtml += `<div class="choice-row"><span class="choice-letter">${letter}</span><span>${(nextContent || '').replace(/^[\s<br>]+/, '').trim()}</span></div>`;
+                            i += 2;
+                        } else {
+                            i++;
+                        }
+                    }
+                    if (choiceHtml) {
+                        const choicesDiv = document.createElement('div');
+                        choicesDiv.innerHTML = choiceHtml;
+                        wrapper.appendChild(choicesDiv);
+                    }
+
+                    li.parentNode.replaceChild(wrapper, li);
+                } else {
+                    // No choices, just wrap as a simple quiz-q
+                    li.classList.add('quiz-q');
+                }
+            });
+        });
+
+        // Also handle p tags that are questions
+        section.querySelectorAll('p').forEach(p => {
+            // If this p contains (A)(B) patterns it's a choice question
+            if (/\([A-Da-d]\)/.test(p.textContent) && p.textContent.trim().length > 10) {
+                p.style.cssText += 'margin:0;';
+            }
+        });
+    }
+
+    function styleAnswerSection(section) {
+        const items = section.querySelectorAll('li, p');
+        items.forEach(item => {
+            const text = item.textContent.trim();
+            if (/^(第?\d+題?[\s：:])|(^\d+\.)/.test(text) || /答案[：:]\s*[\(（][A-Da-d][\)）]/.test(text)) {
+                item.classList.add('ans-item');
+                item.innerHTML = item.innerHTML.replace(
+                    /(\([A-Da-d]\)|（[A-Da-d]）)/g,
+                    '<span class="ans-letter">$1</span>'
+                );
+            }
+        });
+    }
+
+    // Toggle teacher's solution display interactively on the A4 preview page
+    toggleSolutionMode.addEventListener('change', () => {
+        const wrappers = resultContent.querySelectorAll('.ans-wrapper');
+        wrappers.forEach(w => {
+            const val = w.getAttribute('data-ans');
+            const inner = w.querySelector('span');
+            if (inner) {
+                if (toggleSolutionMode.checked) {
+                    inner.className = 'ans-highlight-teacher';
+                    inner.style.color = '';
+                } else {
+                    inner.className = 'ans-highlight-student';
+                    inner.style.color = 'transparent';
+                }
+            }
+        });
+    });
+
+    // ══════════════════════════════════
+    // AI REWRITE & PACK GENERATOR
+    // ══════════════════════════════════
+    async function generateSimplifiedText() {
+        const rawText = originalTextEl.value.trim();
+        if (!rawText) { showToast('⚠️ 請先輸入或貼上需要簡化降載的教材內容！'); return; }
+        if (!optParaEl.checked && !optBulletEl.checked && !optTableEl.checked && !optQAEl.checked) {
+            showToast('⚠️ 請至少勾選一種「教材內文呈現方式」！'); return;
+        }
+
+        const grade = learningGradeEl.value;
+        const level = simplificationLevelEl.value;
+        const genImages = optComicEl.checked;
+
+        let formatInstructions = '';
+        if (optParaEl.checked)   formatInstructions += `- ${optParaEl.value}\n`;
+        if (optBulletEl.checked) formatInstructions += `- ${optBulletEl.value}\n`;
+        if (optTableEl.checked)  formatInstructions += `- ${optTableEl.value}\n`;
+        if (optQAEl.checked)     formatInstructions += `- ${optQAEl.value}\n`;
+
+        // Strict Unicode formatting constraint & Double Bracket Answer Key Instructions
+        let systemPrompt = `你是一位專業且充滿耐心的特殊教育與適性學習教材編輯專家。你的任務是將複雜的教材文章「改寫與降載簡化」，使其極易於閱讀與吸收。
+
+【核心設定】
+1. 學習對象：${grade}
+2. 簡化與改寫幅度：${level}
+3. 重要填空詞彙機制：請務必挑選文章中「最關鍵、重要的專有名詞、生字或答案」，使用雙括號將其包裹，如 \`[[重點詞彙]]\`。這些字句在學生版中會自動化為填空欄位（雙括號內絕不可留空）。
+4. 排版規定：使用 Markdown **粗體** 標示關鍵字。僅在第一個大標題前加上一個適宜的 Emoji，其餘次級標題與正文保持乾淨，切勿添加 Emoji，以免干擾學生的視知覺。
+5. 絕對禁止任何開場白、多餘結語。
+
+【數理與化學公式規範 — 極度重要】
+所有數學公式、化學反應式及特殊單位，必須直接以【純 Unicode 字符與標準上下標】輸出，絕對禁止使用任何 LaTeX 語法。
+常用符號對照範例：
+- 二次方與多次方：直接輸出 ² 或 ³ 或 ⁴ 或 ⁿ (如 x² + bx + c = 0, y = ax²)
+- 化學下標：直接輸出 ₂、₃、₄ 等 (如 H₂O, CO₂, C₆H₁₂O₆)
+- 常見運算與關係符號：±, √, ≦, ≧, ≠, ÷, ×, ≈, ∞, °, ℃, ∠, △, π, θ
+- 分數：以 1/2 或 2/3 呈現
+- 反應箭頭：使用 → 
+- 希臘字母與變量符號直接輸出：Δ, α, β, λ, θ, π`;
+
+        systemPrompt += `
+
+【輸出架構要求】\n`;
+
+        if (genImages) {
+            systemPrompt += `- 情境導入：在文章最開頭單獨一行提供「[六格漫畫提示詞]：」開頭的圖片描述。\n`;
+        }
+
+        systemPrompt += `- 教材主文（依序使用以下格式）：\n${formatInstructions}`;
+
+        if (optVocabEl.checked) {
+            systemPrompt += `- 困難生字與重要詞彙小辭典：教材結束後新增「💡 困難生字與重要詞彙小辭典」區塊，解釋文中的專有名詞與困難生字。\n`;
+        }
+
+        if (optQuizEl.checked) {
+            const fill   = document.getElementById('quizFillCount').value || 3;
+            const choice = document.getElementById('quizChoiceCount').value || 3;
+            const essay  = document.getElementById('quizEssayCount').value || 1;
+            const diff   = document.getElementById('quizDifficulty').value;
+
+            systemPrompt += `- 隨堂測驗：新增「✏️ 觀念確認與小測驗」區塊，難度「${diff}」，包含：
+  ① ${fill} 題填充題（填充挖空的核心解答詞彙亦必須使用雙括號包裹，如：光合作用會釋放出 \`[[氧氣]]\`。每題獨立用 Markdown numbered list 輸出）
+  ② ${choice} 題選擇題（題號前方直接顯示題號「數字. 」，不加括號。如「1. 下列何者...」。四個選項必須各自占獨立行，一個選項一行，以 A., B., C., D. 開頭且絕不加任何括號。整題用 numbered list 輸出）
+  ③ ${essay} 題生活實踐/素養探究題（用 numbered list 輸出）\n`;
+        }
+
+        if (optAnswerEl.checked) {
+            systemPrompt += `- 參考答案：在最末端新增「💡 參考答案與說明」區塊。
+  【格式規定】每題答案用獨立段落輸出，禁止使用 numbered list 格式，格式如下：
+  **第1題** 答案：(C)
+  說明：寫出具體解題邏輯與精準說明。
+  
+  **第2題** 答案：(B)
+  說明：寫出具體解題邏輯與精準說明。`;
+        }
+
+        const userPrompt = `請根據設定，將以下原始文本進行適性降載、簡化並生成精美的差異化學習單：\n\n${rawText}`;
+
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 正在適性重構教材中...';
+        emptyState.classList.add('hidden');
+        a4Paper.classList.add('hidden');
+        actionButtonsContainer.classList.add('hidden');
+        [copyBtn, downloadWordStudentBtn, downloadWordTeacherBtn].forEach(b => b.classList.add('hidden'));
+        loadingState.classList.remove('hidden');
+
+        try {
+            const apiKey = '';
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: { temperature: 0.6 }
+            };
+            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) throw new Error(`API 請求異常 (代碼 ${response.status})`);
+            const result = await response.json();
+            const candidate = result.candidates?.[0];
+
+            if (candidate?.content?.parts?.[0]?.text) {
+                let md = candidate.content.parts[0].text;
+
+                // Handle comic prompt if needed
+                if (genImages) {
+                    const imageQueue = [];
+                    md = md.replace(/\[六格漫畫提示詞\][：:]([^\n]+)/g, (m, p) => {
+                        const id = 'comic-' + Date.now();
+                        imageQueue.push({ id, prompt: p });
+                        return `<div id="${id}" class="my-4 flex flex-col items-center p-6 bg-primary-light border-2 border-dashed border-primary-border rounded-xl min-h-[160px]"><div class="loader mb-2"></div><span class="text-sm text-primary-dark">🎨 AI 繪畫插圖中...</span></div>\n\n`;
+                    });
+                    resultContent.innerHTML = marked.parse(md);
+                    postProcessDOM(resultContent);
+                    imageQueue.forEach(async item => {
+                        try {
+                            const url = await generateImage(item.prompt, grade);
+                            const el = document.getElementById(item.id);
+                            if (el) { el.innerHTML = `<img src="${url}" class="rounded-xl shadow-md w-full" alt="情境導入漫畫">`; el.className = 'my-4'; }
+                        } catch(e) {
+                            const el = document.getElementById(item.id);
+                            if (el) el.innerHTML = `<span class="text-red-500 text-sm">圖片繪製失敗：${e.message}</span>`;
+                        }
+                    });
+                } else {
+                    md = md.replace(/\[六格漫畫提示詞\][：:]([^\n]+)/g, '');
+                    resultContent.innerHTML = marked.parse(md);
+                    postProcessDOM(resultContent);
+                }
+
+                // Dynamic title extraction & clean up
+                const firstH = resultContent.querySelector('h1, h2');
+                let titleText = firstH ? firstH.textContent.trim().replace(/^[\p{Emoji}\u200d\s]+/u,'').trim() : '差異化適性學習單';
+                titleText = titleText.replace(/^[0-9.\s]+/, '').trim();
+                if (titleText.length > 30) titleText = titleText.slice(0,30) + '...';
+                
+                document.title = `${titleText} - 差異化學習單生成系統`;
+                worksheetTitle.textContent = titleText;
+                worksheetSubtitle.textContent = `${grade} · 適性探索學習單`;
+                footerLeft.textContent = titleText;
+                footerRight.textContent = new Date().toLocaleDateString('zh-TW');
+
+                loadingState.classList.add('hidden');
+                a4Paper.classList.remove('hidden');
+                actionButtonsContainer.classList.remove('hidden');
+                copyBtn.classList.remove('hidden');
+                downloadWordStudentBtn.classList.remove('hidden');
+                downloadWordTeacherBtn.classList.remove('hidden');
+            } else {
+                throw new Error('API 未回傳可供解析的教材內容');
+            }
+        } catch(err) {
+            console.error(err);
+            loadingState.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+            emptyState.innerHTML = `<div class="text-red-400 mb-2"><i class="fa-solid fa-circle-exclamation text-3xl"></i></div><p class="text-red-500 font-medium">生成失敗</p><p class="text-xs text-gray-400 mt-1">${err.message}</p>`;
+        } finally {
+            generateBtn.disabled = false;
+            generateBtn.innerHTML = '<i class="fa-solid fa-sparkles"></i> 開始自動生成差異化教材';
+        }
+    }
+
+    async function generateImage(prompt, grade) {
+        const apiKey = '';
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=${apiKey}`;
+        let style = "cute children's book illustration, flat vibrant colors, white background";
+        if (/中學|高中/.test(grade)) style = 'anime manga style, colorful, high quality, white background';
+        const payload = {
+            contents: [{ role: 'user', parts: [{ text: `A 6-panel comic strip 3x2 grid. Include Traditional Chinese speech bubbles. ${prompt}, ${style}` }] }],
+            generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: '4:3' } }
+        };
+        const r = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!r.ok) throw new Error(`Image API Error ${r.status}`);
+        const res = await r.json();
+        const part = res?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+        if (part?.inlineData) return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+        throw new Error('API 未能成功生成圖片資料');
+    }
+
+    // Helper to turn base64 comic strings into docx ImageRun compatible binary buffers
+    function base64ToUint8Array(base64Str) {
+        const raw = atob(base64Str.split(',')[1] || base64Str);
+        const array = new Uint8Array(raw.length);
+        for (let i = 0; i < raw.length; i++) {
+            array[i] = raw.charCodeAt(i);
+        }
+        return array;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════════
+    // DOCX.JS GORGEOUS NO-OVERLAP NESTED-TABLE EXPORTER
+    // ══════════════════════════════════════════════════════════════════════════════
+    async function exportToWordDocx(type) {
+        if (!resultContent.innerHTML || !window.docx) {
+            showToast('⚠️ 無法下載，請確保學習單已順利生成且 docx 庫已完成載入。');
+            return;
+        }
+
+        const isStudent = type === 'student';
+        const btn = isStudent ? downloadWordStudentBtn : downloadWordTeacherBtn;
+        const origHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 匯出中...';
+        btn.disabled = true;
+
+        try {
+            const {
+                Document,
+                Paragraph,
+                TextRun,
+                Table,
+                TableRow,
+                TableCell,
+                WidthType,
+                BorderStyle,
+                AlignmentType,
+                HeadingLevel,
+                PageBreak,
+                ImageRun
+            } = window.docx;
+
+            // Extract core metadata
+            const grade = learningGradeEl.value;
+            const today = new Date().toLocaleDateString('zh-TW');
+            const titleText = worksheetTitle.textContent;
+            const suffix = isStudent ? ' (學生版)' : ' (教師解答版)';
+
+            // Standard fine-double-line heading structure
+            const docxChildren = [
+                new Table({
+                    width: { size: 100, type: WidthType.PERCENTAGE },
+                    borders: {
+                        top: { style: BorderStyle.NONE },
+                        left: { style: BorderStyle.NONE },
+                        right: { style: BorderStyle.NONE },
+                        bottom: { style: BorderStyle.DOUBLE, size: 24, color: "5F8F8B" } // Fine double-border bottom line
+                    },
+                    rows: [
+                        new TableRow({
+                            children: [
+                                new TableCell({
+                                    children: [
+                                        new Paragraph({
+                                            alignment: AlignmentType.CENTER,
+                                            spacing: { before: 120, after: 120 },
+                                            children: [
+                                                new TextRun({
+                                                    text: titleText,
+                                                    bold: true,
+                                                    size: 32, // 16pt
+                                                    color: "2C4D4A",
+                                                    font: "微軟正黑體"
+                                                })
+                                            ]
+                                        }),
+                                        new Paragraph({
+                                            alignment: AlignmentType.CENTER,
+                                            spacing: { after: 120 },
+                                            children: [
+                                                new TextRun({
+                                                    text: `${grade}  ·  適性探索學習單${suffix}`,
+                                                    size: 20, // 10pt
+                                                    color: "666666",
+                                                    font: "微軟正黑體"
+                                                })
+                                            ]
+                                        })
+                                    ],
+                                    columnSpan: 4
+                                })
+                            ]
+                        }),
+                        new TableRow({
+                            children: [
+                                new TableCell({
+                                    children: [
+                                        new Paragraph({
+                                            spacing: { before: 100, after: 100 },
+                                            children: [
+                                                new TextRun({ text: "班  級：", bold: true, size: 22, color: "222222", font: "微軟正黑體" }),
+                                                new TextRun({ text: "                      ", underline: { type: BorderStyle.SINGLE, color: "333333" }, size: 22 })
+                                            ]
+                                        })
+                                    ],
+                                    width: { size: 25, type: WidthType.PERCENTAGE }
+                                }),
+                                new TableCell({
+                                    children: [
+                                        new Paragraph({
+                                            spacing: { before: 100, after: 100 },
+                                            children: [
+                                                new TextRun({ text: "姓  名：", bold: true, size: 22, color: "222222", font: "微軟正黑體" }),
+                                                new TextRun({ text: "                      ", underline: { type: BorderStyle.SINGLE, color: "333333" }, size: 22 })
+                                            ]
+                                        })
+                                    ],
+                                    width: { size: 25, type: WidthType.PERCENTAGE }
+                                }),
+                                new TableCell({
+                                    children: [
+                                        new Paragraph({
+                                            spacing: { before: 100, after: 100 },
+                                            children: [
+                                                new TextRun({ text: "座  號：", bold: true, size: 22, color: "222222", font: "微軟正黑體" }),
+                                                new TextRun({ text: "            ", underline: { type: BorderStyle.SINGLE, color: "333333" }, size: 22 })
+                                            ]
+                                        })
+                                    ],
+                                    width: { size: 25, type: WidthType.PERCENTAGE }
+                                }),
+                                new TableCell({
+                                    children: [
+                                        new Paragraph({
+                                            spacing: { before: 100, after: 100 },
+                                            children: [
+                                                new TextRun({ text: "分  數：", bold: true, size: 22, color: "222222", font: "微軟正黑體" }),
+                                                new TextRun({ text: "              ", underline: { type: BorderStyle.SINGLE, color: "333333" }, size: 22 })
+                                            ]
+                                        })
+                                    ],
+                                    width: { size: 25, type: WidthType.PERCENTAGE }
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                // Spacer paragraph
+                new Paragraph({ spacing: { before: 240, after: 120 } })
+            ];
+
+            // Filter resultContent children based on Student/Teacher setting
+            let contentNodes = [...resultContent.childNodes];
+            if (isStudent && optAnswerEl.checked) {
+                // Completely skip `.section-answer` for Student worksheets
+                contentNodes = contentNodes.filter(node => {
+                    if (node.nodeType === 1 && node.classList.contains('section-answer')) {
+                        return false;
+                    }
+                    return true;
+                });
+            }
+
+            // Helper to parse text with potential [[ 重點 ]] double bracket syntax
+            function parseAnnotatedTextToRuns(rawText, isStudentVer) {
+                const runs = [];
+                const regex = /\[\[(.*?)\]\]/g;
+                let lastIndex = 0;
+                let match;
+
+                while ((match = regex.exec(rawText)) !== null) {
+                    const beforeText = rawText.substring(lastIndex, match.index);
+                    if (beforeText) {
+                        runs.push(new TextRun({ text: beforeText, font: "微軟正黑體", size: 22 }));
+                    }
+
+                    const keyword = match[1];
+                    if (isStudentVer) {
+                        // Beautiful clean blank placeholders for student mode
+                        runs.push(new TextRun({
+                            text: "（　　　　　）",
+                            font: "微軟正黑體",
+                            size: 22,
+                            bold: true,
+                            underline: { type: BorderStyle.SINGLE, color: "333333" }
+                        }));
+                    } else {
+                        // High-contrast bold red underlined key term for teacher key
+                        runs.push(new TextRun({
+                            text: keyword,
+                            font: "微軟正黑體",
+                            size: 22,
+                            bold: true,
+                            color: "FF0000",
+                            underline: { type: BorderStyle.SINGLE, color: "FF0000" }
+                        }));
+                    }
+                    lastIndex = regex.lastIndex;
+                }
+
+                const afterText = rawText.substring(lastIndex);
+                if (afterText) {
+                    runs.push(new TextRun({ text: afterText, font: "微軟正黑體", size: 22 }));
+                }
+
+                return runs.length ? runs : [new TextRun({ text: rawText, font: "微軟正黑體", size: 22 })];
+            }
+
+            function parseNodeList(nodes, isInsideCallout = false) {
+                const elements = [];
+                for (const node of nodes) {
+                    if (node.nodeType === 3) {
+                        const txt = node.textContent;
+                        if (txt.trim()) {
+                            elements.push(new Paragraph({
+                                spacing: { before: 80, after: 80, line: 360 },
+                                children: parseAnnotatedTextToRuns(txt, isStudent)
+                            }));
+                        }
+                    } else if (node.nodeType === 1) {
+                        const tagName = node.tagName.toLowerCase();
+
+                        // Intercept image nodes and convert Uint8Array base64
+                        if (tagName === 'img' || (tagName === 'div' && node.querySelector('img'))) {
+                            const img = node.tagName === 'IMG' ? node : node.querySelector('img');
+                            const src = img.getAttribute('src');
+                            if (src && src.startsWith('data:image')) {
+                                try {
+                                    const binaryData = base64ToUint8Array(src);
+                                    elements.push(new Paragraph({
+                                        alignment: AlignmentType.CENTER,
+                                        spacing: { before: 180, after: 180 },
+                                        children: [
+                                            new ImageRun({
+                                                data: binaryData,
+                                                transformation: {
+                                                    width: 480, // High-quality display scale
+                                                    height: 360
+                                                }
+                                            })
+                                        ]
+                                    }));
+                                } catch (err) {
+                                    console.error('Failed to parse base64 image during Word generation', err);
+                                }
+                            }
+                            continue;
+                        }
+
+                        // Handle quiz sections with Left border accent line
+                        if (node.classList.contains('section-quiz')) {
+                            elements.push(new Paragraph({ children: [new PageBreak()] }));
+                            
+                            const headerEl = node.querySelector('h2, h3');
+                            if (headerEl) {
+                                elements.push(new Paragraph({
+                                    spacing: { before: 240, after: 120 },
+                                    keepWithNext: true,
+                                    children: [
+                                        new TextRun({
+                                            text: headerEl.textContent.trim(),
+                                            bold: true,
+                                            size: 26,
+                                            color: "2C4D4A",
+                                            font: "微軟正黑體"
+                                        })
+                                    ]
+                                }));
+                            }
+                            
+                            // Parse body items inside quiz container (all MC and Fill questions)
+                            const bodyNodes = [...node.childNodes].filter(n => n !== headerEl);
+                            elements.push(...parseNodeList(bodyNodes, true));
+                            continue;
+                        }
+
+                        // Intercept standard MC and fill blocks and output perfectly as vertical unbordered lines
+                        if (node.classList.contains('quiz-q-item') || node.classList.contains('quiz-q')) {
+                            const stemEl = node.querySelector('.font-medium, .quiz-q-stem');
+                            if (stemEl) {
+                                elements.push(new Paragraph({
+                                    spacing: { before: 120, after: 60, line: 360 },
+                                    keepWithNext: true,
+                                    children: parseAnnotatedTextToRuns(stemEl.textContent, isStudent)
+                                }));
+                            }
+
+                            const optionsBox = node.querySelector('.quiz-options-box') || node;
+                            if (optionsBox) {
+                                const choiceLines = [...optionsBox.querySelectorAll('.choice-line, .choice-row')];
+                                choiceLines.forEach(line => {
+                                    const letter = line.querySelector('.choice-letter')?.textContent?.trim();
+                                    const content = line.children.length > 1 ? line.children[1].textContent.trim() : line.textContent.trim();
+                                    const choiceText = letter ? `${letter}. ${content}` : line.textContent.trim();
+                                    elements.push(new Paragraph({
+                                        indent: { left: 540 }, // Indented cleanly under the stem
+                                        spacing: { before: 40, after: 40, line: 360 },
+                                        children: parseAnnotatedTextToRuns(choiceText, isStudent)
+                                    }));
+                                });
+                            }
+                            continue;
+                        }
+
+                        // Intercept decorated structural container divs and output as Table boxes!
+                        if (node.classList.contains('section-vocab') || node.classList.contains('section-answer')) {
+                            elements.push(new Paragraph({ children: [new PageBreak()] }));
+                            elements.push(createCalloutBox(node));
+                            continue;
+                        }
+
+                        if (tagName === 'h1' || tagName === 'h2' || tagName === 'h3') {
+                            const textVal = node.textContent.trim();
+                            const headingLevel = tagName === 'h1' ? HeadingLevel.HEADING_1 : (tagName === 'h2' ? HeadingLevel.HEADING_2 : HeadingLevel.HEADING_3);
+                            const hColor = tagName === 'h1' ? "2C4D4A" : (tagName === 'h2' ? "2C4D4A" : "3D5C59");
+                            const hSize = tagName === 'h1' ? 32 : (tagName === 'h2' ? 26 : 22);
+
+                            elements.push(new Paragraph({
+                                heading: headingLevel,
+                                spacing: { before: 240, after: 120 },
+                                keepWithNext: true,
+                                children: [
+                                    new TextRun({
+                                        text: textVal,
+                                        bold: true,
+                                        size: hSize,
+                                        color: hColor,
+                                        font: "微軟正黑體"
+                                    })
+                                ]
+                            }));
+                        } else if (tagName === 'p') {
+                            elements.push(parseParagraphElement(node));
+                        } else if (tagName === 'blockquote') {
+                            // Render Blockquotes as left-bordered table cells
+                            const text = node.textContent.trim();
+                            elements.push(new Table({
+                                width: { size: 100, type: WidthType.PERCENTAGE },
+                                borders: {
+                                    top: { style: BorderStyle.NONE },
+                                    bottom: { style: BorderStyle.NONE },
+                                    right: { style: BorderStyle.NONE },
+                                    left: { style: BorderStyle.SINGLE, size: 24, color: "8AAEA9" }
+                                },
+                                rows: [
+                                    new TableRow({
+                                        children: [
+                                            new TableCell({
+                                                children: [
+                                                    new Paragraph({
+                                                        spacing: { before: 100, after: 100 },
+                                                        children: parseAnnotatedTextToRuns(text, isStudent)
+                                                    })
+                                                ],
+                                                shading: { fill: "EBF2F1" },
+                                                margins: { left: 200, right: 200 }
+                                            })
+                                        ]
+                                    })
+                                ]
+                            }));
+                        } else if (tagName === 'ul' || tagName === 'ol') {
+                            const listItems = [...node.children];
+                            listItems.forEach((li, idx) => {
+                                elements.push(parseParagraphElement(li, tagName === 'ul' ? "bullet" : "number", idx + 1));
+                            });
+                        } else if (tagName === 'table') {
+                            elements.push(parseTableElement(node));
+                        } else if (tagName === 'div') {
+                            elements.push(...parseNodeList([...node.childNodes], isInsideCallout));
+                        }
+                    }
+                }
+                return elements;
+            }
+
+            function parseParagraphElement(pNode, listType = null, index = 1) {
+                const runs = [];
+                const firstChildText = pNode.textContent.trim();
+                
+                // Detect standard multiple choice options (A. B. C. D.) to suppress default list bullets
+                const isChoiceOption = /^[A-D]\.\s/.test(firstChildText);
+
+                if (listType === "bullet") {
+                    if (!isChoiceOption) {
+                        runs.push(new TextRun({ text: "•  ", bold: true, color: "5F8F8B", font: "微軟正黑體", size: 22 }));
+                    }
+                } else if (listType === "number") {
+                    runs.push(new TextRun({ text: `${index}. `, bold: true, color: "5F8F8B", font: "微軟正黑體", size: 22 }));
+                }
+
+                function processInline(child) {
+                    if (child.nodeType === 3) {
+                        runs.push(...parseAnnotatedTextToRuns(child.textContent, isStudent));
+                    } else if (child.nodeType === 1) {
+                        const inlineTagName = child.tagName.toLowerCase();
+                        const text = child.textContent;
+
+                        // Check if it's an answer wrapper span
+                        if (child.classList.contains('ans-wrapper') || child.querySelector('.ans-highlight-teacher, .ans-highlight-student')) {
+                            const rawWord = child.getAttribute('data-ans') || child.textContent;
+                            runs.push(...parseAnnotatedTextToRuns(`[[${rawWord}]]`, isStudent));
+                        } else {
+                            const isBold = inlineTagName === 'strong' || inlineTagName === 'b' || child.classList.contains('vocab-word');
+                            const isItalic = inlineTagName === 'em' || inlineTagName === 'i';
+                            const isUnderline = inlineTagName === 'u' || child.classList.contains('answer-blank');
+                            let runColor = "222222";
+                            let runShading = null;
+
+                            if (child.classList.contains('vocab-word')) {
+                                runColor = "5B21B6";
+                            }
+                            if (child.classList.contains('ans-letter')) {
+                                runColor = "3D5C59";
+                                runShading = "EBF2F1";
+                            }
+
+                            runs.push(new TextRun({
+                                text: text,
+                                bold: isBold,
+                                italics: isItalic,
+                                underline: isUnderline ? { color: "333333" } : undefined,
+                                color: runColor,
+                                font: "微軟正黑體",
+                                size: 22,
+                                shading: runShading ? { fill: runShading } : undefined
+                            }));
+                        }
+                    }
+                }
+
+                [...pNode.childNodes].forEach(processInline);
+
+                // Dedicate custom left indentation values to match standard exam visual structure
+                const indentLeft = isChoiceOption ? 540 : ((listType === "bullet" || listType === "number") ? 240 : undefined);
+
+                return new Paragraph({
+                    children: runs,
+                    spacing: { before: isChoiceOption ? 40 : 80, after: isChoiceOption ? 40 : 80, line: 360 },
+                    indent: indentLeft ? { left: indentLeft } : undefined
+                });
+            }
+
+            // Generates a beautiful 1-cell Table container to act as a structured section block
+            function createCalloutBox(node) {
+                let borderColor = "CCCCCC";
+                let bgShading = "F9F9F9";
+                let boxTitle = "";
+                let boxTitleColor = "222222";
+
+                if (node.classList.contains('section-vocab')) {
+                    borderColor = "C4B5FD";
+                    bgShading = "F5F3FF";
+                    boxTitleColor = "5B21B6";
+                } else if (node.classList.contains('section-answer')) {
+                    borderColor = "FCD34D";
+                    bgShading = "FFFBEB";
+                    boxTitleColor = "92400E";
+                }
+
+                const headerEl = node.querySelector('h2, h3');
+                if (headerEl) {
+                    boxTitle = headerEl.textContent.trim();
+                }
+
+                const cellChildren = [];
+                if (boxTitle) {
+                    cellChildren.push(new Paragraph({
+                        spacing: { before: 100, after: 150 },
+                        keepWithNext: true,
+                        children: [
+                            new TextRun({
+                                text: boxTitle,
+                                bold: true,
+                                size: 26,
+                                color: boxTitleColor,
+                                font: "微軟正黑體"
+                            })
+                        ]
+                    }));
+                }
+
+                // Add children from DOM node excluding header
+                const bodyNodes = [...node.childNodes].filter(n => n !== headerEl);
+                cellChildren.push(...parseNodeList(bodyNodes, true));
+
+                return new Table({
+                    width: { size: 100, type: WidthType.PERCENTAGE },
+                    borders: {
+                        top: { style: BorderStyle.SINGLE, size: 12, color: borderColor },
+                        bottom: { style: BorderStyle.SINGLE, size: 12, color: borderColor },
+                        left: { style: BorderStyle.SINGLE, size: 24, color: borderColor }, // Thick left border
+                        right: { style: BorderStyle.SINGLE, size: 12, color: borderColor }
+                    },
+                    rows: [
+                        new TableRow({
+                            children: [
+                                new TableCell({
+                                    children: cellChildren,
+                                    shading: { fill: bgShading },
+                                    margins: { top: 200, bottom: 200, left: 240, right: 240 }
+                                })
+                            ]
+                        })
+                    ]
+                });
+            }
+
+            // Generates elegant data grids with alternate background row colors
+            function parseTableElement(tableNode) {
+                const tableRows = [];
+                const headerRow = tableNode.querySelector('tr:has(th)') || tableNode.querySelector('thead tr');
+                const normalRows = [...tableNode.querySelectorAll('tr')].filter(r => r !== headerRow);
+
+                if (headerRow) {
+                    const thCells = [...headerRow.querySelectorAll('th')];
+                    tableRows.push(new TableRow({
+                        children: thCells.map(th => new TableCell({
+                            children: [new Paragraph({
+                                spacing: { before: 100, after: 100 },
+                                children: [new TextRun({
+                                    text: th.textContent.trim(),
+                                    bold: true,
+                                    color: "FFFFFF",
+                                    font: "微軟正黑體",
+                                    size: 22
+                                })]
+                            })],
+                            shading: { fill: "3D5C59" },
+                            margins: { top: 120, bottom: 120, left: 140, right: 140 }
+                        })),
+                        isHeader: true
+                    }));
+                }
+
+                normalRows.forEach((tr, index) => {
+                    const tdCells = [...tr.querySelectorAll('td')];
+                    const rowBg = index % 2 === 0 ? "FFFFFF" : "F6FAF9";
+                    tableRows.push(new TableRow({
+                        children: tdCells.map(td => new TableCell({
+                            children: [parseParagraphElement(td)],
+                            shading: { fill: rowBg },
+                            margins: { top: 100, bottom: 100, left: 140, right: 140 }
+                        }))
+                    }));
+                });
+
+                return new Table({
+                    width: { size: 100, type: WidthType.PERCENTAGE },
+                    borders: {
+                        top: { style: BorderStyle.SINGLE, size: 8, color: "C8DEDC" },
+                        bottom: { style: BorderStyle.SINGLE, size: 8, color: "C8DEDC" },
+                        left: { style: BorderStyle.SINGLE, size: 8, color: "C8DEDC" },
+                        right: { style: BorderStyle.SINGLE, size: 8, color: "C8DEDC" },
+                        insideHorizontal: { style: BorderStyle.SINGLE, size: 4, color: "E8E8E8" }
+                    },
+                    rows: tableRows
+                });
+            }
+
+            // Run linear parsing flow to accumulate kids
+            docxChildren.push(...parseNodeList(contentNodes));
+
+            // Setup Document layout structure with standard 1-inch margins
+            const doc = new Document({
+                sections: [{
+                    properties: {
+                        page: {
+                            margin: {
+                                top: 1440, // 1 inch
+                                bottom: 1440,
+                                left: 1440,
+                                right: 1440
+                            }
+                        }
+                    },
+                    children: docxChildren
+                }]
+            });
+
+            // Pack and export using FileSaver JS
+            const blob = await window.docx.Packer.toBlob(doc);
+            const fileTitle = (titleText + suffix).trim();
+            saveAs(blob, `${fileTitle}.docx`);
+            showToast('✅ Word 原生文件自適應匯出成功！');
+        } catch(e) {
+            console.error(e);
+            showToast('❌ 匯出失敗：' + e.message);
+        } finally {
+            btn.innerHTML = origHtml;
+            btn.disabled = false;
+        }
+    }
+
+    // ══════════════════════════════════
+    // INTERACTION EVENT CONTROLS
+    // ══════════════════════════════════
+    generateBtn.addEventListener('click', generateSimplifiedText);
+    downloadWordStudentBtn.addEventListener('click', () => exportToWordDocx('student'));
+    downloadWordTeacherBtn.addEventListener('click', () => exportToWordDocx('teacher'));
+    copyBtn.addEventListener('click', () => {
+        const t = resultContent.innerText;
+        if (!t) return;
+        navigator.clipboard.writeText(t)
+            .then(() => showToast('✅ 已複製純文字到剪貼簿！'))
+            .catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = t; ta.style.cssText = 'position:fixed;left:-9999px';
+                document.body.appendChild(ta); ta.select();
+                document.execCommand('copy'); document.body.removeChild(ta);
+                showToast('✅ 已複製純文字到剪貼簿！');
+            });
+    });
+    </script>
+</body>
+</html>

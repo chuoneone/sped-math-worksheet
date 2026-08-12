@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>差異化教材生成系統</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@7.1.0/build/index.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@700&family=LXGW+WenKai+TC&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: "LXGW WenKai TC", cursive; background-color: #f8fafc; }
+        h1, h2, h3, h4, .font-heading { font-family: "Chiron GoRound TC", sans-serif; }
+        .worksheet { background: #fff; color: #263238; line-height: 1.9; }
+        .worksheet h1 { color: #065f46; font-size: 1.8rem; margin: 0 0 1.25rem; text-align: center; }
+        .worksheet h2 { color: #065f46; font-size: 1.35rem; margin: 1.6rem 0 .75rem; padding-bottom: .35rem; border-bottom: 2px solid #a7f3d0; }
+        .worksheet h3 { color: #047857; font-size: 1.12rem; margin: 1.25rem 0 .5rem; }
+        .worksheet p { margin: .55rem 0; }
+        .worksheet ul, .worksheet ol { margin: .6rem 0; padding-left: 1.7rem; }
+        .worksheet li { margin: .35rem 0; }
+        .worksheet table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        .worksheet th, .worksheet td { border: 1px solid #94a3b8; padding: .6rem .75rem; vertical-align: top; }
+        .worksheet th { background: #ecfdf5; color: #065f46; }
+        .worksheet blockquote { margin: 1rem 0; padding: .75rem 1rem; border-left: 4px solid #10b981; background: #f0fdf4; }
+        .worksheet img { display: block; max-width: 100%; height: auto; margin: 1rem auto; border-radius: 1rem; }
+        .worksheet .question-number { display: inline-block; min-width: 2rem; font-weight: 700; color: #047857; }
+        .image-loading { min-height: 170px; display: grid; place-items: center; border: 2px dashed #6ee7b7; border-radius: 1rem; background: #f0fdf4; color: #047857; }
+        .spinner { width: 1.25rem; height: 1.25rem; border: 3px solid #a7f3d0; border-top-color: #047857; border-radius: 9999px; animation: spin .8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media print {
+            @page { size: A4; margin: 14mm 15mm; }
+            body { background: #fff; }
+            .no-print { display: none !important; }
+            #result-section { display: block !important; margin: 0 !important; }
+            #worksheet { box-shadow: none !important; border: 0 !important; padding: 0 !important; }
+            .worksheet h2, .worksheet h3, .worksheet li, .worksheet tr, .worksheet blockquote { break-inside: avoid; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="text-gray-700">
+    <div class="container mx-auto p-4 max-w-4xl">
+        <header class="text-center mb-8 no-print">
+            <h1 class="text-4xl font-bold text-emerald-800">差異化教材生成系統</h1>
+            <p class="text-gray-500 mt-2">依據學習程度，自動產出客製化教材架構</p>
+        </header>
+
+        <main class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 no-print">
+            <!-- 教材設定區 -->
+            <section class="mb-8">
+                <h2 class="text-lg font-bold text-emerald-800 mb-4 flex items-center gap-2">
+                    <span class="text-xl">⚙️</span> 教材與對象設定
+                </h2>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-600 mb-1">對象年級</label>
+                        <select id="grade-level" class="w-full p-2 border border-slate-300 rounded-lg">
+                            <option>國中一年級 (七年級)</option>
+                            <option>高中一年級 (十年級)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-600 mb-1">簡化幅度 (由 AI 自動降載改寫)</label>
+                        <select id="simplify-level" class="w-full p-2 border border-slate-300 rounded-lg">
+                            <option>不簡化 (保留原文)</option>
+                            <option selected>微幅簡化 (保留細節)</option>
+                            <option>中度簡化 (通順易懂)</option>
+                            <option>高度簡化 (大幅降載)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-bold text-gray-600 mb-1 flex justify-between">
+                        輸入原始教材內容
+                        <span class="text-slate-400 font-normal">支援數理化公式，AI 將自動以 Unicode 完美生成</span>
+                    </label>
+                    <textarea id="text-input" class="w-full h-40 p-3 border border-slate-300 rounded-xl" placeholder="請在此貼上課文或教材內容..."></textarea>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="document.getElementById('text-input').value='光合作用是植物利用葉綠體，將二氧化碳與水轉化為葡萄糖與氧氣的過程。'" class="text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200">範例：科學知識 (光合作用)</button>
+                    <button onclick="document.getElementById('text-input').value='文藝復興始於14世紀的義大利，標誌著從中世紀向現代世界的轉變。'" class="text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200">範例：歷史人文 (文藝復興)</button>
+                    <button id="example-chinese-btn" type="button" class="text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200">範例：國文課文</button>
+                </div>
+            </section>
+
+            <!-- 產出架構區 -->
+            <section class="mb-8">
+                <h2 class="text-lg font-bold text-emerald-800 mb-4 flex items-center gap-2">
+                    <span class="text-xl">≡</span> 產出學習單架構
+                </h2>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50"><input type="checkbox" id="opt-comic" class="mr-3"> 🎭 情境五格漫畫</label>
+                    <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50"><input type="checkbox" id="opt-summary" class="mr-3"> 📄 簡化核心短文</label>
+                    <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50"><input type="checkbox" id="opt-list" class="mr-3"> 📌 條列式重點整理</label>
+                    <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50"><input type="checkbox" id="opt-table" class="mr-3"> 📊 重點架構表格</label>
+                    <label class="flex items-center p-3 border rounded-lg bg-emerald-50/50 border-emerald-100 cursor-pointer"><input type="checkbox" id="opt-myth" class="mr-3" checked> 💬 常見迷思釐清</label>
+                    <label class="flex items-center p-3 border rounded-lg bg-emerald-50/50 border-emerald-100 cursor-pointer"><input type="checkbox" id="opt-dict" class="mr-3" checked> 📖 生字與學術詞彙小辭典</label>
+                    <label class="flex items-center p-3 border rounded-lg bg-emerald-50/50 border-emerald-100 cursor-pointer"><input type="checkbox" id="opt-quiz" class="mr-3" checked> ✏️ 隨堂小測驗</label>
+                    <label class="flex items-center p-3 border rounded-lg bg-emerald-50/50 border-emerald-100 cursor-pointer"><input type="checkbox" id="opt-ans" class="mr-3" checked> 💡 參考解答與說明</label>
+                </div>
+                
+                <div class="bg-slate-50 p-4 rounded-xl grid grid-cols-4 gap-4 items-center text-sm">
+                    <div>填充題 <input type="number" id="quiz-fill" value="3" class="w-12 p-1 border rounded"></div>
+                    <div>選擇題 <input type="number" id="quiz-choice" value="3" class="w-12 p-1 border rounded"></div>
+                    <div>素養題 <input type="number" id="quiz-literacy" value="1" class="w-12 p-1 border rounded"></div>
+                    <div>難度 <select id="quiz-diff" class="p-1 border rounded">
+                        <option value="不簡化 (依原文程度出題)">不簡化 (維持難度)</option>
+                        <option value="微幅簡化 (稍微降低題目敘述複雜度)" selected>微幅簡化 (預設)</option>
+                        <option value="中度簡化 (適合中後段與特教抽離生)">中度簡化</option>
+                        <option value="高度簡化 (適用重度降載與補救教學)">高度簡化</option>
+                    </select></div>
+                </div>
+            </section>
+
+            <button id="generate-btn" class="w-full bg-emerald-800 text-white font-bold py-4 rounded-xl hover:bg-emerald-900 transition-all shadow-lg shadow-emerald-200">
+                開始自動生成差異化教材
+            </button>
+            <p id="status-message" class="hidden mt-3 text-sm text-center" role="status" aria-live="polite"></p>
+        </main>
+
+        <section id="result-section" class="hidden mt-8 mb-12">
+            <div class="no-print flex flex-wrap justify-between items-center gap-3 mb-3">
+                <h2 class="font-heading text-xl font-bold text-emerald-800">生成結果</h2>
+                <div class="flex gap-2">
+                    <button id="copy-btn" type="button" class="px-4 py-2 rounded-lg border border-emerald-700 text-emerald-800 bg-white hover:bg-emerald-50">複製內容進入 GPT 美化</button>
+                    <button id="word-btn" type="button" class="px-4 py-2 rounded-lg border border-emerald-700 text-emerald-800 bg-white hover:bg-emerald-50">匯出 Word</button>
+                </div>
+            </div>
+            <article id="worksheet" class="worksheet rounded-2xl border border-slate-200 shadow-sm p-8 md:p-12"></article>
+        </section>
+    </div>
+
+    <script>
+        const API_KEY = ""; // 請填入 API Key；依照你的要求先保持空白
+        const TEXT_MODEL = "gemini-3-flash-preview";
+        const IMAGE_MODEL = "gemini-3.1-flash-image-preview";
+
+        const generateBtn = document.getElementById('generate-btn');
+        const statusMessage = document.getElementById('status-message');
+        const resultSection = document.getElementById('result-section');
+        const worksheet = document.getElementById('worksheet');
+        const quizToggle = document.getElementById('opt-quiz');
+        const answerToggle = document.getElementById('opt-ans');
+
+        const chineseLessonExample = `在從紐約到波士頓的火車上，我發現我隔壁座的老先生是位盲人。
+
+我的博士論文指導教授是位盲人，因此我和盲人談起話來，一點困難也沒有，我還弄了一杯熱騰騰的咖啡給他喝。
+
+當時正值洛杉磯種族暴動的時期，我們的談話因此就談到了種族偏見的問題。
+
+老先生告訴我，他是美國南方人，從小就認為黑人低人一等，他家的佣人是黑人，他在南方時從未和黑人一起吃過飯，也從未和黑人上過學，到了北方唸書，他有次被班上同學指定辦一次野餐會，他居然在請帖上註明「我們保留拒絕任何人的權利」。在南方這句話就是「我們不歡迎黑人」的意思，當時舉班譁然，他還被系主任抓去罵了一頓。
+
+他說有時碰到黑人店員，付錢的時候，總將錢放在櫃台上，讓黑人拿去，而不肯和他的手有任何接觸。
+
+我笑著問他：「那你當然不會和黑人結婚了！」
+
+他大笑起來：「我不和他們來往，如何會和黑人結婚？說實話，我當時認為任何白人和黑人結婚都會使父母蒙辱。」
+
+可是，他在波士頓唸研究所的時候，發生了車禍。雖然大難不死，可是眼睛完全失明，什麼也看不見了。他進入一家盲人重建院，在那裡學習如何用點字技巧，如何靠手杖走路等等。慢慢地終於能夠獨立生活了。
+
+他說：「可是我最苦惱的是，我弄不清楚對方是不是黑人。」我向我的心理輔導員談我的問題，他也儘量開導我，我非常信賴他，什麼都告訴他，將他看成自己的良師益友。
+
+有一天，那位輔導員告訴我，他本人就是位黑人。從此以後，我的偏見就慢慢完全消失了，我看不出人是白人，還是黑人。對我來講，我只知道他是好人，還是壞人；至於膚色，對我已絕對地無意義了。
+
+車子快到波士頓，老先生說：「我失去了視力，也失去了偏見，多麼幸福的事！」
+
+在月台上，老先生的太太已在等他，兩人親切地擁抱。我赫然發現他太太是一位滿頭銀髮的黑人，當時大吃一驚。
+
+我這才發現，我視力良好，因此我偏見猶在，多麼不幸的事！`;
+
+        document.getElementById('example-chinese-btn').addEventListener('click', () => {
+            const input = document.getElementById('text-input');
+            input.value = chineseLessonExample;
+            input.focus();
+            setStatus('已匯入國文課文範例。');
+        });
+
+        function syncAnswerToggle() {
+            if (!quizToggle.checked) answerToggle.checked = false;
+            answerToggle.disabled = !quizToggle.checked;
+            answerToggle.closest('label').classList.toggle('opacity-50', answerToggle.disabled);
+        }
+        quizToggle.addEventListener('change', syncAnswerToggle);
+        syncAnswerToggle();
+
+        function setStatus(message, type = 'info') {
+            statusMessage.textContent = message;
+            statusMessage.className = `mt-3 text-sm text-center ${type === 'error' ? 'text-red-600' : 'text-emerald-700'}`;
+        }
+
+        function getOptions() {
+            const quiz = document.getElementById('opt-quiz').checked;
+            return {
+                comic: document.getElementById('opt-comic').checked,
+                summary: document.getElementById('opt-summary').checked,
+                list: document.getElementById('opt-list').checked,
+                table: document.getElementById('opt-table').checked,
+                myth: document.getElementById('opt-myth').checked,
+                dict: document.getElementById('opt-dict').checked,
+                quiz,
+                ans: quiz && document.getElementById('opt-ans').checked
+            };
+        }
+
+        function buildSystemPrompt(options) {
+            const grade = document.getElementById('grade-level').value;
+            const simplify = document.getElementById('simplify-level').value;
+            const fillCount = Math.max(0, Number(document.getElementById('quiz-fill').value) || 0);
+            const choiceCount = Math.max(0, Number(document.getElementById('quiz-choice').value) || 0);
+            const literacyCount = Math.max(0, Number(document.getElementById('quiz-literacy').value) || 0);
+            const difficulty = document.getElementById('quiz-diff').value;
+            const sections = [];
+            const forbidden = [];
+
+            if (options.comic) sections.push('緊接在一級標題下一行，單獨輸出「[五格漫畫提示詞]：具體的繁體中文繪圖描述」，不要把提示詞混入正文。');
+            else forbidden.push('五格漫畫、漫畫提示詞或任何圖片描述');
+            if (options.summary) sections.push('加入「重點摘要」，以簡短自然的段落說明核心概念。');
+            else forbidden.push('重點摘要、簡化核心短文');
+            if (options.list) sections.push('加入「條列式重點」，整理關鍵知識。');
+            else forbidden.push('條列式重點整理');
+            if (options.table) sections.push('加入 Markdown 比較表格，欄位清楚、文字精簡。');
+            else forbidden.push('重點架構表格、比較表格');
+            if (options.myth) sections.push('加入「常見迷思與釐清」，用正確觀念修正常見誤解。');
+            else forbidden.push('常見迷思與釐清');
+            if (options.dict) sections.push('加入「困難生詞小詞典」，每個詞彙都附上適齡、清楚的解釋。');
+            else forbidden.push('困難生詞、生字、學術詞彙小詞典');
+            if (options.quiz) sections.push(`加入「觀念測驗」，難度為「${difficulty}」：${fillCount} 題填充題、${choiceCount} 題四選一選擇題、${literacyCount} 題生活素養題。所有題型的每一道題目都必須使用 Markdown numbered list 顯示明確題號（1.、2.、3.……），不得輸出沒有題號的題幹；選擇題的 A.、B.、C.、D. 必須各自獨立一行，且選項字母不可計入題號。`);
+            else forbidden.push('觀念測驗、隨堂測驗、練習題或自我檢核題');
+            if (options.ans) sections.push('最後加入「參考解答與說明」，逐題提供答案及簡短解析。');
+            else forbidden.push('參考解答、答案或題目解析');
+
+            return `你是臺灣的教材編寫專家，請把使用者提供的內容改寫成精美、正確且可直接列印的繁體中文差異化學習單。
+
+學習對象：${grade}
+簡化程度：${simplify}
+
+簡化幅度必須確實執行：
+- 不簡化：保留原文資訊、用詞與細節，只整理段落和版面。
+- 微幅簡化：保留完整細節，調整過長句子並補充必要解釋。
+- 中度簡化：改用較常見詞彙與較短句子，保留核心概念及主要例子。
+- 高度簡化：大幅降低資訊量與閱讀負荷，只留下必學概念，使用短句與具體例子。
+
+規則：
+1. 第一行必須是唯一的一級標題，格式為「# 標題」。標題必須依原始文本的核心主題重新命名，精準、自然、適合學生；禁止用「差異化教材」「學習單」等空泛名稱代替文本主題。
+2. 僅輸出 Markdown 教材內容，不要開場白、不要程式碼圍欄。
+3. 所有數學式、化學式與單位一律使用純 Unicode，例如 x²、H₂O、CO₂、√、×、÷、≦、≧、→；禁止 LaTeX。
+4. 大標題層級清楚，內文自然，避免超出學生程度。
+5. 不得捏造原文沒有的關鍵事實；需要補充時，明確標示為補充知識。
+6. 請依照下列勾選項目依序產生，沒有勾選的區塊不要輸出：
+${sections.length ? sections.map((item, index) => `${index + 1}. ${item}`).join('\n') : '1. 只輸出依文本主題產生的標題，不加入任何額外教材區塊。'}
+
+【硬性禁止輸出】以下項目未被使用者勾選，標題、內容與變形名稱都禁止出現：
+${forbidden.map(item => `- ${item}`).join('\n')}`;
+        }
+
+        async function callGemini(model, payload) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(API_KEY.trim())}`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                const detail = data?.error?.message || `HTTP ${response.status}`;
+                throw new Error(`Gemini API 呼叫失敗：${detail}`);
+            }
+            return data;
+        }
+
+        function renderMarkdown(markdown) {
+            if (!window.marked) throw new Error('Markdown 排版元件尚未載入，請確認網路連線後重試。');
+            worksheet.innerHTML = marked.parse(markdown, { breaks: true, gfm: true });
+            let title = worksheet.querySelector('h1');
+            if (!title) {
+                const firstHeading = worksheet.querySelector('h2, h3');
+                title = document.createElement('h1');
+                const canPromote = firstHeading && !/摘要|重點|測驗|詞典|解答/.test(firstHeading.textContent);
+                title.textContent = canPromote ? firstHeading.textContent.trim() : '文本主題探索';
+                if (canPromote) firstHeading.remove();
+                worksheet.prepend(title);
+            }
+            document.title = `${title.textContent.trim()}｜差異化教材`;
+        }
+
+        function removeSectionByHeading(pattern) {
+            const headings = [...worksheet.querySelectorAll('h2, h3')].filter(heading => pattern.test(heading.textContent.trim()));
+            headings.forEach(heading => {
+                const level = Number(heading.tagName.slice(1));
+                let next = heading.nextElementSibling;
+                while (next) {
+                    const nextLevel = /^H[1-6]$/.test(next.tagName) ? Number(next.tagName.slice(1)) : 99;
+                    if (nextLevel <= level) break;
+                    const current = next;
+                    next = next.nextElementSibling;
+                    current.remove();
+                }
+                heading.remove();
+            });
+        }
+
+        function enforceSelectedSections(options) {
+            const rules = [
+                [options.summary, /重點摘要|簡化核心短文|核心短文/],
+                [options.list, /條列式重點|重點整理/],
+                [options.table, /重點架構表格|架構表格|比較表格/],
+                [options.myth, /常見迷思|迷思釐清/],
+                [options.dict, /困難生詞|生字與學術詞彙|詞彙小詞典|詞彙小辭典|生詞小詞典/],
+                [options.quiz, /觀念測驗|隨堂小測驗|隨堂測驗|自我檢核/],
+                [options.ans, /參考解答|答案與說明|答案解析/]
+            ];
+            rules.forEach(([enabled, pattern]) => {
+                if (!enabled) removeSectionByHeading(pattern);
+            });
+            if (!options.table) worksheet.querySelectorAll('table').forEach(table => table.remove());
+        }
+
+        function applyQuizNumbers(options) {
+            if (!options.quiz) return;
+            const allHeadings = [...worksheet.querySelectorAll('h2, h3')];
+            const typeHeadings = allHeadings.filter(heading => /填充題|選擇題|素養題|生活實踐|探究題/.test(heading.textContent));
+            const sectionHeadings = typeHeadings.length
+                ? typeHeadings
+                : allHeadings.filter(heading => /觀念測驗|隨堂小測驗|隨堂測驗/.test(heading.textContent));
+            const candidates = new Set();
+
+            sectionHeadings.forEach(heading => {
+                const level = Number(heading.tagName.slice(1));
+                let node = heading.nextElementSibling;
+                while (node) {
+                    const nodeLevel = /^H[1-6]$/.test(node.tagName) ? Number(node.tagName.slice(1)) : 99;
+                    if (nodeLevel <= level) break;
+                    if (node.matches('p, li')) candidates.add(node);
+                    node.querySelectorAll?.('p, li').forEach(item => candidates.add(item));
+                    node = node.nextElementSibling;
+                }
+            });
+
+            const ordered = [...candidates].sort((a, b) => {
+                if (a === b) return 0;
+                return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+            });
+            let questionNumber = 1;
+            ordered.forEach(item => {
+                if (item.closest('ol')) return;
+                const text = item.textContent.trim();
+                const isQuestionTypeLabel = /^(?:[一二三四五六七八九十]+[、.．)]?\s*)?(?:填充題|選擇題|素養題|生活實踐題|生活素養題|探究題)(?:\s*[（(].*[）)])?\s*[：:]?$/.test(text);
+                if (!text || isQuestionTypeLabel || /^[A-D][.、)]\s*/.test(text) || /^(答案|說明|解析)[：:]/.test(text)) return;
+                if (/^\d+[.、)]\s*/.test(text)) {
+                    questionNumber += 1;
+                    return;
+                }
+                const marker = document.createElement('span');
+                marker.className = 'question-number';
+                marker.textContent = `${questionNumber}. `;
+                item.insertBefore(marker, item.firstChild);
+                questionNumber += 1;
+            });
+        }
+
+        async function generateComic(prompt, grade) {
+            const payload = {
+                contents: [{ role: 'user', parts: [{ text: `請繪製五格教學漫畫，使用清楚的 3+2 分格構圖、繁體中文標示、適合${grade}學生、乾淨明亮的教材插畫風格。內容：${prompt}` }] }],
+                generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: '4:3' } }
+            };
+            const data = await callGemini(IMAGE_MODEL, payload);
+            const imagePart = data?.candidates?.[0]?.content?.parts?.find(part => part.inlineData?.data);
+            if (!imagePart) throw new Error('圖片模型沒有回傳圖片資料。');
+            return `data:${imagePart.inlineData.mimeType || 'image/png'};base64,${imagePart.inlineData.data}`;
+        }
+
+        async function insertComicIfNeeded(markdown, options) {
+            const pattern = /\[五格漫畫提示詞\][：:]\s*([^\n]+)/i;
+            const match = markdown.match(pattern);
+            const cleanMarkdown = markdown.replace(pattern, '').trim();
+            renderMarkdown(cleanMarkdown);
+            enforceSelectedSections(options);
+            applyQuizNumbers(options);
+            if (!options.comic || !match) return;
+
+            const holder = document.createElement('div');
+            holder.className = 'image-loading';
+            holder.innerHTML = '<div class="flex items-center gap-3"><span class="spinner"></span><span>正在繪製五格教學漫畫…</span></div>';
+            const title = worksheet.querySelector('h1');
+            if (title) title.insertAdjacentElement('afterend', holder);
+            else worksheet.prepend(holder);
+            try {
+                const imageUrl = await generateComic(match[1].trim(), document.getElementById('grade-level').value);
+                const image = document.createElement('img');
+                image.src = imageUrl;
+                image.alt = 'AI 生成的五格教學漫畫';
+                holder.replaceWith(image);
+            } catch (error) {
+                holder.className = 'my-4 rounded-xl border border-amber-300 bg-amber-50 p-4 text-amber-800';
+                holder.textContent = `教材文字已完成，但漫畫生成失敗：${error.message}`;
+            }
+        }
+
+        generateBtn.addEventListener('click', async () => {
+            const text = document.getElementById('text-input').value.trim();
+            if (!text) {
+                setStatus('請先輸入教材內容。', 'error');
+                document.getElementById('text-input').focus();
+                return;
+            }
+
+            const options = getOptions();
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'AI 正在重構教材…';
+            generateBtn.classList.add('opacity-70', 'cursor-wait');
+            resultSection.classList.add('hidden');
+            worksheet.innerHTML = '';
+            setStatus('正在分析教材並產生適性內容，請稍候…');
+
+            try {
+                const data = await callGemini(TEXT_MODEL, {
+                    contents: [{ role: 'user', parts: [{ text: `請根據設定處理以下原始教材：\n\n${text}` }] }],
+                    systemInstruction: { parts: [{ text: buildSystemPrompt(options) }] },
+                    generationConfig: { temperature: 0.55 }
+                });
+                const markdown = data?.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('').trim();
+                if (!markdown) throw new Error('API 沒有回傳可顯示的教材內容。');
+
+                resultSection.classList.remove('hidden');
+                await insertComicIfNeeded(markdown, options);
+                setStatus('教材生成完成。');
+                resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } catch (error) {
+                console.error(error);
+                setStatus(error.message || '生成失敗，請稍後再試。', 'error');
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = '開始自動生成差異化教材';
+                generateBtn.classList.remove('opacity-70', 'cursor-wait');
+            }
+        });
+
+        document.getElementById('copy-btn').addEventListener('click', async () => {
+            const beautifyUrl = 'https://chatgpt.com/g/g-6a1a588150d881918a2a7dc8f67ae06b-xue-xi-dan-mei-hua-zhu-shou';
+            const fallback = document.createElement('textarea');
+            fallback.value = worksheet.innerText;
+            fallback.setAttribute('readonly', '');
+            fallback.style.position = 'fixed';
+            fallback.style.left = '-9999px';
+            fallback.style.opacity = '0';
+            document.body.appendChild(fallback);
+            fallback.select();
+            let copied = document.execCommand('copy');
+            fallback.remove();
+
+            // 必須在使用者點擊的同一個事件中開啟，避免 blob/iframe 環境阻擋跳轉。
+            const opened = window.open(beautifyUrl, '_blank', 'noopener,noreferrer');
+            if (!opened) {
+                const link = document.createElement('a');
+                link.href = beautifyUrl;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            }
+
+            try {
+                if (!copied) {
+                    await navigator.clipboard.writeText(worksheet.innerText);
+                    copied = true;
+                }
+                setStatus('已複製教材文字，正在前往 GPT 美化助手…');
+            } catch (error) {
+                setStatus('已開啟 GPT 美化助手，但瀏覽器未允許自動複製，請手動複製教材內容。', 'error');
+            }
+        });
+
+        function safeFileName(name) {
+            return (name || '差異化學習單').replace(/[\\/:*?"<>|]/g, '').trim().slice(0, 50) || '差異化學習單';
+        }
+
+        function base64ToUint8Array(dataUrl) {
+            const raw = atob(dataUrl.split(',')[1] || '');
+            const bytes = new Uint8Array(raw.length);
+            for (let i = 0; i < raw.length; i += 1) bytes[i] = raw.charCodeAt(i);
+            return bytes;
+        }
+
+        async function exportWord() {
+            if (!worksheet.children.length) {
+                setStatus('請先生成教材，再匯出 Word。', 'error');
+                return;
+            }
+            if (!window.docx) {
+                setStatus('DOCX 元件尚未載入，請確認網路連線後重試。', 'error');
+                return;
+            }
+
+            const button = document.getElementById('word-btn');
+            button.disabled = true;
+            button.textContent = '正在製作 Word…';
+            setStatus('正在整理 Word 版面與圖片…');
+
+            try {
+                const {
+                    Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType,
+                    Table, TableRow, TableCell, WidthType, BorderStyle, ShadingType,
+                    ImageRun, PageBreak, VerticalAlign
+                } = window.docx;
+                const green = '176B5B';
+                const dark = '233B36';
+                const pale = 'EAF6F2';
+                const font = '微軟正黑體';
+                const noBorder = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' };
+                const thinBorder = { style: BorderStyle.SINGLE, size: 6, color: 'B7CCC6' };
+                const allThin = {
+                    top: thinBorder, bottom: thinBorder, left: thinBorder, right: thinBorder,
+                    insideHorizontal: thinBorder, insideVertical: thinBorder
+                };
+                const titleText = worksheet.querySelector('h1')?.textContent.trim() || '差異化學習單';
+
+                const paragraphFromText = (text, options = {}) => new Paragraph({
+                    spacing: options.spacing || { after: 110, line: 360 },
+                    indent: options.indent,
+                    keepWithNext: options.keepWithNext,
+                    alignment: options.alignment,
+                    children: [new TextRun({
+                        text: String(text || '').trim(),
+                        font,
+                        size: options.size || 22,
+                        bold: Boolean(options.bold),
+                        color: options.color || dark
+                    })]
+                });
+
+                const lineParagraphs = (text, options = {}) => String(text || '')
+                    .split(/\n+/)
+                    .map(line => line.trim())
+                    .filter(Boolean)
+                    .map(line => {
+                        const isChoice = /^[A-D][.、)]\s*/.test(line);
+                        return paragraphFromText(line, {
+                            ...options,
+                            indent: isChoice ? { left: 620 } : options.indent,
+                            spacing: isChoice ? { after: 55, line: 340 } : options.spacing
+                        });
+                    });
+
+                const parseTable = tableElement => {
+                    const rows = [...tableElement.rows];
+                    return new Table({
+                        width: { size: 100, type: WidthType.PERCENTAGE },
+                        borders: allThin,
+                        rows: rows.map((row, rowIndex) => new TableRow({
+                            tableHeader: rowIndex === 0,
+                            children: [...row.cells].map(cell => {
+                                const isHeader = rowIndex === 0 || cell.tagName === 'TH';
+                                return new TableCell({
+                                    width: { size: Math.floor(100 / Math.max(row.cells.length, 1)), type: WidthType.PERCENTAGE },
+                                    shading: { fill: isHeader ? pale : 'FFFFFF', type: ShadingType.CLEAR },
+                                    margins: { top: 120, bottom: 120, left: 150, right: 150 },
+                                    verticalAlign: VerticalAlign.CENTER,
+                                    children: lineParagraphs(cell.innerText || cell.textContent, {
+                                        size: 21,
+                                        bold: isHeader,
+                                        color: isHeader ? green : dark,
+                                        spacing: { after: 40, line: 320 }
+                                    })
+                                });
+                            })
+                        }))
+                    });
+                };
+
+                const parseNodes = nodes => {
+                    const output = [];
+                    for (const node of nodes) {
+                        if (node.nodeType !== Node.ELEMENT_NODE) continue;
+                        const tag = node.tagName.toLowerCase();
+                        if (tag === 'h1') continue;
+
+                        if (tag === 'h2' || tag === 'h3') {
+                            if (/參考解答/.test(node.textContent)) output.push(new Paragraph({ children: [new PageBreak()] }));
+                            output.push(new Paragraph({
+                                heading: tag === 'h2' ? HeadingLevel.HEADING_1 : HeadingLevel.HEADING_2,
+                                spacing: { before: tag === 'h2' ? 260 : 180, after: 110 },
+                                keepWithNext: true,
+                                border: tag === 'h2' ? { bottom: { style: BorderStyle.SINGLE, size: 10, color: '9BC9BC', space: 5 } } : undefined,
+                                children: [new TextRun({
+                                    text: node.textContent.trim(), font, bold: true,
+                                    size: tag === 'h2' ? 27 : 23, color: green
+                                })]
+                            }));
+                        } else if (tag === 'p') {
+                            output.push(...lineParagraphs(node.innerText || node.textContent));
+                        } else if (tag === 'ul' || tag === 'ol') {
+                            [...node.children].forEach((li, itemIndex) => {
+                                const lines = String(li.innerText || li.textContent).split(/\n+/).map(value => value.trim()).filter(Boolean);
+                                lines.forEach((rawLine, lineIndex) => {
+                                    const isChoice = /^[A-D][.、)]\s*/.test(rawLine);
+                                    const needsNumber = tag === 'ol' && lineIndex === 0 && !/^\d+[.、)]\s*/.test(rawLine);
+                                    const line = needsNumber ? `${itemIndex + 1}. ${rawLine}` : rawLine;
+                                    output.push(paragraphFromText(line, {
+                                        indent: { left: isChoice ? 720 : 420, hanging: isChoice ? 0 : 260 },
+                                        spacing: { after: isChoice ? 55 : 90, line: 340 },
+                                        keepWithNext: lineIndex === 0 && lines.length > 1
+                                    }));
+                                });
+                            });
+                        } else if (tag === 'table') {
+                            output.push(parseTable(node));
+                            output.push(new Paragraph({ spacing: { after: 100 } }));
+                        } else if (tag === 'blockquote') {
+                            output.push(new Table({
+                                width: { size: 100, type: WidthType.PERCENTAGE },
+                                borders: {
+                                    top: noBorder, bottom: noBorder, right: noBorder,
+                                    left: { style: BorderStyle.SINGLE, size: 20, color: green }
+                                },
+                                rows: [new TableRow({ children: [new TableCell({
+                                    shading: { fill: pale, type: ShadingType.CLEAR },
+                                    margins: { top: 150, bottom: 150, left: 200, right: 200 },
+                                    children: lineParagraphs(node.innerText || node.textContent, { spacing: { after: 40, line: 340 } })
+                                })] })]
+                            }));
+                        } else if (tag === 'img') {
+                            const src = node.getAttribute('src') || '';
+                            if (src.startsWith('data:image')) {
+                                output.push(new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    spacing: { before: 160, after: 180 },
+                                    children: [new ImageRun({
+                                        data: base64ToUint8Array(src),
+                                        transformation: { width: 480, height: 360 }
+                                    })]
+                                }));
+                            }
+                        } else if (tag === 'div' || tag === 'section' || tag === 'article') {
+                            output.push(...parseNodes([...node.children]));
+                        }
+                    }
+                    return output;
+                };
+
+                const infoTable = new Table({
+                    width: { size: 100, type: WidthType.PERCENTAGE },
+                    borders: {
+                        top: noBorder, bottom: thinBorder, left: noBorder, right: noBorder,
+                        insideHorizontal: noBorder, insideVertical: noBorder
+                    },
+                    rows: [new TableRow({
+                        children: ['班級：__________', '姓名：__________', '座號：______'].map(text => new TableCell({
+                            width: { size: 33, type: WidthType.PERCENTAGE },
+                            margins: { top: 100, bottom: 130, left: 80, right: 80 },
+                            children: [paragraphFromText(text, { size: 21, bold: true, spacing: { after: 0 } })]
+                        }))
+                    })]
+                });
+
+                const children = [
+                    new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        spacing: { after: 70 },
+                        children: [new TextRun({ text: titleText, font, bold: true, size: 34, color: green })]
+                    }),
+                    new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        spacing: { after: 170 },
+                        children: [new TextRun({
+                            text: `${document.getElementById('grade-level').value}・差異化學習單`,
+                            font, size: 20, color: '627873'
+                        })]
+                    }),
+                    infoTable,
+                    new Paragraph({ spacing: { after: 80 } }),
+                    ...parseNodes([...worksheet.children])
+                ];
+
+                const wordDocument = new Document({
+                    creator: '差異化教材生成系統',
+                    title: titleText,
+                    description: 'AI 生成的差異化學習單',
+                    sections: [{
+                        properties: {
+                            page: {
+                                size: { width: 11906, height: 16838 },
+                                margin: { top: 900, right: 950, bottom: 900, left: 950 }
+                            }
+                        },
+                        children
+                    }]
+                });
+                const blob = await Packer.toBlob(wordDocument);
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${safeFileName(titleText)}_學習單.docx`;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1500);
+                setStatus('Word 學習單已匯出。');
+            } catch (error) {
+                console.error(error);
+                setStatus(`Word 匯出失敗：${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+                button.textContent = '匯出 Word';
+            }
+        }
+
+        document.getElementById('word-btn').addEventListener('click', exportWord);
+    </script>
+</body>
+</html>

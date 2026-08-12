@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黃老師的跨領域自主學習工坊</title>
+    <!-- 引入 Tailwind CSS 與 FontAwesome 圖標 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0b0f19;
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+        
+        /* 玻璃擬物化面板 */
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* 漸層光暈特效 */
+        .glow-chinese { box-shadow: 0 0 20px rgba(244, 63, 94, 0.2); }
+        .glow-english { box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }
+        .glow-math { box-shadow: 0 0 20px rgba(20, 184, 166, 0.2); }
+        .glow-science { box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); }
+        .glow-history { box-shadow: 0 0 20px rgba(245, 158, 11, 0.2); }
+
+        /* 隱藏滾動條 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+            animation: float 4s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-[#090d16] min-h-screen flex flex-col justify-between">
+
+    <!-- 導覽列 -->
+    <nav class="sticky top-0 z-50 bg-[#090d16]/90 border-b border-slate-800/60 backdrop-blur-md px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-tr from-amber-500 to-rose-500 rounded-xl flex items-center justify-center shadow-lg shadow-rose-500/20">
+                    <i class="fas fa-graduation-cap text-slate-950 text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-rose-400 text-xl font-black tracking-widest">黃老師</span>
+                    <span class="text-xs text-slate-400 block font-light tracking-wider">跨領域自主學習工坊</span>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-6 text-sm text-slate-400">
+                <span class="hover:text-white transition cursor-pointer"><i class="fas fa-seedling mr-1 text-emerald-500"></i> 熱情教學</span>
+                <span class="hover:text-white transition cursor-pointer"><i class="fas fa-laptop-code mr-1 text-cyan-500"></i> 數位互動</span>
+                <span class="hover:text-white transition cursor-pointer"><i class="fas fa-heart mr-1 text-rose-500"></i> 適性發展</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄版位 -->
+    <header class="relative overflow-hidden py-16 md:py-24 border-b border-slate-900">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.1),transparent_70%)]"></div>
+        <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
+            <div class="inline-block p-1 border border-indigo-500/30 rounded-full mb-6 animate-pulse">
+                <span class="block px-4 py-1 text-xs tracking-widest text-indigo-400 bg-indigo-950/40 rounded-full font-semibold">
+                    ✨ 啟發思考 ． 樂在學習 ✨
+                </span>
+            </div>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black mb-6 tracking-wide text-slate-100 leading-tight">
+                歡迎來到 <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-400 to-indigo-400">黃老師的教學空間</span>
+            </h1>
+            <p class="text-sm md:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed font-light">
+                在這裡，我們不只學習課本上的知識，更能透過動態、好玩的互動式教具，自主探索各學科的核心奧秘。請在下方點擊您想挑戰或前往的學習學科！
+            </p>
+        </div>
+    </header>
+
+    <!-- 主學科按鈕區 -->
+    <main class="max-w-7xl mx-auto px-4 md:px-6 py-12 flex-grow space-y-16 w-full">
+        <section class="scroll-mt-24">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-slate-100 tracking-wider">
+                    <i class="fas fa-cubes text-indigo-400 mr-2"></i>五大教學探索領域
+                </h2>
+                <p class="text-xs md:text-sm text-slate-500 mt-2">點選「國、英、數」展開本頁互動教室，點選「自然、社會」直接前往線上探索網站。</p>
+            </div>
+
+            <!-- 五個主要的學科按鈕/卡片 -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
+                
+                <!-- 按鈕 1: 國文 -->
+                <button onclick="switchSubject('chinese')" id="btn-chinese" class="subject-card group p-6 rounded-2xl glass-panel text-center transition-all duration-300 hover:scale-[1.03] hover:border-rose-500/50 glow-chinese flex flex-col justify-between items-center h-48 active:scale-95">
+                    <div class="w-14 h-14 bg-rose-500/10 group-hover:bg-rose-500/20 text-rose-400 rounded-xl flex items-center justify-center text-2xl transition duration-300">
+                        <i class="fas fa-scroll"></i>
+                    </div>
+                    <div>
+                        <span class="block text-lg font-black text-rose-400 tracking-widest mt-4">國文</span>
+                        <span class="block text-[10px] text-slate-500 mt-1 font-light">成語挑戰教室</span>
+                    </div>
+                </button>
+
+                <!-- 按鈕 2: 英文 -->
+                <button onclick="switchSubject('english')" id="btn-english" class="subject-card group p-6 rounded-2xl glass-panel text-center transition-all duration-300 hover:scale-[1.03] hover:border-blue-500/50 flex flex-col justify-between items-center h-48 active:scale-95">
+                    <div class="w-14 h-14 bg-blue-500/10 group-hover:bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center text-2xl transition duration-300">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <div>
+                        <span class="block text-lg font-black text-blue-400 tracking-widest mt-4">英文</span>
+                        <span class="block text-[10px] text-slate-500 mt-1 font-light">單字閃卡拼寫</span>
+                    </div>
+                </button>
+
+                <!-- 按鈕 3: 數學 -->
+                <button onclick="switchSubject('math')" id="btn-math" class="subject-card group p-6 rounded-2xl glass-panel text-center transition-all duration-300 hover:scale-[1.03] hover:border-teal-500/50 flex flex-col justify-between items-center h-48 active:scale-95">
+                    <div class="w-14 h-14 bg-teal-500/10 group-hover:bg-teal-500/20 text-teal-400 rounded-xl flex items-center justify-center text-2xl transition duration-300">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <div>
+                        <span class="block text-lg font-black text-teal-400 tracking-widest mt-4">數學</span>
+                        <span class="block text-[10px] text-slate-500 mt-1 font-light">動態數列計算</span>
+                    </div>
+                </button>
+
+                <!-- 按鈕 4: 自然 (指向指定外部連結) -->
+                <a href="https://smallfatyellow.github.io/myhome/science.html" target="_blank" class="group p-6 rounded-2xl glass-panel text-center transition-all duration-300 hover:scale-[1.03] hover:border-green-500/50 flex flex-col justify-between items-center h-48 active:scale-95 hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]">
+                    <div class="w-14 h-14 bg-green-500/10 group-hover:bg-green-500/20 text-green-400 rounded-xl flex items-center justify-center text-2xl transition duration-300 relative">
+                        <i class="fas fa-flask"></i>
+                        <span class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center text-[8px] text-slate-950 font-bold"><i class="fas fa-external-link-alt scale-75"></i></span>
+                    </div>
+                    <div>
+                        <span class="block text-lg font-black text-green-400 tracking-widest mt-4">自然</span>
+                        <span class="block text-[10px] text-slate-500 mt-1 font-light">自然科學探索頁 <i class="fas fa-arrow-right ml-0.5 text-green-500/50 group-hover:translate-x-1 transition-transform inline-block"></i></span>
+                    </div>
+                </a>
+
+                <!-- 按鈕 5: 社會 (指向指定外部連結) -->
+                <a href="https://smallfatyellow.github.io/myhome/history.html" target="_blank" class="group p-6 rounded-2xl glass-panel text-center transition-all duration-300 hover:scale-[1.03] hover:border-amber-500/50 flex flex-col justify-between items-center h-48 active:scale-95 hover:shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+                    <div class="w-14 h-14 bg-amber-500/10 group-hover:bg-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center text-2xl transition duration-300 relative">
+                        <i class="fas fa-landmark"></i>
+                        <span class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center text-[8px] text-slate-950 font-bold"><i class="fas fa-external-link-alt scale-75"></i></span>
+                    </div>
+                    <div>
+                        <span class="block text-lg font-black text-amber-400 tracking-widest mt-4">社會</span>
+                        <span class="block text-[10px] text-slate-500 mt-1 font-light">歷史社會探索頁 <i class="fas fa-arrow-right ml-0.5 text-amber-500/50 group-hover:translate-x-1 transition-transform inline-block"></i></span>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- 本地互動學科呈現區區 -->
+        <section id="interactive-workspace" class="scroll-mt-24">
+            
+            <!-- 1. 國文互動教室區 -->
+            <div id="subject-chinese" class="subject-workspace glass-panel rounded-3xl p-6 md:p-8 space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 gap-2">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-lg"><i class="fas fa-scroll"></i></span>
+                        <div>
+                            <h3 class="text-xl font-black text-rose-400 tracking-widest">國文科 ． 成語釋義挑戰賽</h3>
+                            <p class="text-xs text-slate-400 font-light">精選常用成語，測試你的字義與情境配合觀念！</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-rose-950/40 text-rose-400 border border-rose-800/30 rounded-full text-xs font-bold font-mono">
+                        互動配對遊戲
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                    <!-- 題目卡 -->
+                    <div class="md:col-span-5 bg-slate-950/60 p-5 rounded-2xl border border-slate-800 space-y-4">
+                        <span class="text-xs bg-rose-500/10 text-rose-400 px-2.5 py-1 rounded font-bold">成語謎題</span>
+                        <p id="chinese-question" class="text-lg font-black text-slate-200 tracking-wide pt-2 min-h-[60px] leading-relaxed">
+                            -- 載入中 --
+                        </p>
+                        <div class="text-[11px] text-slate-500 flex items-center"><i class="fas fa-info-circle mr-1"></i> 請點擊右邊對應的正確成語選項</div>
+                    </div>
+
+                    <!-- 選項卡 -->
+                    <div class="md:col-span-7 flex flex-col justify-between gap-3">
+                        <div class="grid grid-cols-1 gap-2.5" id="chinese-options">
+                            <!-- JS 動態生成成語按鈕 -->
+                        </div>
+                        
+                        <div id="chinese-feedback" class="hidden p-4 rounded-xl text-xs transition duration-300">
+                            <div class="flex items-center space-x-2 font-bold mb-1">
+                                <span id="chinese-feedback-icon"></span>
+                                <span id="chinese-feedback-title">正確！</span>
+                            </div>
+                            <p id="chinese-feedback-text" class="text-slate-400 leading-relaxed"></p>
+                        </div>
+
+                        <div class="flex justify-end pt-2">
+                            <button onclick="nextChineseQuestion()" id="chinese-next-btn" class="hidden px-5 py-2.5 bg-rose-600 hover:bg-rose-500 text-slate-950 font-bold rounded-xl text-xs transition active:scale-95">
+                                下一題 <i class="fas fa-chevron-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 英文互動教室區 (預設隱藏) -->
+            <div id="subject-english" class="subject-workspace hidden glass-panel rounded-3xl p-6 md:p-8 space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 gap-2">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg"><i class="fas fa-language"></i></span>
+                        <div>
+                            <h3 class="text-xl font-black text-blue-400 tracking-widest">英文科 ． 動態字彙閃卡</h3>
+                            <p class="text-xs text-slate-400 font-light">精選關鍵升學必備單字，點擊拼寫、邊聽發音邊背單字！</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-blue-950/40 text-blue-400 border border-blue-800/30 rounded-full text-xs font-bold font-mono">
+                        字彙閃卡與拼寫
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- 字彙閃卡正面 -->
+                    <div class="bg-gradient-to-br from-slate-950 to-slate-900 rounded-2xl p-6 border border-slate-800 flex flex-col justify-between min-h-[220px]">
+                        <div>
+                            <div class="flex justify-between items-start">
+                                <span class="text-xs text-blue-400 font-bold tracking-widest uppercase">Flashcard</span>
+                                <button onclick="speakCurrentWord()" class="w-9 h-9 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center transition active:scale-90" title="語音朗讀">
+                                    <i class="fas fa-volume-up"></i>
+                                </button>
+                            </div>
+                            <div class="text-center py-6">
+                                <h4 id="english-word" class="text-4xl font-extrabold text-slate-100 tracking-wide">English</h4>
+                                <p id="english-phonetic" class="text-xs text-slate-500 mt-2">/ˈɪŋ.ɡlɪʃ/</p>
+                                <p id="english-meaning" class="text-sm text-blue-300 mt-4 font-light">n. 英語</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500 border-t border-slate-800/60 pt-3">
+                            <span>例句：<span id="english-example" class="italic text-slate-400">Loading...</span></span>
+                        </div>
+                    </div>
+
+                    <!-- 拼讀實踐挑戰卡 -->
+                    <div class="bg-slate-950/30 rounded-2xl p-6 border border-slate-800 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded font-bold">自我拼寫挑戰</span>
+                            <p class="text-xs text-slate-400 mt-3 mb-4 leading-relaxed">請在下方輸入框中正確拼寫出該單字，點擊檢查：</p>
+                            
+                            <div class="space-y-3">
+                                <input type="text" id="english-input" placeholder="請輸入單字拼寫..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-all font-mono" onkeydown="if(event.key==='Enter') checkEnglishSpelling()">
+                                <div id="english-spell-feedback" class="hidden text-xs py-2 px-3 rounded-lg font-bold"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 pt-6 border-t border-slate-800/40">
+                            <button onclick="checkEnglishSpelling()" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 text-slate-950 font-bold rounded-xl text-xs transition active:scale-95">檢查答案</button>
+                            <button onclick="nextEnglishCard()" class="py-2.5 px-4 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold rounded-xl text-xs transition active:scale-95">下個字 <i class="fas fa-arrow-right ml-1"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 數學互動教室區 (預設隱藏) -->
+            <div id="subject-math" class="subject-workspace hidden glass-panel rounded-3xl p-6 md:p-8 space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 gap-2">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center text-lg"><i class="fas fa-calculator"></i></span>
+                        <div>
+                            <h3 class="text-xl font-black text-teal-400 tracking-widest">數學科 ． 等差數列動態模擬器</h3>
+                            <p class="text-xs text-slate-400 font-light">輸入首項、公差與項數，即時展示數列數值並分析！</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-teal-950/40 text-teal-400 border border-teal-800/30 rounded-full text-xs font-bold font-mono">
+                        公式與數值運算
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- 控制面板 -->
+                    <div class="bg-slate-950/60 p-5 rounded-2xl border border-slate-800 space-y-4">
+                        <h4 class="text-xs text-teal-400 font-bold tracking-widest uppercase mb-2">參數調整</h4>
+                        
+                        <!-- 首項 -->
+                        <div class="space-y-1">
+                            <label class="text-[11px] text-slate-400 block flex justify-between">
+                                <span>首項 (a₁)</span>
+                                <span class="font-bold text-teal-400" id="math-val-first">1</span>
+                            </label>
+                            <input type="range" id="math-first" min="-50" max="50" value="1" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-teal-500" oninput="calculateArithmeticSequence()">
+                        </div>
+
+                        <!-- 公差 -->
+                        <div class="space-y-1">
+                            <label class="text-[11px] text-slate-400 block flex justify-between">
+                                <span>公差 (d)</span>
+                                <span class="font-bold text-teal-400" id="math-val-diff">3</span>
+                            </label>
+                            <input type="range" id="math-diff" min="-20" max="20" value="3" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-teal-500" oninput="calculateArithmeticSequence()">
+                        </div>
+
+                        <!-- 項數 -->
+                        <div class="space-y-1">
+                            <label class="text-[11px] text-slate-400 block flex justify-between">
+                                <span>項數 (n)</span>
+                                <span class="font-bold text-teal-400" id="math-val-num">8</span>
+                            </label>
+                            <input type="range" id="math-num" min="3" max="15" value="8" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-teal-500" oninput="calculateArithmeticSequence()">
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-800/60 text-center">
+                            <p class="text-[11px] text-slate-500">
+                                數列一般項公式：<strong class="text-teal-400 font-mono">aₙ = a₁ + (n-1)d</strong>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 計算與圖表視覺化結果 -->
+                    <div class="md:col-span-2 bg-slate-950/30 p-6 rounded-2xl border border-slate-800 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs bg-teal-500/10 text-teal-400 px-2.5 py-1 rounded font-bold">即時生成結果</span>
+                            
+                            <!-- 數列表現法 -->
+                            <div class="mt-6 space-y-4">
+                                <div>
+                                    <span class="text-[11px] text-slate-500 block">生成的數列項目為：</span>
+                                    <div id="math-sequence-display" class="flex flex-wrap gap-2 mt-2">
+                                        <!-- JS 生成數列卡 -->
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4 pt-2">
+                                    <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
+                                        <span class="text-[10px] text-slate-400 block">第 n 項的值 (aₙ)</span>
+                                        <span class="text-xl font-extrabold text-teal-400" id="math-result-an">22</span>
+                                    </div>
+                                    <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
+                                        <span class="text-[10px] text-slate-400 block">前 n 項總和 (Sₙ)</span>
+                                        <span class="text-xl font-extrabold text-teal-400" id="math-result-sn">92</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 簡單公式說明 -->
+                        <div class="mt-4 p-3 bg-teal-950/10 rounded-xl border-l-4 border-teal-500 text-[11px] text-slate-400 leading-relaxed">
+                            <i class="fas fa-info-circle text-teal-400 mr-1.5"></i>
+                            首項為 <strong id="info-a1">1</strong>、公差為 <strong id="info-d">3</strong>。前 <strong id="info-n">8</strong> 項之級數和可用公式 <strong class="text-teal-400 font-mono">Sₙ = n(a₁ + aₙ) / 2</strong> 計得，即為 <strong id="info-sn">92</strong>。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- 老師教學理念 -->
+        <section class="max-w-4xl mx-auto glass-panel p-6 md:p-8 rounded-3xl border border-slate-800/80">
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="w-24 h-24 bg-gradient-to-tr from-indigo-500 to-rose-500 rounded-full flex items-center justify-center text-4xl shadow-lg">
+                    🎓
+                </div>
+                <div class="space-y-3 text-center md:text-left flex-1">
+                    <h3 class="text-xl font-extrabold text-slate-100">黃老師的教育宣言：適性揚才，自主探索</h3>
+                    <p class="text-xs md:text-sm text-slate-400 leading-relaxed font-light">
+                        「教育不是灌滿一桶水，而是點燃一把火。」在數位教育蓬勃發展的今天，我希望透過生動的動態交互科技，減少孩子在抽象學科上的挫敗感，帶給孩子沉浸式、有意義的自主學習體驗。
+                    </p>
+                    <div class="flex justify-center md:justify-start gap-3 pt-1">
+                        <span class="px-2.5 py-1 bg-slate-900 text-slate-400 border border-slate-800 rounded text-[10px]">#翻轉教室</span>
+                        <span class="px-2.5 py-1 bg-slate-900 text-slate-400 border border-slate-800 rounded text-[10px]">#自學力培養</span>
+                        <span class="px-2.5 py-1 bg-slate-900 text-slate-400 border border-slate-800 rounded text-[10px]">#跨領域學習</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-950 border-t border-slate-900 py-10 px-6 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto space-y-4">
+            <div class="flex justify-center space-x-6 text-lg text-slate-400 mb-2">
+                <a href="https://smallfatyellow.github.io/myhome/science.html" target="_blank" class="hover:text-green-400 transition" title="前往自然科學平台"><i class="fas fa-flask"></i></a>
+                <a href="https://smallfatyellow.github.io/myhome/history.html" target="_blank" class="hover:text-amber-400 transition" title="前往歷史人文平台"><i class="fas fa-landmark"></i></a>
+                <span class="text-slate-700">|</span>
+                <span class="hover:text-indigo-400 transition cursor-pointer"><i class="fas fa-school"></i></span>
+            </div>
+            <p>© 2026 黃老師跨學科自主學習平台 ． 創思啟發專屬教具網頁</p>
+            <p class="text-[11px] text-slate-600">本網頁支援自適應 RWD 手機版介面、英美語語音發音 API 及數學數列實時運算</p>
+        </div>
+    </footer>
+
+    <script>
+        /* === 1. 學科工作區切換邏輯 === */
+        const subjects = ['chinese', 'english', 'math'];
+        
+        function switchSubject(targetSubject) {
+            // 切換下方工作區的隱藏與呈現
+            subjects.forEach(sub => {
+                const element = document.getElementById(`subject-${sub}`);
+                if (sub === targetSubject) {
+                    element.classList.remove('hidden');
+                } else {
+                    element.classList.add('hidden');
+                }
+            });
+
+            // 更新上端卡片的高亮樣式
+            subjects.forEach(sub => {
+                const card = document.getElementById(`btn-${sub}`);
+                if (sub === targetSubject) {
+                    card.classList.add(`glow-${sub}`, 'border-indigo-500/30');
+                    if(sub === 'chinese') card.classList.add('border-rose-500/40');
+                    if(sub === 'english') card.classList.add('border-blue-500/40');
+                    if(sub === 'math') card.classList.add('border-teal-500/40');
+                } else {
+                    card.classList.remove('glow-chinese', 'glow-english', 'glow-math', 'border-rose-500/40', 'border-blue-500/40', 'border-teal-500/40');
+                }
+            });
+
+            // 平滑滾動到工作區
+            document.getElementById('interactive-workspace').scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+            });
+        }
+
+
+        /* === 2. 國文科互動數據與遊戲機制 === */
+        const chineseQuestions = [
+            {
+                q: "當一個人說話「做事顛倒順序，不顧及根本，只從微末處下手」時，我們會用哪一個成語來形容？",
+                opts: ["本末倒置", "名落孫山", "孤芳自賞", "畫蛇添足"],
+                correct: 0,
+                desc: "「本」指根本，「末」指末梢。將事物根本與枝節位置弄反了，比喻輕重本末本分主次不分、顛倒了事物的重要性。"
+            },
+            {
+                q: "「形容雙方勢均力敵，旗鼓相當，無法輕易分出勝負、上下高低。」以下何者最適合形容此情況？",
+                opts: ["守株待兔", "棋逢對手", "井底之蛙", "不期而遇"],
+                correct: 1,
+                desc: "「棋逢對手」比喻下棋時遇到實力相當的對手。引申為做事或競爭時，雙方的功力或本領不分軒輊。"
+            },
+            {
+                q: "「比喻作多餘的事，不僅無益，反而有害，弄巧成拙。」這是指哪一個寓言成語？",
+                opts: ["刻舟求劍", "拔苗助長", "畫蛇添足", "掩耳盜鈴"],
+                correct: 2,
+                desc: "「畫蛇添足」源自古代畫蛇比賽，某人畫完又為蛇添上腳。後比喻做多餘的事，破壞原有的和諧或招致失敗。"
+            },
+            {
+                q: "「不親自實地考察，只在屋子裡憑空憑想像做規劃、定規章。」這可以用來批評什麼行為？",
+                opts: ["閉門造車", "拋磚引玉", "盲人摸象", "迎刃而解"],
+                correct: 0,
+                desc: "「閉門造車」原意是關起門來造車子，只要規格合乎法度，出門也能適用。現今多比喻脫離實際，只憑個人想像行事。"
+            }
+        ];
+
+        let currentChineseIndex = 0;
+        let chineseAnswered = false;
+
+        function loadChineseQuestion() {
+            chineseAnswered = false;
+            const currentQ = chineseQuestions[currentChineseIndex];
+            
+            // 寫入問題
+            document.getElementById('chinese-question').innerText = currentQ.q;
+            document.getElementById('chinese-feedback').classList.add('hidden');
+            document.getElementById('chinese-next-btn').classList.add('hidden');
+
+            // 渲染選項按鈕
+            const optionsContainer = document.getElementById('chinese-options');
+            optionsContainer.innerHTML = '';
+            
+            currentQ.opts.forEach((opt, idx) => {
+                const button = document.createElement('button');
+                button.onclick = () => selectChineseAnswer(idx);
+                button.className = "chinese-opt-btn w-full text-left p-4 bg-slate-900 border border-slate-800 hover:border-rose-500/50 rounded-xl transition duration-200 text-slate-300 flex justify-between items-center active:scale-95";
+                button.innerHTML = `
+                    <span>${opt}</span>
+                    <i class="far fa-circle text-slate-600"></i>
+                `;
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectChineseAnswer(selectedIdx) {
+            if (chineseAnswered) return;
+            chineseAnswered = true;
+
+            const q = chineseQuestions[currentChineseIndex];
+            const isCorrect = selectedIdx === q.correct;
+
+            // 更新選項按鈕樣式
+            const buttons = document.querySelectorAll('.chinese-opt-btn');
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === q.correct) {
+                    btn.className = "chinese-opt-btn w-full text-left p-4 bg-emerald-950/40 border border-emerald-500 text-emerald-400 rounded-xl flex justify-between items-center";
+                    btn.innerHTML = `<span>${q.opts[idx]}</span> <i class="fas fa-check-circle text-emerald-500"></i>`;
+                } else if (idx === selectedIdx && !isCorrect) {
+                    btn.className = "chinese-opt-btn w-full text-left p-4 bg-rose-950/40 border border-rose-500 text-rose-400 rounded-xl flex justify-between items-center";
+                    btn.innerHTML = `<span>${q.opts[idx]}</span> <i class="fas fa-times-circle text-rose-500"></i>`;
+                } else {
+                    btn.classList.add('opacity-40');
+                }
+            });
+
+            // 展現說明回饋
+            const feedback = document.getElementById('chinese-feedback');
+            const icon = document.getElementById('chinese-feedback-icon');
+            const title = document.getElementById('chinese-feedback-title');
+            const text = document.getElementById('chinese-feedback-text');
+
+            feedback.classList.remove('hidden');
+            if (isCorrect) {
+                feedback.className = "p-4 rounded-xl text-xs bg-emerald-950/20 border border-emerald-900/30 text-emerald-400";
+                icon.className = "fas fa-thumbs-up";
+                title.innerText = "答對了！非常優秀！";
+            } else {
+                feedback.className = "p-4 rounded-xl text-xs bg-rose-950/20 border border-rose-900/30 text-rose-400";
+                icon.className = "fas fa-times-circle";
+                title.innerText = "可惜答錯囉！";
+            }
+            text.innerText = q.desc;
+
+            // 顯示下一題按鈕
+            document.getElementById('chinese-next-btn').classList.remove('hidden');
+        }
+
+        function nextChineseQuestion() {
+            currentChineseIndex++;
+            if (currentChineseIndex >= chineseQuestions.length) {
+                currentChineseIndex = 0; // 循環播放
+            }
+            loadChineseQuestion();
+        }
+
+
+        /* === 3. 英文單字閃卡功能與發音語音 API === */
+        const englishWords = [
+            {
+                word: "Education",
+                phonetic: "/ˌedʒ.jʊˈkeɪ.ʃən/",
+                meaning: "n. 教育",
+                example: "Education is the best weapon to change the world.",
+                hint: "以 -tion 結尾的名詞"
+            },
+            {
+                word: "Discovery",
+                phonetic: "/dɪˈskʌv.ər.i/",
+                meaning: "n. 發現、探索",
+                example: "The telescope made the discovery of new stars possible.",
+                hint: "名詞，字尾為 -y"
+            },
+            {
+                word: "Innovative",
+                phonetic: "/ˈɪn.ə.veɪ.tɪv/",
+                meaning: "adj. 創新的、新穎的",
+                example: "She was an innovative teacher who always used new tech.",
+                hint: "形容詞，字尾為 -tive"
+            },
+            {
+                word: "Challenge",
+                phonetic: "/ˈtʃæl.ɪndʒ/",
+                meaning: "n. / v. 挑戰",
+                example: "Learning a new language is a great challenge.",
+                hint: "動詞/名詞，c 開頭"
+            }
+        ];
+
+        let currentEnglishIndex = 0;
+
+        function loadEnglishCard() {
+            const currentC = englishWords[currentEnglishIndex];
+            
+            document.getElementById('english-word').innerText = currentC.word;
+            document.getElementById('english-phonetic').innerText = currentC.phonetic;
+            document.getElementById('english-meaning').innerText = currentC.meaning;
+            document.getElementById('english-example').innerText = currentC.example;
+
+            // 重設拼寫挑戰
+            const input = document.getElementById('english-input');
+            input.value = '';
+            input.className = "w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-all font-mono";
+            
+            const feedback = document.getElementById('english-spell-feedback');
+            feedback.classList.add('hidden');
+        }
+
+        function speakCurrentWord() {
+            const currentC = englishWords[currentEnglishIndex];
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(currentC.word);
+                utterance.lang = 'en-US'; // 英文發音
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("抱歉，您的瀏覽器不支援 SpeechSynthesis 語音播報。");
+            }
+        }
+
+        function checkEnglishSpelling() {
+            const currentC = englishWords[currentEnglishIndex];
+            const userVal = document.getElementById('english-input').value.trim();
+            const feedback = document.getElementById('english-spell-feedback');
+            const input = document.getElementById('english-input');
+
+            feedback.classList.remove('hidden');
+
+            if (userVal.toLowerCase() === currentC.word.toLowerCase()) {
+                feedback.className = "text-xs py-2 px-3 rounded-lg font-bold bg-emerald-950/40 text-emerald-400 border border-emerald-900/30";
+                feedback.innerHTML = `<i class="fas fa-check mr-1"></i> 完全正確！拼讀無誤！`;
+                input.className = "w-full bg-slate-900 border border-emerald-500 rounded-xl px-4 py-3 text-emerald-400 font-mono";
+            } else {
+                feedback.className = "text-xs py-2 px-3 rounded-lg font-bold bg-rose-950/40 text-rose-400 border border-rose-900/30";
+                feedback.innerHTML = `<i class="fas fa-exclamation-triangle mr-1"></i> 拼錯囉，請再試一次！(提示: ${currentC.hint})`;
+                input.className = "w-full bg-slate-900 border border-rose-500 rounded-xl px-4 py-3 text-rose-400 font-mono";
+            }
+        }
+
+        function nextEnglishCard() {
+            currentEnglishIndex++;
+            if (currentEnglishIndex >= englishWords.length) {
+                currentEnglishIndex = 0;
+            }
+            loadEnglishCard();
+        }
+
+
+        /* === 4. 數學科等差數列動態計算 === */
+        function calculateArithmeticSequence() {
+            const a1 = parseInt(document.getElementById('math-first').value);
+            const d = parseInt(document.getElementById('math-diff').value);
+            const n = parseInt(document.getElementById('math-num').value);
+
+            // 更新控制面板上的實時數值
+            document.getElementById('math-val-first').innerText = a1;
+            document.getElementById('math-val-diff').innerText = d;
+            document.getElementById('math-val-num').innerText = n;
+
+            // 計算數列與各項
+            let sequence = [];
+            for (let i = 0; i < n; i++) {
+                sequence.push(a1 + i * d);
+            }
+
+            const an = sequence[n - 1]; // 第 n 項
+            const sn = (n * (a1 + an)) / 2; // 前 n 項之和
+
+            // 更新結果
+            document.getElementById('math-result-an').innerText = an;
+            document.getElementById('math-result-sn').innerText = sn;
+
+            // 動態渲染數列卡片項目
+            const seqContainer = document.getElementById('math-sequence-display');
+            seqContainer.innerHTML = '';
+            sequence.forEach((val, index) => {
+                const card = document.createElement('div');
+                card.className = "flex flex-col items-center justify-center p-2.5 bg-slate-900 rounded-xl border border-slate-800 w-12 h-14";
+                card.innerHTML = `
+                    <span class="text-[8px] text-slate-500 font-mono">a${index + 1}</span>
+                    <span class="text-sm font-extrabold text-teal-400">${val}</span>
+                `;
+                seqContainer.appendChild(card);
+            });
+
+            // 更新下方簡述說明文字
+            document.getElementById('info-a1').innerText = a1;
+            document.getElementById('info-d').innerText = d;
+            document.getElementById('info-n').innerText = n;
+            document.getElementById('info-sn').innerText = sn;
+        }
+
+
+        /* === 5. 初始化頁面執行 === */
+        window.onload = function() {
+            // 預設開啟國文科
+            switchSubject('chinese');
+            
+            // 載入國文第一題
+            loadChineseQuestion();
+
+            // 載入英文單字第一張
+            loadEnglishCard();
+
+            // 實施一次數學動態運算
+            calculateArithmeticSequence();
+        };
+    </script>
+</body>
+</html>

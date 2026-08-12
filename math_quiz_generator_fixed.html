@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>數學出題小幫手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- JSZip 用於打包圖片 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- docx 用於匯出 Word -->
+    <script src="https://unpkg.com/docx@7.3.0/build/index.js"></script>
+    
+    <!-- 1. MathJax 3 (用於將 LaTeX 轉為 MathML) -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- 2. mathml2omml (將 MathML 轉為微軟 Word OMML XML 標籤) -->
+    <script type="module">
+      import { mml2omml } from 'https://cdn.jsdelivr.net/npm/mathml2omml@0.5.0/dist/index.esm.js';
+      window.mml2omml = mml2omml;
+    </script>
+
+    <!-- KaTeX (數學公式網頁預覽) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&family=LXGW+WenKai+Mono+TC&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: "LXGW WenKai Mono TC", "Chiron GoRound TC", sans-serif;
+            background-color: #f8fafc;
+            background-image: radial-gradient(at 0% 0%, hsla(160, 100%, 96%, 1) 0, transparent 50%), radial-gradient(at 100% 100%, hsla(200, 100%, 95%, 1) 0, transparent 50%);
+            color: #334155;
+            min-height: 100vh;
+        }
+        .chiron-font {
+            font-family: "LXGW WenKai Mono TC", "Chiron GoRound TC", sans-serif;
+        }
+        .main-container {
+            max-width: 960px;
+            margin: 1rem auto;
+            padding: 1.5rem;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+        @media (min-width: 640px) {
+            .main-container {
+                margin: 2rem auto;
+                padding: 2.5rem;
+            }
+        }
+        .btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+         @media (min-width: 640px) {
+            .btn {
+                width: auto;
+            }
+        }
+        .btn:disabled {
+            background-color: #cbd5e1;
+            color: #64748b;
+            cursor: not-allowed;
+            opacity: 0.7;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #0f766e 100%);
+            color: #FFFFFF;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #059669 0%, #115e59 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+        }
+        .btn-secondary {
+            background-color: #f8fafc;
+            color: #0f766e;
+            border: 1px solid #e2e8f0;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #f1f5f9;
+            border-color: #cbd5e1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .btn-danger {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fee2e2;
+        }
+        .btn-danger:hover:not(:disabled) {
+            background-color: #fee2e2;
+        }
+        textarea, select, input[type="number"], input[type="text"] {
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 12px 16px;
+            width: 100%;
+            transition: all 0.2s ease;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        textarea:focus, select:focus, input[type="number"]:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #10b981;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+        }
+        input:disabled, select:disabled {
+            background-color: #f1f5f9;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+        .loader, .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #059669;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border-width: 2px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* PDF 渲染的隱藏區域 */
+        #pdf-render-area {
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: -9999;
+            opacity: 0;
+            pointer-events: none;
+            background-color: white;
+            color: black;
+            font-family: "LXGW WenKai Mono TC", "Chiron GoRound TC", sans-serif;
+            width: 210mm; /* A4 width */
+        }
+        
+        /* 動態字體大小控制 */
+        :root {
+            --base-font-size: 16px;
+        }
+        .dynamic-font-area {
+            font-size: var(--base-font-size);
+        }
+        .dynamic-font-area .text-sm {
+            font-size: calc(var(--base-font-size) * 0.875) !important;
+            line-height: 1.5;
+        }
+        .dynamic-font-area .text-base {
+            font-size: var(--base-font-size) !important;
+            line-height: 1.5;
+        }
+        .dynamic-font-area .text-lg {
+            font-size: calc(var(--base-font-size) * 1.125) !important;
+            line-height: 1.5;
+        }
+        .dynamic-font-area .text-xl {
+            font-size: calc(var(--base-font-size) * 1.25) !important;
+            line-height: 1.4;
+        }
+        .dynamic-font-area .text-2xl {
+            font-size: calc(var(--base-font-size) * 1.5) !important;
+            line-height: 1.3;
+        }
+
+        /* KaTeX 樣式修正 */
+        .katex-display > .katex {
+            text-align: left !important;
+            margin-left: 0 !important;
+        }
+        .katex {
+            font-size: 1.1em;
+        }
+        
+        /* 列印專用樣式 */
+        @media print {
+            body {
+                background-color: white !important;
+                color: black !important;
+            }
+            .main-container {
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+            #output-area {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            /* 避免題目與解答跨頁被裁切 */
+            .question-item, .answer-item {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            /* 解答區強制換新頁 */
+            #answers-container {
+                page-break-before: always;
+                break-before: page;
+            }
+            .print-header {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body class="chiron-font">
+
+    <div class="main-container">
+        <header class="text-center mb-8 sm:mb-10 print:hidden relative">
+            <div class="inline-block mb-3 px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-sm font-bold tracking-wide border border-emerald-100 shadow-sm">
+                ✨ SPEDMIX
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600 tracking-tight pb-2">
+                個別化數學出題小幫手
+            </h1>
+            <p class="text-base sm:text-lg text-slate-500 mt-2 font-medium">貼上單元主題或知識點，AI 自動生成試卷、詳解與標題！</p>
+            
+            <div class="mt-6 flex justify-center">
+                <div class="inline-flex items-start sm:items-center gap-3 px-5 py-4 bg-white border border-slate-200 text-slate-700 rounded-2xl text-sm shadow-[0_2px_10px_rgb(0,0,0,0.02)] max-w-2xl text-left sm:text-center transition-all hover:border-emerald-300 hover:shadow-md">
+                    <span class="text-2xl leading-none">🖨️</span>
+                    <span class="leading-relaxed"><strong>列印小提示：</strong>題目生成後，直接按下 <kbd class="mx-1 px-2 py-1 bg-slate-100 border border-slate-300 rounded-md text-xs font-mono font-bold text-slate-800 shadow-sm">Ctrl + P</kbd> (Mac 請按 <kbd class="mx-1 px-2 py-1 bg-slate-100 border border-slate-300 rounded-md text-xs font-mono font-bold text-slate-800 shadow-sm">Cmd + P</kbd>) 即可列印精美的紙本測驗卷，系統會為您自動隱藏操作介面！</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- 輸入區塊 -->
+            <div class="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-slate-100 print:hidden">
+                <div>
+                    <label class="block mb-3 text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <span class="bg-emerald-100 text-emerald-700 w-8 h-8 rounded-full flex items-center justify-center text-sm">1</span>
+                        請輸入單元主題或知識點
+                    </label>
+                    
+                    <!-- 圖片上傳區 -->
+                    <div class="mb-3 flex items-center gap-2">
+                         <button id="main-text-select-btn" class="btn btn-secondary !w-auto !py-2 !px-4 text-sm">📸 上傳圖片 / 講義照片</button>
+                    </div>
+                    
+                    <div id="main-text-paste-zone" tabindex="0" class="relative mb-4 p-6 border-2 border-dashed border-slate-300 rounded-xl text-center text-slate-500 min-h-[8rem] flex flex-col justify-center items-center transition-all hover:border-emerald-400 hover:bg-emerald-50/50 focus:outline-none focus:border-emerald-500 focus:bg-emerald-50 focus:ring-4 focus:ring-emerald-500/10 group">
+                        <div id="main-text-placeholder">
+                            <p class="mb-2 font-medium">將圖片拖曳至此</p>
+                            <p class="text-sm text-slate-400">或直接貼上圖片 (Ctrl+V)</p>
+                        </div>
+                        <img id="main-text-preview" class="hidden max-h-48 max-w-full object-contain rounded-lg shadow-md">
+                        
+                        <!-- 圖片控制按鈕 -->
+                        <div id="image-controls" class="hidden absolute top-2 right-2 flex-col gap-2">
+                             <button id="main-text-remove-btn" class="bg-white text-red-500 border border-red-200 hover:bg-red-50 rounded-full h-8 w-8 flex items-center justify-center shadow-sm" title="移除圖片">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                             </button>
+                        </div>
+                    </div>
+                    
+                    <input type="file" id="main-text-upload" class="hidden" accept="image/*">
+                    
+                    <div class="flex items-center gap-2 mb-2">
+                        <button id="main-text-ocr-btn" class="btn btn-secondary !w-auto !py-1.5 !px-3 text-sm" disabled>
+                            <span class="flex items-center gap-2">
+                                <span>擷取圖片文字 (OCR)</span>
+                                <div id="main-text-loader" class="spinner hidden w-4 h-4 border-2"></div>
+                            </span>
+                        </button>
+                    </div>
+
+                    <textarea id="main-text" rows="6" class="resize-y" placeholder="請在此處貼上單元主題、知識點、或一段說明文字...&#10;例如：&#10;國中七年級上學期，二元一次聯立方程式&#10;或是&#10;請針對「畢氏定理」出題，難度設定為國中二年級。"></textarea>
+                </div>
+            </div>
+
+            <!-- 出題設定 -->
+            <div class="mb-8 p-6 bg-emerald-50/50 rounded-2xl border border-emerald-100 shadow-sm print:hidden">
+                <h3 class="text-lg font-bold text-slate-800 flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-2">
+                        <span class="bg-emerald-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-sm">2</span>
+                        出題設定
+                    </div>
+                    <!-- 新增顯示配分開關 -->
+                    <div class="flex items-center gap-2 text-sm bg-white px-3 py-1.5 rounded-lg border border-emerald-200 shadow-sm">
+                        <input type="checkbox" id="enable-scoring" class="h-4 w-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer accent-emerald-600" checked>
+                        <label for="enable-scoring" class="text-slate-700 cursor-pointer font-bold">顯示配分</label>
+                    </div>
+                </h3>
+
+                <!-- 考卷標題 -->
+                <div class="mb-5">
+                    <label for="quiz-title" class="font-bold text-slate-700 block mb-2">考卷標題</label>
+                    <div class="relative">
+                        <input type="text" id="quiz-title" class="w-full pl-4 pr-10 bg-white" placeholder="AI 將於生成題目時自動產生標題，您也可以手動輸入">
+                        <span id="title-generating-icon" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-emerald-500 hidden">
+                             <div class="spinner w-5 h-5 border-emerald-500 border-t-transparent"></div>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 數學題型 -->
+                <div class="bg-white border border-slate-200 p-5 rounded-xl space-y-4 shadow-sm">
+                    
+                    <!-- 選擇題 -->
+                    <div class="p-4 rounded-xl border border-slate-100 hover:border-emerald-200 hover:shadow-sm transition-all bg-slate-50/50 hover:bg-white">
+                        <div class="flex items-center gap-3 mb-3">
+                             <input type="checkbox" id="enable-mc" class="h-5 w-5 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer accent-emerald-600" checked>
+                             <label for="enable-mc" class="font-bold text-slate-800 cursor-pointer text-lg">選擇題</label>
+                        </div>
+                        <div id="mc-controls-wrapper" class="pl-8 space-y-3">
+                            <div id="mc-rows" class="space-y-3">
+                                <div class="flex flex-wrap items-center gap-x-4 gap-y-3 mc-row">
+                                    <div class="flex items-center gap-2">
+                                        <label class="text-sm font-bold text-slate-600">題數</label>
+                                        <input type="number" class="q-count w-20 text-center py-2 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-white" value="5" min="1" max="20">
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <label class="text-sm font-bold text-slate-600">每題配分</label>
+                                        <input type="number" class="q-score w-20 text-center py-2 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-white" placeholder="自動" min="1" max="100">
+                                    </div>
+                                    <div class="flex items-center gap-2 flex-grow max-w-xs">
+                                        <label class="text-sm font-bold text-slate-600 whitespace-nowrap">難度</label>
+                                        <select class="q-diff w-full py-2 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-white">
+                                            <option>1️⃣ 超入門 (Concrete Beginner)</option>
+                                            <option>2️⃣ 基礎 (Basic Recall)</option>
+                                            <option>3️⃣ 低中階 (Simple Application)</option>
+                                            <option selected>4️⃣ 中階 (Procedural)</option>
+                                            <option>5️⃣ 進階 (Reasoning)</option>
+                                            <option>6️⃣ 高階 (Abstract Problem Solving)</option>
+                                            <option>7️⃣ 挑戰 (Complex & Integrated)</option>
+                                        </select>
+                                    </div>
+                                    <button type="button" class="text-red-400 hover:text-red-600 hidden remove-row-btn p-1.5 rounded-md hover:bg-red-50 transition-colors" title="移除此難度">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" id="add-mc-row-btn" class="text-sm text-emerald-600 font-bold hover:text-emerald-700 flex items-center gap-1 py-1 px-2 rounded hover:bg-emerald-50 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                                新增不同難度
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 填充題 -->
+                    <div class="p-4 rounded-xl border border-slate-100 hover:border-emerald-200 hover:shadow-sm transition-all bg-slate-50/50 hover:bg-white">
+                        <div class="flex items-center gap-3 mb-3">
+                             <input type="checkbox" id="enable-fill-in" class="h-5 w-5 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer accent-emerald-600" checked>
+                             <label for="enable-fill-in" class="font-bold text-slate-800 cursor-pointer text-lg">填充題</label>
+                        </div>
+                        <div id="fill-in-controls-wrapper" class="pl-8 space-y-3">
+                             <div id="fill-in-rows" class="space-y-3">
+                                 <div class="flex flex-wrap items-center gap-x-4 gap-y-3 fill-in-row">
+                                     <div class="flex items-center gap-2">
+                                        <label class="text-sm font-bold text-slate-600">題數</label>
+                                        <input type="number" class="q-count w-20 text-center py-2 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-white" value="5" min="1" max="20">
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <label class="text-sm font-bold text-slate-600">每題配分</label>
+                                        <input type="number" class="q-score w-20 text-center py-2 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-white" placeholder="自動" min="1" max="100">
+                                    </div>
+                                     <div class="flex items-center gap-2 flex-grow max-w-xs">
+                                        <label class="text-sm font-bold text-slate-600 whitespace-nowrap">難度</label>
+                                        <select class="q-diff w-full py-2 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-white">
+                                             <option>1️⃣ 超入門 (Concrete Beginner)</option>
+                                             <option>2️⃣ 基礎 (Basic Recall)</option>
+                                             <option>3️⃣ 低中階 (Simple Application)</option>
+                                             <option selected>4️⃣ 中階 (Procedural)</option>
+                                             <option>5️⃣ 進階 (Reasoning)</option>
+                                             <option>6️⃣ 高階 (Abstract Problem Solving)</option>
+                                             <option>7️⃣ 挑戰 (Complex & Integrated)</option>
+                                        </select>
+                                     </div>
+                                     <button type="button" class="text-red-400 hover:text-red-600 hidden remove-row-btn p-1.5 rounded-md hover:bg-red-50 transition-colors" title="移除此難度">
+                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                     </button>
+                                 </div>
+                             </div>
+                             <button type="button" id="add-fill-in-row-btn" class="text-sm text-emerald-600 font-bold hover:text-emerald-700 flex items-center gap-1 py-1 px-2 rounded hover:bg-emerald-50 transition-colors">
+                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                                 新增不同難度
+                             </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 應用題 -->
+                    <div class="p-4 rounded-xl border border-slate-100 hover:border-emerald-200 hover:shadow-sm transition-all bg-slate-50/50 hover:bg-white">
+                        <div class="flex items-center gap-3 mb-3">
+                             <input type="checkbox" id="enable-word-problem" class="h-5 w-5 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer accent-emerald-600" checked>
+                             <label for="enable-word-problem" class="font-bold text-slate-800 cursor-pointer text-lg">應用題</label>
+                        </div>
+                        <div id="word-problem-controls-wrapper" class="pl-8 space-y-3">
+                             <div id="word-problem-rows" class="space-y-3">
+                                 <div class="flex flex-wrap items-center gap-x-4 gap-y-3 word-problem-row">
+                                     <div class="flex items-center gap-2">
+                                        <label class="text-sm font-bold text-slate-600">題數</label>
+                                        <input type="number" class="q-count w-20 text-center py-2 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-white" value="3" min="1" max="10">
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <label class="text-sm font-bold text-slate-600">每題配分</label>
+                                        <input type="number" class="q-score w-20 text-center py-2 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-white" placeholder="自動" min="1" max="100">
+                                    </div>
+                                     <div class="flex items-center gap-2 flex-grow max-w-xs">
+                                        <label class="text-sm font-bold text-slate-600 whitespace-nowrap">難度</label>
+                                        <select class="q-diff w-full py-2 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-white">
+                                             <option>1️⃣ 超入門 (Concrete Beginner)</option>
+                                             <option>2️⃣ 基礎 (Basic Recall)</option>
+                                             <option>3️⃣ 低中階 (Simple Application)</option>
+                                             <option selected>4️⃣ 中階 (Procedural)</option>
+                                             <option>5️⃣ 進階 (Reasoning)</option>
+                                             <option>6️⃣ 高階 (Abstract Problem Solving)</option>
+                                             <option>7️⃣ 挑戰 (Complex & Integrated)</option>
+                                        </select>
+                                     </div>
+                                     <button type="button" class="text-red-400 hover:text-red-600 hidden remove-row-btn p-1.5 rounded-md hover:bg-red-50 transition-colors" title="移除此難度">
+                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                     </button>
+                                 </div>
+                             </div>
+                             <button type="button" id="add-word-problem-row-btn" class="text-sm text-emerald-600 font-bold hover:text-emerald-700 flex items-center gap-1 py-1 px-2 rounded hover:bg-emerald-50 transition-colors">
+                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                                 新增不同難度
+                             </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作按鈕區塊 -->
+            <div class="flex flex-col sm:flex-row items-stretch justify-center gap-4 mb-10 print:hidden">
+                <button id="generate-all" class="btn btn-primary text-lg flex-1 sm:flex-none sm:min-w-[240px] shadow-lg shadow-emerald-500/30" disabled>
+                    ✨ 開始生成題目
+                </button>
+                <button id="clear-all" class="btn btn-secondary flex-1 sm:flex-none">
+                    ↺ 全部重置
+                </button>
+            </div>
+
+            <!-- 載入動畫 -->
+            <div id="loader-container" class="hidden flex-col items-center justify-center my-10 p-10 bg-white rounded-2xl border border-emerald-100 shadow-sm">
+                <div class="loader"></div>
+                <p id="loader-status" class="mt-6 text-emerald-600 font-bold text-lg animate-pulse">題目生成中，AI 正在運算...</p>
+                <p id="timer" class="mt-2 text-slate-400 font-mono text-sm">00:00</p>
+            </div>
+
+            <!-- 輸出結果區塊 -->
+            <div id="output-area" class="mt-8 bg-white p-8 sm:p-12 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-200 hidden relative overflow-hidden">
+                <!-- 裝飾性背景元素 -->
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-400 print:hidden"></div>
+                
+                <div id="questions-container" class="dynamic-font-area">
+                     <!-- 列印專用標題區塊 -->
+                     <div class="print-header hidden mb-6 border-b-2 border-slate-800 pb-4">
+                         <h1 id="print-title" class="text-2xl font-bold text-center mb-4 text-black">數學單元評量</h1>
+                         <div class="text-right text-base text-black font-bold">班級：_______ 座號：_______ 姓名：______________</div>
+                     </div>
+                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end border-b-2 border-emerald-200 pb-3 mb-8 print:hidden gap-4">
+                        <h2 class="text-2xl font-bold text-slate-800">【題目卷】</h2>
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 shadow-sm">
+                                <span class="text-sm font-bold text-slate-600 px-2">字體大小</span>
+                                <button id="btn-font-decrease" class="w-7 h-7 flex items-center justify-center bg-white hover:bg-emerald-50 text-emerald-600 rounded shadow-sm transition-colors font-bold text-lg leading-none" title="縮小字體">-</button>
+                                <span id="font-size-display" class="text-sm font-mono font-bold w-8 text-center text-slate-700">16</span>
+                                <button id="btn-font-increase" class="w-7 h-7 flex items-center justify-center bg-white hover:bg-emerald-50 text-emerald-600 rounded shadow-sm transition-colors font-bold text-lg leading-none" title="放大字體">+</button>
+                            </div>
+                            <span class="text-sm font-medium px-3 py-1 bg-slate-100 text-slate-500 rounded-full hidden sm:inline-block">預覽模式</span>
+                        </div>
+                     </div>
+                     <div id="questions-list" class="space-y-8"></div>
+                </div>
+                <div id="answers-container" class="mt-16 pt-10 border-t-2 border-dashed border-slate-200 dynamic-font-area">
+                     <div class="flex justify-between items-end border-b-2 border-emerald-200 pb-3 mb-8">
+                        <h2 class="text-2xl font-bold text-slate-800">【解答與解析】</h2>
+                     </div>
+                     <div id="answers-list" class="space-y-6"></div>
+                </div>
+            </div>
+
+            <!-- 後續操作按鈕 -->
+            <div id="actions-after" class="hidden mt-10 pt-8 border-t border-slate-200 print:hidden">
+                <div class="flex flex-col sm:flex-row justify-center gap-4 flex-wrap">
+                    <button id="download-word" class="btn btn-primary flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" /></svg>
+                        匯出 Word (含原生數學式)
+                    </button>
+                    <button id="copy-content" class="btn btn-secondary flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" /><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" /></svg>
+                        複製所有內容 (Markdown)
+                    </button>
+                </div>
+                
+                <div class="mt-6 text-center text-sm text-slate-600 bg-amber-50 p-4 rounded-xl border border-amber-200 max-w-xl mx-auto shadow-sm">
+                    💡 <strong>小提示：</strong>若想要存一份數學式完美的 PDF 檔，請先全選 (<kbd class="px-1 py-0.5 bg-white border border-slate-300 rounded shadow-sm text-xs font-mono font-bold">Ctrl</kbd> + <kbd class="px-1 py-0.5 bg-white border border-slate-300 rounded shadow-sm text-xs font-mono font-bold">A</kbd>) 內容，再按列印 (<kbd class="px-1 py-0.5 bg-white border border-slate-300 rounded shadow-sm text-xs font-mono font-bold">Ctrl</kbd> + <kbd class="px-1 py-0.5 bg-white border border-slate-300 rounded shadow-sm text-xs font-mono font-bold">P</kbd>)。
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="print:hidden" style="font-size:12px; color:gray; text-align:center; margin-top: 3rem; margin-bottom: 2rem;">
+        © 2026 米克師 | 個別化數學出題小幫手
+        <br>本作品採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh_TW" target="_blank" class="underline text-green-700 hover:text-green-900">CC BY-NC-SA 4.0 創用CC授權</a>。
+    </footer>
+    
+    <!-- 用於生成 PDF 的隱藏容器 -->
+    <div id="pdf-render-area"></div>
+
+
+    <script>
+        // 全域變數用來儲存原始資料，以便產生 Markdown
+        let currentQuizData = [];
+
+        // KaTeX 自動渲染設定
+        function setupKatex() {
+            if (window.renderMathInElement) {
+                window.renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false},
+                        {left: '\\[', right: '\\]', display: true}
+                    ],
+                    throwOnError: false,
+                    output: 'html' // 優先使用 HTML 輸出以利 PDF 截圖
+                });
+            }
+        }
+
+        const mainTextInput = document.getElementById('main-text');
+        
+        const generateAllBtn = document.getElementById('generate-all');
+        const clearAllBtn = document.getElementById('clear-all');
+        
+        const enableMCCheckbox = document.getElementById('enable-mc');
+        const enableFillInCheckbox = document.getElementById('enable-fill-in');
+        const enableWordProblemCheckbox = document.getElementById('enable-word-problem');
+        const enableScoringCheckbox = document.getElementById('enable-scoring');
+        
+        const outputArea = document.getElementById('output-area');
+        const loaderContainer = document.getElementById('loader-container');
+        const timerEl = document.getElementById('timer');
+        const loaderStatus = document.getElementById('loader-status');
+        
+        const questionsContainer = document.getElementById('questions-container');
+        const answersContainer = document.getElementById('answers-container');
+        const questionsList = document.getElementById('questions-list');
+        const answersList = document.getElementById('answers-list');
+
+        const actionsAfter = document.getElementById('actions-after');
+        const copyContentBtn = document.getElementById('copy-content');
+        const downloadWordBtn = document.getElementById('download-word');
+
+        
+        const quizTitleInput = document.getElementById('quiz-title');
+        const titleGeneratingIcon = document.getElementById('title-generating-icon');
+
+        let questionCounter = 0;
+        let timerInterval;
+        let currentFontSize = 16;
+
+        // 字體大小控制邏輯
+        const fontSizeDisplay = document.getElementById('font-size-display');
+        const btnFontDecrease = document.getElementById('btn-font-decrease');
+        const btnFontIncrease = document.getElementById('btn-font-increase');
+
+        function updateFontSize(newSize) {
+            if (newSize < 12 || newSize > 32) return; // 限制字體大小範圍
+            currentFontSize = newSize;
+            fontSizeDisplay.textContent = currentFontSize;
+            document.documentElement.style.setProperty('--base-font-size', `${currentFontSize}px`);
+        }
+
+        btnFontDecrease.addEventListener('click', () => updateFontSize(currentFontSize - 2));
+        btnFontIncrease.addEventListener('click', () => updateFontSize(currentFontSize + 2));
+
+        function updateButtonStates() {
+            const hasMainText = mainTextInput.value.trim() !== '';
+            generateAllBtn.disabled = !hasMainText;
+        }
+
+        function toggleControls() {
+            const setControlState = (checkbox, wrapperId) => {
+                const wrapper = document.getElementById(wrapperId);
+                const isChecked = checkbox.checked;
+                wrapper.style.opacity = isChecked ? '1' : '0.4';
+                wrapper.style.pointerEvents = isChecked ? 'auto' : 'none';
+                Array.from(wrapper.querySelectorAll('input, select, button')).forEach(el => el.disabled = !isChecked);
+            };
+
+            setControlState(enableMCCheckbox, 'mc-controls-wrapper');
+            setControlState(enableFillInCheckbox, 'fill-in-controls-wrapper');
+            setControlState(enableWordProblemCheckbox, 'word-problem-controls-wrapper');
+        }
+
+        // 處理顯示配分開關狀態
+        enableScoringCheckbox.addEventListener('change', (e) => {
+            const isChecked = e.target.checked;
+            document.querySelectorAll('.q-score').forEach(input => {
+                input.disabled = !isChecked;
+                if (!isChecked) {
+                    input.value = ''; // 關閉時清空數值
+                    input.parentElement.style.opacity = '0.4';
+                } else {
+                    input.parentElement.style.opacity = '1';
+                }
+            });
+        });
+
+        // 動態增刪難度列的邏輯
+        function setupDynamicRows(type) {
+            const container = document.getElementById(`${type}-rows`);
+            const addBtn = document.getElementById(`add-${type}-row-btn`);
+            
+            function updateRemoveButtons() {
+                const rows = container.querySelectorAll(`.${type}-row`);
+                rows.forEach((row) => {
+                    const removeBtn = row.querySelector('.remove-row-btn');
+                    if (rows.length > 1) {
+                        removeBtn.classList.remove('hidden');
+                    } else {
+                        removeBtn.classList.add('hidden');
+                    }
+                });
+            }
+
+            // 使用事件委派處理刪除按鈕
+            container.addEventListener('click', (e) => {
+                const removeBtn = e.target.closest('.remove-row-btn');
+                if (removeBtn) {
+                    const row = removeBtn.closest(`.${type}-row`);
+                    if (container.querySelectorAll(`.${type}-row`).length > 1) {
+                        row.remove();
+                        updateRemoveButtons();
+                    }
+                }
+            });
+
+            // 新增一列
+            addBtn.addEventListener('click', () => {
+                const rows = container.querySelectorAll(`.${type}-row`);
+                const lastRow = rows[rows.length - 1];
+                const newRow = lastRow.cloneNode(true);
+                
+                // 預設將新複製列的題數改成 3，並清空配分
+                newRow.querySelector('.q-count').value = '3';
+                const scoreInput = newRow.querySelector('.q-score');
+                scoreInput.value = '';
+                
+                // 根據當前「顯示配分」開關決定新列的狀態
+                const isScoringEnabled = enableScoringCheckbox.checked;
+                scoreInput.disabled = !isScoringEnabled;
+                scoreInput.parentElement.style.opacity = isScoringEnabled ? '1' : '0.4';
+                
+                container.appendChild(newRow);
+                updateRemoveButtons();
+            });
+
+            updateRemoveButtons();
+        }
+
+        mainTextInput.addEventListener('input', updateButtonStates);
+        enableMCCheckbox.addEventListener('change', toggleControls);
+        enableFillInCheckbox.addEventListener('change', toggleControls);
+        enableWordProblemCheckbox.addEventListener('change', toggleControls);
+
+
+        // Gemini API 呼叫
+        async function callGeminiAPI(payload) {
+            const apiKey = ""; // Canvas Environment Variable
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    throw new Error(`API 請求失敗，狀態碼： ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error("Gemini API 呼叫錯誤:", error);
+                alert(`連線發生錯誤: ${error.message}，請檢查網路或稍後再試。`);
+                return null;
+            }
+        }
+        
+        async function callSimpleTextGeneration(prompt) {
+            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+            const result = await callGeminiAPI(payload);
+            if (result && result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts[0].text) {
+                return result.candidates[0].content.parts[0].text.trim();
+            }
+            return null;
+        }
+        
+        // 生成標題 (獨立函式)
+        async function generateTitle(text) {
+            titleGeneratingIcon.classList.remove('hidden');
+            
+            const prompt = `你是一位專業的測驗卷編輯。請根據以下內容：「${text.substring(0, 500)}...」，為這份試卷想一個簡潔、專業的標題。
+            規則：
+            1. 標題格式如：「八年級數學 - 畢氏定理 隨堂測驗」或「一元一次方程式 進階練習卷」。
+            2. 請只回傳標題文字，不要包含任何引號、Markdown 或多餘說明。`;
+            
+            try {
+                const title = await callSimpleTextGeneration(prompt);
+                if (title) {
+                    quizTitleInput.value = title.replace(/['"《》]/g, '');
+                    document.getElementById('print-title').textContent = quizTitleInput.value;
+                }
+            } catch (e) {
+                console.error("標題生成失敗", e);
+            } finally {
+                titleGeneratingIcon.classList.add('hidden');
+            }
+        }
+        
+       function setupImageInput(
+            selectBtnId, zoneId, fileInputId, previewId, placeholderId, 
+            removeBtnId, ocrBtnId, loaderId, targetTextareaId
+        ) {
+            const selectBtn = document.getElementById(selectBtnId);
+            const zone = document.getElementById(zoneId);
+            const fileInput = document.getElementById(fileInputId);
+            const preview = document.getElementById(previewId);
+            const placeholder = document.getElementById(placeholderId);
+            const removeBtn = document.getElementById(removeBtnId);
+            const ocrBtn = document.getElementById(ocrBtnId);
+            const loader = document.getElementById(loaderId);
+            const targetTextarea = document.getElementById(targetTextareaId);
+            const imageControls = document.getElementById('image-controls');
+            
+            let currentFile = null;
+
+            selectBtn.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+
+            zone.addEventListener('paste', (e) => {
+                const items = (e.clipboardData || window.clipboardData).items;
+                for (const item of items) {
+                    if (item.kind === 'file' && item.type.startsWith('image/')) {
+                        e.preventDefault();
+                        const file = item.getAsFile();
+                        handleFile(file);
+                        break;
+                    }
+                }
+            });
+
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('border-green-600', 'bg-green-50');
+            });
+            zone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                zone.classList.remove('border-green-600', 'bg-green-50');
+            });
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('border-green-600', 'bg-green-50');
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    handleFile(e.dataTransfer.files[0]);
+                }
+            });
+            
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                reset();
+            });
+
+            function handleFile(file) {
+                if (!file || !file.type.startsWith('image/')) {
+                    alert('請上傳有效的圖片檔 (JPG, PNG)！');
+                    return;
+                }
+                currentFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                    imageControls.classList.remove('hidden');
+                    imageControls.classList.add('flex');
+                    ocrBtn.disabled = false;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function reset() {
+                currentFile = null;
+                preview.src = '';
+                preview.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                imageControls.classList.add('hidden');
+                imageControls.classList.remove('flex');
+                ocrBtn.disabled = true;
+                fileInput.value = '';
+            }
+            
+            ocrBtn.addEventListener('click', async () => {
+                if (!currentFile) return;
+
+                loader.classList.remove('hidden');
+                ocrBtn.disabled = true;
+                
+                const originalBtnText = ocrBtn.querySelector('span').innerText;
+
+                const reader = new FileReader();
+                reader.onloadend = async () => {
+                    const base64Data = reader.result.split(',')[1];
+                    const payload = {
+                        contents: [{
+                            parts: [
+                                { text: "請辨識並回傳圖片中的所有文字，保持原始段落格式。如果是數學公式，請盡量轉換為 LaTeX 格式。" },
+                                { inlineData: { mimeType: currentFile.type, data: base64Data } }
+                            ]
+                        }]
+                    };
+
+                    const result = await callGeminiAPI(payload);
+                    if (result && result.candidates && result.candidates.length > 0) {
+                        const newText = result.candidates[0].content.parts[0].text;
+                        if (targetTextarea.value.trim() !== '') {
+                            targetTextarea.value += '\n\n' + newText;
+                        } else {
+                            targetTextarea.value = newText;
+                        }
+                    } else {
+                        alert('文字辨識失敗，請確認圖片清晰度後再試。');
+                    }
+                    
+                    updateButtonStates();
+                    loader.classList.add('hidden');
+                };
+                reader.readAsDataURL(currentFile);
+            });
+
+            return { reset }; 
+        }
+        
+        const mainTextReset = setupImageInput(
+            'main-text-select-btn', 'main-text-paste-zone', 'main-text-upload', 'main-text-preview', 'main-text-placeholder', 
+            'main-text-remove-btn', 'main-text-ocr-btn', 'main-text-loader', 'main-text'
+        );
+
+        function startTimer() {
+            let seconds = 0;
+            timerEl.textContent = `00:00`;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                seconds++;
+                const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const secs = (seconds % 60).toString().padStart(2, '0');
+                timerEl.textContent = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function toggleLoader(show) {
+            loaderContainer.classList.toggle('hidden', !show);
+            loaderContainer.classList.toggle('flex', show);
+            if (show) {
+                startTimer();
+                generateAllBtn.disabled = true;
+            } else {
+                clearInterval(timerInterval);
+                generateAllBtn.disabled = false;
+            }
+        }
+
+        function clearOutput() {
+            questionsList.innerHTML = '';
+            answersList.innerHTML = '';
+            outputArea.classList.add('hidden');
+            questionCounter = 0;
+            currentQuizData = []; // 清除儲存的資料
+        }
+
+        // 下載單張題目的邏輯
+        async function downloadSingleQuestionImage(questionNode, index) {
+            const originalIcon = questionNode.querySelector('.action-btns');
+            if (originalIcon) originalIcon.style.display = 'none'; // 隱藏按鈕避免截圖到
+
+            const renderArea = document.getElementById('pdf-render-area');
+            renderArea.style.opacity = '1';
+
+            try {
+                const clone = questionNode.cloneNode(true);
+                const cloneBtns = clone.querySelector('.action-btns');
+                if (cloneBtns) cloneBtns.remove();
+                
+                const titleDiv = clone.querySelector('.text-lg');
+                if (titleDiv && titleDiv.firstChild && titleDiv.firstChild.nodeType === Node.TEXT_NODE) {
+                     titleDiv.firstChild.textContent = titleDiv.firstChild.textContent.replace(/^\d+\.\s*/, '');
+                }
+
+                clone.className = ''; 
+                clone.style.margin = '0';
+                clone.style.padding = '30px';
+                clone.style.backgroundColor = '#ffffff';
+                clone.style.width = '800px'; 
+                clone.style.position = 'relative';
+                clone.style.fontFamily = '"LXGW WenKai Mono TC", "Chiron GoRound TC", sans-serif';
+                
+                const scaleFactor = currentFontSize / 16;
+                clone.style.fontSize = `${20 * scaleFactor}px`; 
+                clone.querySelectorAll('.text-lg').forEach(el => el.style.fontSize = `${24 * scaleFactor}px`);
+                clone.querySelectorAll('.text-base').forEach(el => el.style.fontSize = `${20 * scaleFactor}px`);
+                
+                renderArea.innerHTML = '';
+                renderArea.appendChild(clone);
+                
+                await new Promise(r => setTimeout(r, 50));
+
+                const canvas = await html2canvas(clone, {
+                    scale: 2, 
+                    backgroundColor: '#ffffff',
+                    useCORS: true,
+                    windowWidth: 1200 
+                });
+                
+                canvas.toBlob((blob) => {
+                    saveAs(blob, `第${index}題.png`);
+                }, 'image/png');
+
+            } catch (error) {
+                console.error("Single image generation failed", error);
+                alert("圖片下載失敗，請稍後再試。");
+            } finally {
+                renderArea.innerHTML = '';
+                renderArea.style.opacity = '0';
+                if (originalIcon) originalIcon.style.display = ''; 
+            }
+        }
+
+        // 輔助函數：生成題目 HTML
+        function getQuestionHTML(q, questionType, qNum) {
+            if (questionType === 'mc') {
+                const optionChars = ['(A)', '(B)', '(C)', '(D)'];
+                let optionsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 mt-3 ml-4">';
+                if (q.options && Array.isArray(q.options)) {
+                    q.options.forEach((option, i) => {
+                        let cleanOpt = option.replace(/^[\(（][A-D][\)）]\s*/i, '').replace(/^[A-D][\.\、]\s*/i, '').trim();
+                        if (!cleanOpt) cleanOpt = option; 
+                        optionsHtml += `<div class="flex"><span class="font-bold mr-2">${optionChars[i]}</span> <span>${cleanOpt}</span></div>`;
+                    });
+                }
+                optionsHtml += '</div>';
+                return `<div class="font-bold text-lg mb-1 pr-24 text-slate-800">${qNum}. ${q.question}</div>${optionsHtml}`;
+            } else {
+                let html = `<div class="font-bold text-lg mb-4 pr-24 text-slate-800">${qNum}. ${q.question}</div>`;
+                if (questionType === 'word-problem') {
+                    html += `<div class="h-24 border-b border-dashed border-slate-300 mb-2 print:h-32"></div>`;
+                }
+                return html;
+            }
+        }
+
+        // 輔助函數：生成解答 HTML
+        function getAnswerHTML(q, questionType, qNum, isScoringEnabled, isUniform) {
+            let answerScoreTag = (isScoringEnabled && !isUniform && q.score > 0) ? `<span class="text-sm font-normal text-emerald-600 ml-2">[${q.score}分]</span>` : '';
+            let currentAnswerOption = q.answer;
+
+            if (questionType === 'mc' && q.options && Array.isArray(q.options)) {
+                const optionChars = ['(A)', '(B)', '(C)', '(D)'];
+                const possibleLetters = ['A', 'B', 'C', 'D'];
+                let foundIndex = -1;
+
+                q.options.forEach((option, i) => {
+                    let cleanOpt = option.replace(/^[\(（][A-D][\)）]\s*/i, '').replace(/^[A-D][\.\、]\s*/i, '').trim();
+                    let cleanAns = q.answer.replace(/^[\(（][A-D][\)）]\s*/i, '').replace(/^[A-D][\.\、]\s*/i, '').trim();
+                    if (cleanOpt === cleanAns || option === q.answer) {
+                        foundIndex = i;
+                    }
+                });
+                
+                let cleanDirectAns = q.answer.replace(/[\(\)（）]/g, '').trim().toUpperCase();
+                if (foundIndex === -1 && possibleLetters.includes(cleanDirectAns)) {
+                    foundIndex = possibleLetters.indexOf(cleanDirectAns);
+                }
+
+                if (foundIndex !== -1) {
+                    currentAnswerOption = optionChars[foundIndex];
+                }
+            }
+
+            let html = `<div class="font-bold text-emerald-700">${qNum}. ${currentAnswerOption} ${answerScoreTag}</div>`;
+            if (q.explanation) {
+                html += `<div class="mt-2 text-sm text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-100"><span class="font-bold text-slate-500">[解析]</span> ${q.explanation}</div>`;
+            }
+            return html;
+        }
+
+        // 輔助函數：生成複雜配分的文字描述
+        function generateScoreSubtitle(questions, startQNum, isScoringEnabled) {
+            const totalScore = questions.reduce((sum, q) => sum + (q.score || 0), 0);
+            if (!isScoringEnabled || totalScore <= 0) return '';
+
+            const isUniform = questions.length > 0 && questions.every(q => q.score === questions[0].score);
+            if (isUniform) {
+                return `(每題 ${questions[0].score} 分，共 ${totalScore} 分)`;
+            }
+
+            let groups = [];
+            let currentStart = startQNum;
+            for (let i = 0; i < questions.length; i++) {
+                if (i === questions.length - 1 || questions[i].score !== questions[i+1].score) {
+                    let currentEnd = startQNum + i;
+                    if (currentStart === currentEnd) {
+                        groups.push(`第${currentStart}題 ${questions[i].score} 分`);
+                    } else {
+                        groups.push(`第${currentStart}-${currentEnd}題 每題 ${questions[i].score} 分`);
+                    }
+                    if (i < questions.length - 1) {
+                        currentStart = startQNum + i + 1;
+                    }
+                }
+            }
+            return `(${groups.join('，')}，共 ${totalScore} 分)`;
+        }
+
+        // 渲染題目
+        function renderQuestions(sectionData) {
+            const { questions, type: questionType, title: sectionTitle, isScoringEnabled, topic } = sectionData;
+
+            if (!questions || !Array.isArray(questions) || questions.length === 0) return;
+
+            outputArea.classList.remove('hidden');
+
+            const isUniform = questions.length > 0 && questions.every(q => q.score === questions[0].score);
+            const startGlobalQNum = questionCounter + 1;
+            const scoreText = generateScoreSubtitle(questions, startGlobalQNum, isScoringEnabled);
+            let scoreSubtitle = scoreText ? `<span class="text-sm font-normal text-slate-500 ml-3 pdf-score-text">${scoreText}</span>` : '';
+
+            // 題目區標題
+            const qSection = document.createElement('div');
+            qSection.className = 'mb-6';
+            qSection.innerHTML = `<h3 class="text-xl font-bold text-slate-800 bg-emerald-50/50 p-3 border-l-4 border-emerald-500 rounded-r-lg flex items-baseline flex-wrap gap-y-1">${sectionTitle} ${scoreSubtitle}</h3>`;
+            questionsList.appendChild(qSection);
+
+            // 解答區標題
+            const aSection = document.createElement('div');
+            aSection.className = 'mb-4 mt-6 first:mt-0';
+            aSection.innerHTML = `<h3 class="text-lg font-bold text-slate-800 border-b border-slate-200 pb-2 flex items-baseline flex-wrap">${sectionTitle} ${scoreSubtitle}</h3>`;
+            answersList.appendChild(aSection);
+
+            questions.forEach((q, qIndex) => {
+                questionCounter++;
+                const currentQNum = questionCounter; 
+                
+                const questionBlock = document.createElement('div');
+                questionBlock.className = 'question-item mb-6 pl-2 relative group hover:bg-slate-50 rounded-xl p-3 transition-colors'; 
+                
+                const actionBtns = document.createElement('div');
+                actionBtns.className = 'action-btns print:hidden absolute top-3 right-3 flex gap-2 z-10 opacity-0 group-hover:opacity-100 transition-all';
+                
+                const regenerateBtn = document.createElement('button');
+                regenerateBtn.className = 'p-2 text-slate-400 hover:text-amber-600 hover:bg-white bg-white/80 rounded-full shadow-sm border border-slate-200 transition-colors';
+                regenerateBtn.title = '單題重生';
+                regenerateBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>';
+                
+                const downloadBtn = document.createElement('button');
+                downloadBtn.className = 'p-2 text-slate-400 hover:text-emerald-600 hover:bg-white bg-white/80 rounded-full shadow-sm border border-slate-200 transition-colors';
+                downloadBtn.title = '下載此題圖片';
+                downloadBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>';
+                
+                actionBtns.appendChild(regenerateBtn);
+                actionBtns.appendChild(downloadBtn);
+
+                const contentWrapper = document.createElement('div');
+                contentWrapper.className = 'q-content-wrapper';
+                
+                const answerBlock = document.createElement('div');
+                answerBlock.className = 'answer-item mb-4 pl-2';
+                
+                contentWrapper.innerHTML = getQuestionHTML(q, questionType, currentQNum);
+                answerBlock.innerHTML = getAnswerHTML(q, questionType, currentQNum, isScoringEnabled, isUniform);
+
+                questionBlock.appendChild(actionBtns);
+                questionBlock.appendChild(contentWrapper);
+                
+                questionsList.appendChild(questionBlock);
+                answersList.appendChild(answerBlock);
+
+                downloadBtn.onclick = (e) => {
+                    e.stopPropagation(); 
+                    const originalText = downloadBtn.innerHTML;
+                    downloadBtn.innerHTML = '<div class="spinner w-4 h-4 border-emerald-600 border-t-transparent"></div>';
+                    downloadBtn.disabled = true;
+                    
+                    downloadSingleQuestionImage(questionBlock, currentQNum).then(() => {
+                        downloadBtn.innerHTML = originalText;
+                        downloadBtn.disabled = false;
+                    });
+                };
+
+                regenerateBtn.onclick = async (e) => {
+                    e.stopPropagation();
+                    const originalText = regenerateBtn.innerHTML;
+                    regenerateBtn.innerHTML = '<div class="spinner w-4 h-4 border-amber-600 border-t-transparent"></div>';
+                    regenerateBtn.disabled = true;
+
+                    try {
+                        const newQ = await regenerateQuestionAPI(topic, questionType, q.diff, q.question);
+                        if (newQ) {
+                            newQ.score = q.score;
+                            newQ.diff = q.diff;
+                            sectionData.questions[qIndex] = newQ; 
+                            q = newQ; 
+                            
+                            contentWrapper.innerHTML = getQuestionHTML(q, questionType, currentQNum);
+                            answerBlock.innerHTML = getAnswerHTML(q, questionType, currentQNum, isScoringEnabled, isUniform);
+                            
+                            if (window.renderMathInElement) {
+                                window.renderMathInElement(contentWrapper, {
+                                    delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}],
+                                    throwOnError: false
+                                });
+                                window.renderMathInElement(answerBlock, {
+                                    delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}],
+                                    throwOnError: false
+                                });
+                            }
+                        } else {
+                            alert("單題重生失敗，請稍後再試。");
+                        }
+                    } catch (error) {
+                        console.error("Regenerate Error:", error);
+                        alert("單題重生發生錯誤。");
+                    } finally {
+                        regenerateBtn.innerHTML = originalText;
+                        regenerateBtn.disabled = false;
+                    }
+                };
+            });
+            
+            if (window.renderMathInElement) {
+                window.renderMathInElement(questionsList, {
+                    delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}],
+                    throwOnError: false
+                });
+                window.renderMathInElement(answersList, {
+                    delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}],
+                    throwOnError: false
+                });
+            }
+        } 
+
+        // 泛用型 API 呼叫 (包含 JSON Schema)
+        async function callTextGenerationAPI(prompt, schema = null) {
+             const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                },
+            };
+            if (schema) {
+                 payload.generationConfig.responseSchema = schema;
+            }
+            const result = await callGeminiAPI(payload);
+            if(result && result.candidates && result.candidates.length > 0){
+                let rawText = result.candidates[0].content.parts[0].text;
+                try {
+                    const cleanedText = rawText.replace(/[\u0000-\u001F\u007F-\u009F]/g, (char) => {
+                        if (char === '\n' || char === '\t') return char;
+                        return '';
+                    });
+                    return JSON.parse(cleanedText);
+                } catch (e) {
+                    console.error("JSON Parse Error", e);
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        async function generateMCQuestions(text, count, difficulty) {
+            const prompt = `
+                請擔任專業數學老師，根據主題「${text}」設計 ${count} 題「選擇題」，難度為「${difficulty}」。
+                規則：
+                1. 所有的數學公式與符號（包含數字、角度、分數等）**必須嚴格使用** \`$\` 或 \`$$\` 符號包覆。例如：必須寫 \`$60^{\\circ}$\` 或 \`$x^2$\`，**絕對不可以**出現沒有 \`$\` 包覆的 LaTeX 語法（如 \`60^{\\circ}\` 或 \`x^2\`）。
+                2. 回傳 JSON 陣列。
+                3. explanation 欄位必須包含「解題步驟」或觀念說明。
+                4. options 陣列內的選項「請勿」包含 (A), (B), (C), (D) 等前綴標號，只需純文字。
+                5. answer 欄位請填入正確選項的「完整內容文字」，而不是填 A, B, C, D。
+            `;
+            const schema = {
+                type: "ARRAY",
+                items: {
+                    type: "OBJECT",
+                    properties: {
+                        "question": { "type": "STRING" },
+                        "options": { "type": "ARRAY", "items": { "type": "STRING" } },
+                        "answer": { "type": "STRING" },
+                        "explanation": { "type": "STRING" }
+                    },
+                    required: ["question", "options", "answer", "explanation"]
+                }
+            };
+            return await callTextGenerationAPI(prompt, schema);
+        }
+
+        async function generateFillInQuestions(text, count, difficulty) {
+            const prompt = `
+                請擔任專業數學老師，根據主題「${text}」設計 ${count} 題「填充題」，難度為「${difficulty}」。
+                規則：
+                1. 所有的數學公式與符號（包含數字、角度、分數等）**必須嚴格使用** \`$\` 或 \`$$\` 符號包覆。例如：必須寫 \`$60^{\\circ}$\` 或 \`$x^2$\`，**絕對不可以**出現沒有 \`$\` 包覆的 LaTeX 語法（如 \`60^{\\circ}\` 或 \`x^2\`）。
+                2. 題目空格用「____」表示。
+                3. explanation 欄位請提供簡短解法。
+            `;
+            const schema = {
+                type: "ARRAY",
+                items: {
+                    type: "OBJECT",
+                    properties: {
+                        "question": { "type": "STRING" },
+                        "answer": { "type": "STRING" },
+                        "explanation": { "type": "STRING" }
+                    },
+                    required: ["question", "answer"]
+                }
+            };
+            return await callTextGenerationAPI(prompt, schema);
+        }
+
+        async function generateWordProblemQuestions(text, count, difficulty) {
+            const prompt = `
+                請擔任專業數學老師，根據主題「${text}」設計 ${count} 題「應用題」，難度為「${difficulty}」。
+                規則：
+                1. 所有的數學公式與符號（包含數字、角度、分數等）**必須嚴格使用** \`$\` 或 \`$$\` 符號包覆。例如：必須寫 \`$60^{\\circ}$\` 或 \`$x^2$\`，**絕對不可以**出現沒有 \`$\` 包覆的 LaTeX 語法（如 \`60^{\\circ}\` 或 \`x^2\`）。
+                2. 題目需結合生活情境。
+                3. answer 欄位為最終答案。
+                4. explanation 欄位必須包含詳細的「逐步解題過程」。
+            `;
+            const schema = {
+                type: "ARRAY",
+                items: {
+                    type: "OBJECT",
+                    properties: {
+                        "question": { "type": "STRING" },
+                        "answer": { "type": "STRING" },
+                        "explanation": { "type": "STRING" }
+                    },
+                    required: ["question", "answer", "explanation"]
+                }
+            };
+            return await callTextGenerationAPI(prompt, schema);
+        }
+
+        async function regenerateQuestionAPI(topic, type, difficulty, oldQuestionText) {
+            let prompt = `請擔任專業數學老師，根據主題「${topic}」設計 1 題新的「${type === 'mc' ? '選擇題' : type === 'fill-in' ? '填充題' : '應用題'}」，難度為「${difficulty}」。\n這題是為了替換原題目：「${oldQuestionText}」，請確保新題目與原題目知識點或題型相似，但不完全相同。`;
+            
+            let schema;
+            if (type === 'mc') {
+                prompt += `\n規則：1. 所有數學公式與符號（含數字、角度）必須嚴格使用 \`$\` 或 \`$$\` 包覆。例如寫 \`$60^{\\circ}$\`，絕不可出現無 \`$\` 包覆的 LaTeX 語法（如 \`60^{\\circ}\`）。2. 回傳單一 JSON 物件。3. explanation 欄位必須包含解題步驟。4. options 選項「請勿」包含 (A)(B)(C)(D) 等前綴標號。5. answer 填寫完整正確選項文字，非單純代號。`;
+                schema = {
+                    type: "OBJECT",
+                    properties: {
+                        "question": { "type": "STRING" },
+                        "options": { "type": "ARRAY", "items": { "type": "STRING" } },
+                        "answer": { "type": "STRING" },
+                        "explanation": { "type": "STRING" }
+                    },
+                    required: ["question", "options", "answer", "explanation"]
+                };
+            } else if (type === 'fill-in') {
+                prompt += `\n規則：1. 所有數學公式與符號（含數字、角度）必須嚴格使用 \`$\` 或 \`$$\` 包覆。例如寫 \`$60^{\\circ}$\`，絕不可出現無 \`$\` 包覆的 LaTeX 語法。2. 題目空格用「____」表示。3. 回傳單一 JSON 物件。4. explanation 欄位請提供簡短解法。`;
+                schema = {
+                    type: "OBJECT",
+                    properties: {
+                        "question": { "type": "STRING" },
+                        "answer": { "type": "STRING" },
+                        "explanation": { "type": "STRING" }
+                    },
+                    required: ["question", "answer"]
+                };
+            } else {
+                prompt += `\n規則：1. 所有數學公式與符號（含數字、角度）必須嚴格使用 \`$\` 或 \`$$\` 包覆。例如寫 \`$60^{\\circ}$\`，絕不可出現無 \`$\` 包覆的 LaTeX 語法。2. 題目需結合生活情境。3. answer 欄位為最終答案。4. 回傳單一 JSON 物件。5. explanation 欄位必須包含詳細的「逐步解題過程」。`;
+                schema = {
+                    type: "OBJECT",
+                    properties: {
+                        "question": { "type": "STRING" },
+                        "answer": { "type": "STRING" },
+                        "explanation": { "type": "STRING" }
+                    },
+                    required: ["question", "answer", "explanation"]
+                };
+            }
+
+            return await callTextGenerationAPI(prompt, schema);
+        }
+
+        generateAllBtn.addEventListener('click', async () => {
+            const text = mainTextInput.value.trim();
+            if (!text) {
+                alert('請先輸入單元主題或知識點！');
+                return;
+            }
+            
+            const isScoringEnabled = enableScoringCheckbox.checked;
+            
+            let definedScoreTotal = 0;
+            let autoScoreQuestionsCount = 0;
+            const rowConfigs = [];
+            
+            const types = ['mc', 'fill-in', 'word-problem'];
+            types.forEach(type => {
+                const checkbox = document.getElementById(`enable-${type}`);
+                if (checkbox && checkbox.checked) {
+                    const rows = document.querySelectorAll(`.${type}-row`);
+                    rows.forEach(row => {
+                        const count = parseInt(row.querySelector('.q-count').value, 10) || 0;
+                        const scoreStr = row.querySelector('.q-score').value;
+                        const diff = row.querySelector('.q-diff').value;
+                        
+                        if (count > 0) {
+                            let score = 0;
+                            let isAuto = true;
+                            
+                            if (isScoringEnabled) {
+                                let parsedScore = parseInt(scoreStr, 10);
+                                isAuto = isNaN(parsedScore);
+                                
+                                if (!isAuto) {
+                                    score = parsedScore;
+                                    definedScoreTotal += score * count;
+                                } else {
+                                    autoScoreQuestionsCount += count;
+                                }
+                            }
+                            
+                            rowConfigs.push({ type, count, score, isAuto, diff });
+                        }
+                    });
+                }
+            });
+            
+            if (rowConfigs.length === 0) {
+                alert('請至少選擇一種題型並設定題數大於0。');
+                return;
+            }
+            
+            let baseAutoScore = 0;
+            let remainder = 0;
+            
+            if (isScoringEnabled) {
+                let remainingScore = Math.max(0, 100 - definedScoreTotal);
+                baseAutoScore = autoScoreQuestionsCount > 0 ? Math.floor(remainingScore / autoScoreQuestionsCount) : 0;
+                remainder = autoScoreQuestionsCount > 0 ? remainingScore % autoScoreQuestionsCount : 0;
+            }
+            
+            rowConfigs.forEach(config => {
+                config.questionScores = [];
+                for(let i=0; i<config.count; i++) {
+                    if (config.isAuto) {
+                        let s = baseAutoScore;
+                        if (remainder > 0) {
+                            s += 1;
+                            remainder -= 1;
+                        }
+                        config.questionScores.push(s);
+                    } else {
+                        config.questionScores.push(config.score);
+                    }
+                }
+            });
+ 
+            clearOutput();
+            toggleLoader(true);
+            actionsAfter.classList.add('hidden');
+            
+            if (!quizTitleInput.value.trim()) {
+                generateTitle(text); 
+            } else {
+                document.getElementById('print-title').textContent = quizTitleInput.value.trim();
+            }
+
+            async function generateForType(type, typeLabel, apiCallFunc, configsForType) {
+                let allQuestions = [];
+                let typePromises = [];
+                
+                configsForType.forEach(config => {
+                    typePromises.push(
+                        apiCallFunc(text, config.count, config.diff).then(questions => {
+                            if (questions && Array.isArray(questions)) {
+                                questions.forEach((q, idx) => {
+                                    q.score = config.questionScores[idx] || 0;
+                                    q.diff = config.diff; 
+                                });
+                                return questions;
+                            }
+                            return null;
+                        })
+                    );
+                });
+                
+                if (typePromises.length === 0) return null;
+                
+                const resArray = await Promise.allSettled(typePromises);
+                resArray.forEach(res => {
+                    if (res.status === 'fulfilled' && res.value) {
+                        allQuestions = allQuestions.concat(res.value);
+                    }
+                });
+                
+                if (allQuestions.length > 0) {
+                    return { type: type, title: typeLabel, questions: allQuestions };
+                }
+                return null;
+            }
+
+            const generationTasks = [];
+
+            const mcConfigs = rowConfigs.filter(c => c.type === 'mc');
+            if (mcConfigs.length > 0) {
+                generationTasks.push(generateForType('mc', '選擇題', generateMCQuestions, mcConfigs));
+            }
+            
+            const fillInConfigs = rowConfigs.filter(c => c.type === 'fill-in');
+            if (fillInConfigs.length > 0) {
+                generationTasks.push(generateForType('fill-in', '填充題', generateFillInQuestions, fillInConfigs));
+            }
+            
+            const wordProblemConfigs = rowConfigs.filter(c => c.type === 'word-problem');
+            if (wordProblemConfigs.length > 0) {
+                generationTasks.push(generateForType('word-problem', '應用題', generateWordProblemQuestions, wordProblemConfigs));
+            }
+
+            const results = await Promise.all(generationTasks);
+            let anySuccess = false;
+            let sectionIndex = 0;
+            const chNumerals = ['一', '二', '三'];
+
+            results.forEach((result) => {
+                if (result) {
+                    let displayTitle = `${chNumerals[sectionIndex]}、${result.title}`;
+                    
+                    let sectionData = {
+                        title: displayTitle,
+                        type: result.type,
+                        questions: result.questions,
+                        isScoringEnabled: isScoringEnabled,
+                        topic: text 
+                    };
+                    
+                    renderQuestions(sectionData);
+                    currentQuizData.push(sectionData);
+
+                    anySuccess = true;
+                    sectionIndex++;
+                }
+            });
+
+            toggleLoader(false);
+
+            if (anySuccess) {
+                actionsAfter.classList.remove('hidden');
+            } else {
+                alert('生成過程發生錯誤，請稍後再試。');
+            }
+        });
+
+        function resetDynamicRows(type, defaultCount) {
+            const container = document.getElementById(`${type}-rows`);
+            const rows = container.querySelectorAll(`.${type}-row`);
+            for (let i = 1; i < rows.length; i++) {
+                rows[i].remove();
+            }
+            const firstRow = rows[0];
+            firstRow.querySelector('.q-count').value = defaultCount;
+            firstRow.querySelector('.q-score').value = ''; 
+            firstRow.querySelector('.q-diff').selectedIndex = 3; 
+            firstRow.querySelector('.remove-row-btn').classList.add('hidden');
+        }
+
+        clearAllBtn.addEventListener('click', () => {
+            if(!confirm('確定要清空所有內容嗎？')) return;
+            mainTextInput.value = '';
+            
+            resetDynamicRows('mc', 5);
+            resetDynamicRows('fill-in', 5);
+            resetDynamicRows('word-problem', 3);
+
+            quizTitleInput.value = '';
+            
+            enableMCCheckbox.checked = true;
+            enableFillInCheckbox.checked = true;
+            enableWordProblemCheckbox.checked = true;
+
+            clearOutput();
+            actionsAfter.classList.add('hidden');
+            mainTextReset.reset();
+            updateButtonStates();
+            toggleControls();
+        });
+
+        function generateMarkdown() {
+            if (currentQuizData.length === 0) return '';
+            
+            let md = `# ${quizTitleInput.value || '數學試卷'}\n\n`;
+            let globalQIndex = 1;
+
+            md += `## 題目卷\n\n`;
+            
+            currentQuizData.forEach(section => {
+                const isScoringEnabled = section.isScoringEnabled;
+                const scoreText = generateScoreSubtitle(section.questions, globalQIndex, isScoringEnabled);
+                let scoreSubtitle = scoreText ? ` ${scoreText}` : '';
+
+                md += `### ${section.title}${scoreSubtitle}\n\n`;
+                section.questions.forEach((q) => {
+                    md += `${globalQIndex}. ${q.question}\n`;
+                    
+                    if (section.type === 'mc' && q.options) {
+                        const chars = ['(A)', '(B)', '(C)', '(D)'];
+                        q.options.forEach((opt, i) => {
+                            let cleanOpt = opt.replace(/^[\(（][A-D][\)）]\s*/i, '').replace(/^[A-D][\.\、]\s*/i, '').trim();
+                            if(!cleanOpt) cleanOpt = opt;
+                            md += `   ${chars[i]} ${cleanOpt}\n`; 
+                        });
+                    }
+                    md += `\n`; 
+                    globalQIndex++;
+                });
+                md += `\n`;
+            });
+
+            md += `---\n\n`; 
+
+            md += `## 解答與解析\n\n`;
+            globalQIndex = 1; 
+
+            currentQuizData.forEach(section => {
+                const isScoringEnabled = section.isScoringEnabled;
+                const isUniform = section.questions.length > 0 && section.questions.every(q => q.score === section.questions[0].score);
+                md += `### ${section.title}\n\n`;
+                section.questions.forEach((q) => {
+                    let answerText = q.answer;
+                    
+                    if (section.type === 'mc' && q.options) {
+                        const chars = ['(A)', '(B)', '(C)', '(D)'];
+                        const possibleLetters = ['A', 'B', 'C', 'D'];
+                        let foundIndex = -1;
+                        
+                        q.options.forEach((opt, i) => {
+                            let cleanOpt = opt.replace(/^[\(（][A-D][\)）]\s*/i, '').replace(/^[A-D][\.\、]\s*/i, '').trim();
+                            let cleanAns = q.answer.replace(/^[\(（][A-D][\)）]\s*/i, '').replace(/^[A-D][\.\、]\s*/i, '').trim();
+                            if (cleanOpt === cleanAns || opt === q.answer) {
+                                 foundIndex = i;
+                            }
+                        });
+
+                        let cleanDirectAns = q.answer.replace(/[\(\)（）]/g, '').trim().toUpperCase();
+                        if (foundIndex === -1 && possibleLetters.includes(cleanDirectAns)) {
+                            foundIndex = possibleLetters.indexOf(cleanDirectAns);
+                        }
+
+                        if (foundIndex !== -1) {
+                             answerText = chars[foundIndex];
+                        }
+                    }
+
+                    let ansScoreText = (isScoringEnabled && !isUniform && q.score > 0) ? ` [${q.score}分]` : '';
+                    md += `**${globalQIndex}. ${answerText}**${ansScoreText}\n`;
+                    
+                    if (q.explanation) {
+                        md += `> [解析] ${q.explanation}\n\n`;
+                    } else {
+                        md += `\n`;
+                    }
+                    globalQIndex++;
+                });
+            });
+
+            return md;
+        }
+
+        function copyTextToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            document.body.appendChild(textArea);
+            
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                return successful;
+            } catch (err) {
+                console.error('無法複製文字', err);
+                return false;
+            } finally {
+                document.body.removeChild(textArea);
+            }
+        }
+
+        copyContentBtn.addEventListener('click', () => {
+            if (questionsList.children.length === 0) return;
+            
+            const markdownText = generateMarkdown();
+
+            if (copyTextToClipboard(markdownText)) {
+                const originalText = copyContentBtn.innerHTML;
+                copyContentBtn.innerHTML = '已複製 Markdown！';
+                setTimeout(() => copyContentBtn.innerHTML = originalText, 2000);
+            } else {
+                alert('複製失敗，請手動選取。');
+            }
+        });
+
+
+
+        // 輔助函式：解析包含 LaTeX 的字串並轉為 Word 原生數學物件 (OMML XML)
+        function createDocxChildrenFromText(text, isBold = false) {
+            const { TextRun, ImportedXmlComponent } = docx;
+            const children = [];
+            
+            // 使用正規表達式匹配 $$...$$ (顯示型) 或 $...$ (行內型)
+            const regex = /(\$\$.*?\$\$|\$.*?\$)/gs;
+            let lastIndex = 0;
+            let match;
+
+            while ((match = regex.exec(text)) !== null) {
+                // 1. 公式前的純文字
+                if (match.index > lastIndex) {
+                    const plainText = text.substring(lastIndex, match.index);
+                    children.push(new TextRun({ 
+                        text: plainText, 
+                        bold: isBold,
+                        font: "Microsoft JhengHei"
+                    }));
+                }
+
+                const mathStr = match[0];
+                let latexContent = '';
+                if (mathStr.startsWith('$$')) {
+                    latexContent = mathStr.substring(2, mathStr.length - 2);
+                } else {
+                    latexContent = mathStr.substring(1, mathStr.length - 1);
+                }
+                latexContent = latexContent.trim();
+                
+                try {
+                    // Step 1: 將 LaTeX 轉成 MathML
+                    let mmlStr = '';
+                    if (window.MathJax && window.MathJax.tex2mml) {
+                        const res = window.MathJax.tex2mml(latexContent);
+                        if (typeof res === 'string') {
+                            mmlStr = res;
+                        } else if (res && res.outerHTML) {
+                            mmlStr = res.outerHTML;
+                        } else if (res && res.innerHTML) {
+                            mmlStr = res.innerHTML;
+                        }
+                    } else if (window.temml) {
+                        mmlStr = window.temml.renderToString(latexContent, { xml: true });
+                    }
+
+                    // 清理 MathJax 外層的容器標籤，確保只保留 <math>...</math>
+                    if (mmlStr && typeof mmlStr === 'string' && mmlStr.includes('<math')) {
+                        const mathMatch = mmlStr.match(/<math[\s\S]*?<\/math>/i);
+                        if (mathMatch) {
+                            mmlStr = mathMatch[0];
+                        }
+                    }
+
+                    // Step 2 & 3: 將 MathML 轉成 OMML 並展開 imported.root（消除 <undefined> 外殼）
+                    if (mmlStr && window.mml2omml) {
+                        const ommlXml = window.mml2omml(mmlStr);
+                        const imported = ImportedXmlComponent.fromXmlString(ommlXml);
+                        if (imported && imported.root && imported.root.length > 0) {
+                            children.push(...imported.root); // 展開元素進段落，不使用 wrapper 節點
+                        } else {
+                            children.push(new TextRun({ text: mathStr, bold: isBold, font: "Microsoft JhengHei" }));
+                        }
+                    } else {
+                        children.push(new TextRun({ text: mathStr, bold: isBold, font: "Microsoft JhengHei" }));
+                    }
+                } catch(e) {
+                    console.warn("Math parse error for:", latexContent, e);
+                    children.push(new TextRun({ text: mathStr, bold: isBold, font: "Microsoft JhengHei" }));
+                }
+
+                lastIndex = regex.lastIndex;
+            }
+
+            // 2. 公式後的剩餘純文字
+            if (lastIndex < text.length) {
+                const plainText = text.substring(lastIndex);
+                children.push(new TextRun({ 
+                    text: plainText, 
+                    bold: isBold,
+                    font: "Microsoft JhengHei"
+                }));
+            }
+
+            return children;
+        }
+
+        // 匯出 Word 檔邏輯 (已包含排版與字型優化)
+        downloadWordBtn.addEventListener('click', async () => {
+            if (currentQuizData.length === 0) return;
+
+            const originalBtnText = downloadWordBtn.innerHTML;
+            downloadWordBtn.innerHTML = `<div class="spinner w-5 h-5 border-white border-t-transparent inline-block mr-2"></div> 匯出中...`;
+            downloadWordBtn.disabled = true;
+
+            try {
+                const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } = docx;
+                const docChildren = [];
+
+                // 標題
+                const titleText = quizTitleInput.value.trim() || '數學試卷';
+                docChildren.push(
+                    new Paragraph({
+                        text: titleText,
+                        heading: HeadingLevel.HEADING_1,
+                        alignment: AlignmentType.CENTER,
+                        spacing: { after: 400 },
+                    })
+                );
+
+                // --- 題目卷段落 ---
+                docChildren.push(
+                    new Paragraph({
+                        text: "【題目卷】",
+                        heading: HeadingLevel.HEADING_2,
+                        spacing: { before: 400, after: 200 },
+                    })
+                );
+
+                let globalQIndex = 1;
+                currentQuizData.forEach(section => {
+                    const isScoringEnabled = section.isScoringEnabled;
+                    const scoreText = generateScoreSubtitle(section.questions, globalQIndex, isScoringEnabled);
+                    let scoreSubtitle = scoreText ? ` ${scoreText}` : '';
+
+                    docChildren.push(
+                        new Paragraph({
+                            children: [
+                                new TextRun({ text: section.title, bold: true, size: 28, font: "Microsoft JhengHei" }), 
+                                new TextRun({ text: scoreSubtitle, size: 24, color: "666666", font: "Microsoft JhengHei" })
+                            ],
+                            spacing: { before: 300, after: 150 },
+                        })
+                    );
+
+                    section.questions.forEach((q) => {
+                        // 題目本文
+                        docChildren.push(
+                            new Paragraph({
+                                children: [
+                                    new TextRun({ text: `${globalQIndex}. `, bold: true, font: "Microsoft JhengHei" }),
+                                    ...createDocxChildrenFromText(q.question)
+                                ],
+                                spacing: { after: 100 },
+                            })
+                        );
+
+                        // 選擇題選項 (優化為 2 欄併排橫排)
+                        if (section.type === 'mc' && q.options) {
+                            const chars = ['(A)', '(B)', '(C)', '(D)'];
+                            
+                            // 第一列：(A) 與 (B)
+                            const line1Children = [new TextRun({ text: "      ", font: "Microsoft JhengHei" })];
+                            const opt0Clean = q.options[0] ? q.options[0].replace(/^[\(（][A-D][\)）]\s*/i, '').replace(/^[A-D][\.\、]\s*/i, '').trim() : '';
+                            line1Children.push(new TextRun({ text: `${chars[0]} `, bold: true, font: "Microsoft JhengHei" }));
+                            line1Children.push(...createDocxChildrenFromText(opt0Clean));
+                            
+                            if (q.options[1]) {
+                                line1Children.push(new TextRun({ text: "\t\t", font: "Microsoft JhengHei" }));
+                                const opt1Clean = q.options[1].replace(/^[\(（][A-D][\)）]\s*/i, '').replace(/^[A-D][\.\、]\s*/i, '').trim();
+                                line1Children.push(new TextRun({ text: `${chars[1]} `, bold: true, font: "Microsoft JhengHei" }));
+                                line1Children.push(...createDocxChildrenFromText(opt1Clean));
+                            }
+                            docChildren.push(new Paragraph({ children: line1Children, spacing: { after: 50 } }));
+
+                            // 第二列：(C) 與 (D)
+                            if (q.options[2]) {
+                                const line2Children = [new TextRun({ text: "      ", font: "Microsoft JhengHei" })];
+                                const opt2Clean = q.options[2].replace(/^[\(（][A-D][\)）]\s*/i, '').replace(/^[A-D][\.\、]\s*/i, '').trim();
+                                line2Children.push(new TextRun({ text: `${chars[2]} `, bold: true, font: "Microsoft JhengHei" }));
+                                line2Children.push(...createDocxChildrenFromText(opt2Clean));
+
+                                if (q.options[3]) {
+                                    line2Children.push(new TextRun({ text: "\t\t", font: "Microsoft JhengHei" }));
+                                    const opt3Clean = q.options[3].replace(/^[\(（][A-D][\)）]\s*/i, '').replace(/^[A-D][\.\、]\s*/i, '').trim();
+                                    line2Children.push(new TextRun({ text: `${chars[3]} `, bold: true, font: "Microsoft JhengHei" }));
+                                    line2Children.push(...createDocxChildrenFromText(opt3Clean));
+                                }
+                                docChildren.push(new Paragraph({ children: line2Children, spacing: { after: 150 } }));
+                            }
+                        } else if (section.type === 'word-problem') {
+                             docChildren.push(new Paragraph({ text: "", spacing: { after: 800 } }));
+                        } else {
+                             docChildren.push(new Paragraph({ text: "", spacing: { after: 200 } }));
+                        }
+
+                        globalQIndex++;
+                    });
+                });
+
+                // 分頁符號
+                docChildren.push(
+                    new Paragraph({
+                        text: "---解答分隔線--- (列印時可將此頁分開)",
+                        pageBreakBefore: true,
+                        alignment: AlignmentType.CENTER,
+                        spacing: { before: 400, after: 400 },
+                        color: "999999"
+                    })
+                );
+
+                // --- 解答區段落 ---
+                docChildren.push(
+                    new Paragraph({
+                        text: "【解答與解析】",
+                        heading: HeadingLevel.HEADING_2,
+                        spacing: { before: 400, after: 200 },
+                    })
+                );
+
+                globalQIndex = 1; 
+                currentQuizData.forEach(section => {
+                    const isScoringEnabled = section.isScoringEnabled;
+                    const isUniform = section.questions.length > 0 && section.questions.every(q => q.score === section.questions[0].score);
+                    
+                    docChildren.push(
+                        new Paragraph({
+                            text: section.title,
+                            bold: true,
+                            size: 28,
+                            spacing: { before: 300, after: 150 },
+                        })
+                    );
+
+                    section.questions.forEach((q) => {
+                        let answerText = q.answer;
+                        
+                        if (section.type === 'mc' && q.options) {
+                            const chars = ['(A)', '(B)', '(C)', '(D)'];
+                            const possibleLetters = ['A', 'B', 'C', 'D'];
+                            let foundIndex = -1;
+                            
+                            q.options.forEach((opt, i) => {
+                                let cleanOpt = opt.replace(/^[\(（][A-D][\)）]\s*/i, '').replace(/^[A-D][\.\、]\s*/i, '').trim();
+                                let cleanAns = q.answer.replace(/^[\(（][A-D][\)）]\s*/i, '').replace(/^[A-D][\.\、]\s*/i, '').trim();
+                                if (cleanOpt === cleanAns || opt === q.answer) {
+                                     foundIndex = i;
+                                }
+                            });
+
+                            let cleanDirectAns = q.answer.replace(/[\(\)（）]/g, '').trim().toUpperCase();
+                            if (foundIndex === -1 && possibleLetters.includes(cleanDirectAns)) {
+                                foundIndex = possibleLetters.indexOf(cleanDirectAns);
+                            }
+
+                            if (foundIndex !== -1) {
+                                 answerText = chars[foundIndex];
+                            }
+                        }
+
+                        let ansScoreText = (isScoringEnabled && !isUniform && q.score > 0) ? ` [${q.score}分]` : '';
+                        
+                        // 答案本體
+                        docChildren.push(
+                            new Paragraph({
+                                children: [
+                                    new TextRun({ text: `${globalQIndex}. `, bold: true, font: "Microsoft JhengHei" }),
+                                    ...createDocxChildrenFromText(answerText, true), 
+                                    new TextRun({ text: ansScoreText, color: "059669", font: "Microsoft JhengHei" })
+                                ],
+                                spacing: { after: 100 },
+                            })
+                        );
+                        
+                        // 解析
+                        if (q.explanation) {
+                            docChildren.push(
+                                new Paragraph({
+                                    children: [
+                                        new TextRun({ text: "[解析] ", bold: true, color: "64748B", font: "Microsoft JhengHei" }),
+                                        ...createDocxChildrenFromText(q.explanation)
+                                    ],
+                                    indent: { left: 720 },
+                                    spacing: { after: 200 },
+                                })
+                            );
+                        } else {
+                            docChildren.push(new Paragraph({ text: "", spacing: { after: 100 } }));
+                        }
+                        globalQIndex++;
+                    });
+                });
+
+                // 建立文件
+                const doc = new Document({
+                    sections: [{
+                        properties: {},
+                        children: docChildren,
+                    }],
+                });
+
+                // 打包並下載
+                const blob = await Packer.toBlob(doc);
+                saveAs(blob, `${titleText}.docx`);
+
+            } catch (error) {
+                console.error("Word export failed", error);
+                alert("匯出 Word 失敗，請檢查主控台錯誤訊息。");
+            } finally {
+                downloadWordBtn.innerHTML = originalBtnText;
+                downloadWordBtn.disabled = false;
+            }
+        });
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            updateButtonStates();
+            
+            setupDynamicRows('mc');
+            setupDynamicRows('fill-in');
+            setupDynamicRows('word-problem');
+            enableScoringCheckbox.dispatchEvent(new Event('change'));
+            
+            toggleControls();
+            
+            quizTitleInput.addEventListener('input', (e) => {
+                document.getElementById('print-title').textContent = e.target.value.trim() || '數學單元評量';
+            });
+
+            setTimeout(setupKatex, 500);
+        });
+
+    </script>
+</body>
+</html>

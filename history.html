@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大清帝國的興衰：歷史互動探索之旅</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Serif TC', serif;
+            background-color: #121212;
+            color: #e5e7eb;
+            overflow-x: hidden;
+        }
+        .imperial-gradient {
+            background: linear-gradient(135deg, #1f120c 0%, #110804 100%);
+        }
+        .gold-glow {
+            text-shadow: 0 0 10px rgba(217, 119, 6, 0.5);
+        }
+        .border-imperial {
+            border-color: #d97706;
+        }
+        /* 隱藏滾動條但保持滾動功能 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* 卡片翻轉效果 */
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card-active .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="imperial-gradient min-h-screen">
+
+    <nav class="sticky top-0 z-50 bg-[#1a0f0a]/95 border-b border-amber-900/30 backdrop-blur-md px-6 py-4 transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-amber-500 text-3xl font-bold tracking-widest gold-glow">大清帝國</span>
+                <span class="text-xs text-amber-700 border border-amber-700/50 px-2 py-0.5 rounded uppercase tracking-wider hidden sm:inline-block">1616 - 1912</span>
+            </div>
+            <div class="flex flex-wrap justify-center gap-2 sm:gap-4 text-sm md:text-base">
+                <a href="#timeline-sec" class="px-3 py-1.5 rounded text-gray-300 hover:text-amber-400 hover:bg-amber-950/30 transition">歷史長河</a>
+                <a href="#emperor-sec" class="px-3 py-1.5 rounded text-gray-300 hover:text-amber-400 hover:bg-amber-950/30 transition">帝王群像</a>
+                <a href="#map-sec" class="px-3 py-1.5 rounded text-gray-300 hover:text-amber-400 hover:bg-amber-950/30 transition">疆域版圖</a>
+                <a href="#system-sec" class="px-3 py-1.5 rounded text-gray-300 hover:text-amber-400 hover:bg-amber-950/30 transition">典章制度</a>
+                <a href="#quiz-sec" class="px-3 py-1.5 rounded text-amber-500 border border-amber-500/30 bg-amber-950/20 hover:bg-amber-500 hover:text-black transition">歷史答題</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative overflow-hidden py-24 md:py-32 flex items-center justify-center border-b border-amber-950/50">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(217,119,6,0.15),transparent_70%)]"></div>
+        <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+            <div class="inline-block p-1 border border-amber-500/30 rounded-full mb-6">
+                <span class="block px-4 py-1 text-xs tracking-widest text-amber-400 bg-amber-950/40 rounded-full">二百九十六年的帝國史詩</span>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-wide text-amber-100 font-serif leading-tight">
+                盛衰浮沉．大清紀事
+            </h1>
+            <p class="text-lg md:text-xl text-stone-400 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+                從白山黑水的崛起，到逐鹿中原的輝煌；歷經康乾盛世的鼎盛，亦在近代巨變中黯然落幕。透過本互動平台，深度探索清朝的歷史軌跡、重要制度與帝王故事。
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#timeline-sec" class="px-8 py-3 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-lg shadow-lg shadow-amber-900/30 transition-all transform hover:-translate-y-0.5">
+                    開始探索歷史 <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+                <a href="#quiz-sec" class="px-8 py-3 bg-stone-900 border border-amber-800/30 hover:border-amber-600/60 text-stone-300 font-semibold rounded-lg transition-all">
+                    挑戰歷史知識
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 md:px-6 py-12 space-y-24">
+
+        <section id="timeline-sec" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-amber-400 mb-4 tracking-wider"><i class="fas fa-hourglass-half mr-3"></i>歷史長河</h2>
+                <p class="text-stone-400 max-w-xl mx-auto">點擊各個歷史關鍵節點，解鎖大清二百九十六年間的轉折與重大事件。</p>
+            </div>
+
+            <!-- 時間軸導航 -->
+            <div class="relative mb-8">
+                <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 bg-stone-800"></div>
+                <div id="timeline-progress" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-amber-500 transition-all duration-500" style="width: 0%"></div>
+                <div class="flex justify-between items-center relative z-10 overflow-x-auto no-scrollbar py-4 px-2 space-x-4 md:space-x-0">
+                    <!-- 節點 1 -->
+                    <button onclick="selectTimeline(0)" class="timeline-btn flex-none w-12 h-12 rounded-full border-2 border-amber-500 bg-stone-950 text-amber-500 font-bold flex items-center justify-center transition-all focus:outline-none hover:scale-110 active-btn" data-index="0">
+                        1616
+                    </button>
+                    <!-- 節點 2 -->
+                    <button onclick="selectTimeline(1)" class="timeline-btn flex-none w-12 h-12 rounded-full border-2 border-stone-600 bg-stone-950 text-stone-400 font-bold flex items-center justify-center transition-all focus:outline-none hover:scale-110" data-index="1">
+                        1636
+                    </button>
+                    <!-- 節點 3 -->
+                    <button onclick="selectTimeline(2)" class="timeline-btn flex-none w-12 h-12 rounded-full border-2 border-stone-600 bg-stone-950 text-stone-400 font-bold flex items-center justify-center transition-all focus:outline-none hover:scale-110" data-index="2">
+                        1644
+                    </button>
+                    <!-- 節點 4 -->
+                    <button onclick="selectTimeline(3)" class="timeline-btn flex-none w-12 h-12 rounded-full border-2 border-stone-600 bg-stone-950 text-stone-400 font-bold flex items-center justify-center transition-all focus:outline-none hover:scale-110" data-index="3">
+                        1661
+                    </button>
+                    <!-- 節點 5 -->
+                    <button onclick="selectTimeline(4)" class="timeline-btn flex-none w-12 h-12 rounded-full border-2 border-stone-600 bg-stone-950 text-stone-400 font-bold flex items-center justify-center transition-all focus:outline-none hover:scale-110" data-index="4">
+                        1796
+                    </button>
+                    <!-- 節點 6 -->
+                    <button onclick="selectTimeline(5)" class="timeline-btn flex-none w-12 h-12 rounded-full border-2 border-stone-600 bg-stone-950 text-stone-400 font-bold flex items-center justify-center transition-all focus:outline-none hover:scale-110" data-index="5">
+                        1840
+                    </button>
+                    <!-- 節點 7 -->
+                    <button onclick="selectTimeline(6)" class="timeline-btn flex-none w-12 h-12 rounded-full border-2 border-stone-600 bg-stone-950 text-stone-400 font-bold flex items-center justify-center transition-all focus:outline-none hover:scale-110" data-index="6">
+                        1898
+                    </button>
+                    <!-- 節點 8 -->
+                    <button onclick="selectTimeline(7)" class="timeline-btn flex-none w-12 h-12 rounded-full border-2 border-stone-600 bg-stone-950 text-stone-400 font-bold flex items-center justify-center transition-all focus:outline-none hover:scale-110" data-index="7">
+                        1912
+                    </button>
+                </div>
+            </div>
+
+            <!-- 時間軸卡片內容 -->
+            <div id="timeline-card" class="bg-stone-900/60 border border-amber-900/30 rounded-2xl p-6 md:p-8 backdrop-blur transition-all duration-500 transform translate-y-0 opacity-100">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-stone-800 pb-4">
+                    <div>
+                        <span id="timeline-year" class="text-3xl md:text-4xl font-extrabold text-amber-500 font-serif">1616 年</span>
+                        <h3 id="timeline-title" class="text-xl md:text-2xl font-bold text-stone-100 mt-1">后金建國：女真崛起於白山黑水</h3>
+                    </div>
+                    <span id="timeline-period" class="px-3 py-1 bg-amber-900/30 text-amber-400 border border-amber-700/30 rounded-full text-xs font-bold">
+                        前清時期
+                    </span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <h4 class="text-amber-600 font-bold text-lg"><i class="fas fa-landmark mr-2"></i>事件概要</h4>
+                        <p id="timeline-desc" class="text-stone-300 leading-relaxed">
+                            努爾哈赤在赫圖阿拉（今遼寧新賓）建國稱汗，國號「大金」（史稱後金），定年號為天命。這標誌著建州女真統一各部後，正式向明朝政權發出挑戰，為日後清軍入關奠定了堅實的軍事與政治基礎。
+                        </p>
+                        <div class="p-4 bg-stone-950/50 rounded-xl border-l-4 border-amber-600">
+                            <span class="text-xs text-amber-500 block font-bold mb-1"><i class="fas fa-lightbulb mr-1"></i>歷史冷知識</span>
+                            <p id="timeline-trivia" class="text-xs text-stone-400 italic">「後金」之所以叫金，是為了繼承宋代女真人建立的「金朝」，代表著女真民族的復興與榮耀。</p>
+                        </div>
+                    </div>
+                    <div class="bg-stone-950/40 rounded-xl p-5 border border-stone-800 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-stone-300 font-bold mb-4 flex items-center">
+                                <span class="w-2 h-2 bg-amber-500 rounded-full mr-2"></span>關鍵人物與影響
+                            </h4>
+                            <ul id="timeline-impact" class="space-y-3 text-sm text-stone-400">
+                                <li class="flex items-start"><i class="fas fa-user-crown text-amber-600 mt-1 mr-2 text-xs"></i><span><strong>核心人物：</strong> 努爾哈赤（清太祖）</span></li>
+                                <li class="flex items-start"><i class="fas fa-scroll text-amber-600 mt-1 mr-2 text-xs"></i><span><strong>重大制度：</strong> 創立「八旗制度」，實行軍政合一，極大提升女真戰鬥力。</span></li>
+                                <li class="flex items-start"><i class="fas fa-history text-amber-600 mt-1 mr-2 text-xs"></i><span><strong>歷史轉折：</strong> 隨後頒布「七大恨」誓師伐明，發動薩爾滸之戰，明廷在遼東控制力徹底崩潰。</span></li>
+                            </ul>
+                        </div>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button onclick="prevTimeline()" class="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-lg text-sm transition">上一個事件</button>
+                            <button onclick="nextTimeline()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black font-semibold rounded-lg text-sm transition">下一個事件</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="emperor-sec" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-amber-400 mb-4 tracking-wider"><i class="fas fa-crown mr-3"></i>大清十二帝</h2>
+                <p class="text-stone-400 max-w-xl mx-auto">清朝共有十二位皇帝（含入關前兩位），點擊切換各個代表性君王，一窺他們的功過與人生。</p>
+            </div>
+
+            <!-- 帝王頭像選擇滑動區 -->
+            <div class="flex overflow-x-auto no-scrollbar gap-4 pb-6 px-2 scroll-smooth" id="emperor-selector">
+                <!-- 皇帝按鈕由 JS 動態生成 -->
+            </div>
+
+            <!-- 皇帝詳情大卡片 -->
+            <div id="emperor-detail-card" class="bg-stone-900 border border-amber-900/40 rounded-2xl p-6 md:p-8 flex flex-col lg:flex-row gap-8 transition-all duration-300">
+                <!-- 左側：皇帝基本資訊 -->
+                <div class="lg:w-1/3 flex flex-col justify-between bg-stone-950/60 p-6 rounded-xl border border-stone-800">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-4">
+                            <span id="emp-dynast-no" class="text-xs bg-amber-600 text-black font-bold px-2.5 py-1 rounded">入關後第4代</span>
+                            <span id="emp-reign-years" class="text-sm text-stone-400 font-mono">1661 - 1722</span>
+                        </div>
+                        <h3 class="text-4xl font-bold text-amber-400 font-serif mb-2" id="emp-name">康熙帝</h3>
+                        <p class="text-stone-300 text-sm mb-4" id="emp-temple-name">廟號：聖祖 ． 姓名：愛新覺羅．玄燁</p>
+                        
+                        <div class="space-y-3 mt-6">
+                            <div class="flex justify-between border-b border-stone-800 pb-2 text-sm">
+                                <span class="text-stone-400">在位時長</span>
+                                <span class="font-bold text-stone-200" id="emp-duration">61 年 (中國歷史最長)</span>
+                            </div>
+                            <div class="flex justify-between border-b border-stone-800 pb-2 text-sm">
+                                <span class="text-stone-400">年號含意</span>
+                                <span class="font-bold text-amber-500" id="emp-motto">萬民康寧，天下熙盛</span>
+                            </div>
+                            <div class="flex justify-between pb-2 text-sm">
+                                <span class="text-stone-400">歷史評價</span>
+                                <span class="font-bold text-emerald-400" id="emp-rating">千古一帝 / 奠基盛世</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 快速導覽 -->
+                    <div class="mt-8 pt-6 border-t border-stone-800 flex justify-between items-center">
+                        <button onclick="changeEmperor(-1)" class="text-stone-400 hover:text-amber-400 transition"><i class="fas fa-chevron-left mr-1"></i> 前一位</button>
+                        <button onclick="changeEmperor(1)" class="text-stone-400 hover:text-amber-400 transition">下一位 <i class="fas fa-chevron-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- 右側：施政與軼事 -->
+                <div class="lg:w-2/3 space-y-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-2 text-amber-500 font-bold text-lg mb-3">
+                            <i class="fas fa-award"></i>
+                            <span>主要政績與歷史成就</span>
+                        </div>
+                        <p id="emp-achievements" class="text-stone-300 leading-relaxed mb-6 text-sm md:text-base">
+                            八歲登基，少擒鰲拜奪回大權。平定三藩之亂、統一台灣並設立台灣府、驅逐沙俄侵略簽訂《尼布楚條約》、三征噶爾丹鞏固西北邊疆。開創「康乾盛世」的輝煌基業，展現高超的文治武功。
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-stone-950/40 p-4 rounded-lg border border-stone-800/80">
+                                <span class="text-xs text-amber-500 font-bold block mb-1"><i class="fas fa-feather-alt mr-1"></i>文化與內政</span>
+                                <p id="emp-cultural" class="text-xs text-stone-400 leading-relaxed">
+                                    編纂《康熙字典》、重視理學，同時對西方科學（如天文、數學、醫學）展現高度興趣並親自學習。實行「滋生人丁，永不加賦」，為中國人口暴增奠定基礎。
+                                </p>
+                            </div>
+                            <div class="bg-amber-950/10 p-4 rounded-lg border border-amber-900/20">
+                                <span class="text-xs text-amber-500 font-bold block mb-1"><i class="fas fa-scroll-old mr-1"></i>宮廷軼事與爭議</span>
+                                <p id="emp-anecdote" class="text-xs text-stone-400 leading-relaxed">
+                                    晚年深陷「九子奪嫡」的皇位繼承危機，導致朝政一度怠惰。康熙每日勤政，批閱奏摺至深夜，甚至精通微積分與拉丁文，是位真正的「學霸皇帝」。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 帝王金句 -->
+                    <div class="bg-stone-950/80 p-4 rounded-xl border-l-4 border-amber-500 italic text-stone-300 text-sm mt-4">
+                        <i class="fas fa-quote-left text-amber-600 mr-2"></i>
+                        <span id="emp-quote">「鞠躬盡瘁，死而後已。朕身不隕，其政不懈。」</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="map-sec" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-amber-400 mb-4 tracking-wider"><i class="fas fa-map-marked-alt mr-3"></i>疆域變遷與重大戰役</h2>
+                <p class="text-stone-400 max-w-xl mx-auto">透過以下互動地圖展示，了解清代從東北割據，到版圖擴張至鼎盛，再到晚期喪權辱國割地賠款的過程。</p>
+            </div>
+
+            <div class="bg-stone-900 border border-amber-900/40 rounded-2xl p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- 左側：控制面板 -->
+                <div class="space-y-6 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-stone-100 mb-3"><i class="fas fa-sliders-h text-amber-500 mr-2"></i>選擇歷史時期</h3>
+                        <p class="text-stone-400 text-sm mb-6">拉動拉桿或點擊下方按鈕，觀察地圖疆域（示意圖）的演變，並閱讀該時期的國土特色與關鍵條約。</p>
+                        
+                        <!-- 疆域滑桿 -->
+                        <div class="px-2 mb-8">
+                            <input type="range" id="map-slider" min="0" max="3" value="0" class="w-full h-2 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500" oninput="updateMapPeriod(this.value)">
+                            <div class="flex justify-between text-xs text-stone-400 mt-2 font-mono">
+                                <span>後金 (1616)</span>
+                                <span>入關 (1644)</span>
+                                <span>極盛 (1790)</span>
+                                <span>晚清 (1900)</span>
+                            </div>
+                        </div>
+
+                        <!-- 快速選擇 -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="setMapPeriod(0)" id="map-btn-0" class="py-2 px-3 bg-amber-600 text-black font-bold text-xs rounded-lg transition">後金割據時期</button>
+                            <button onclick="setMapPeriod(1)" id="map-btn-1" class="py-2 px-3 bg-stone-800 text-stone-300 font-semibold text-xs rounded-lg hover:bg-stone-700 transition">大清入關定鼎</button>
+                            <button onclick="setMapPeriod(2)" id="map-btn-2" class="py-2 px-3 bg-stone-800 text-stone-300 font-semibold text-xs rounded-lg hover:bg-stone-700 transition">乾隆十全武功</button>
+                            <button onclick="setMapPeriod(3)" id="map-btn-3" class="py-2 px-3 bg-stone-800 text-stone-300 font-semibold text-xs rounded-lg hover:bg-stone-700 transition">割地賠款危局</button>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-stone-950/60 rounded-xl border border-stone-800 text-xs text-stone-400 space-y-2">
+                        <div class="flex justify-between"><span class="font-bold text-stone-300">當前控制面積：</span><span class="text-amber-500" id="map-area">約 50 萬平方公里</span></div>
+                        <div class="flex justify-between"><span class="font-bold text-stone-300">關鍵都城/行省：</span><span class="text-stone-300" id="map-capital">赫圖阿拉、盛京</span></div>
+                        <div class="flex justify-between"><span class="font-bold text-stone-300">主要對手/條約：</span><span class="text-red-400" id="map-rival">明朝、海西女真</span></div>
+                    </div>
+                </div>
+
+                <!-- 中間：疆域示意圖（使用精美的SVG配合動態形狀展示） -->
+                <div class="lg:col-span-2 bg-stone-950 rounded-xl p-4 flex flex-col justify-center items-center relative overflow-hidden min-h-[300px] border border-stone-800">
+                    <div class="absolute top-4 left-4 bg-stone-900/80 px-3 py-1 rounded border border-stone-800 text-xs text-stone-400 z-10">
+                        <i class="fas fa-compass mr-1"></i> 疆域大勢示意圖
+                    </div>
+                    
+                    <svg viewBox="0 0 500 350" class="w-full h-auto max-h-[350px]" id="map-svg">
+                        <!-- 底圖背景參考線 -->
+                        <rect x="0" y="0" width="500" height="350" fill="transparent"/>
+                        <!-- 海洋與鄰近大陸 -->
+                        <path d="M 400,220 Q 420,240 450,260 T 480,310" fill="none" stroke="#2a2520" stroke-width="2" stroke-dasharray="4"/>
+                        <text x="430" y="290" fill="#443c35" font-size="10" font-family="serif">太平洋</text>
+                        
+                        <!-- 現代中國國界參考線 (虛線) -->
+                        <path d="M 120,60 C 220,50 350,40 420,80 C 450,120 480,200 450,280 C 420,310 320,320 250,320 C 180,320 150,270 120,280 C 100,240 80,180 90,120 C 100,80 110,70 120,60 Z" fill="none" stroke="#332a22" stroke-width="1.5" stroke-dasharray="3,3"/>
+                        
+                        <!-- 動態疆域核心形狀 (透過JS調整路徑或尺寸與填色) -->
+                        <path id="qing-territory-path" d="M 330,60 C 370,50 400,70 420,95 C 400,120 370,110 330,100 Z" fill="rgba(217, 119, 6, 0.25)" stroke="#d97706" stroke-width="2.5" class="transition-all duration-700"/>
+                        
+                        <!-- 重要城市標記 -->
+                        <g id="city-markers" class="transition-all duration-500">
+                            <!-- 盛京/北京 -->
+                            <circle cx="360" cy="115" r="5" fill="#f59e0b" stroke="#000" stroke-width="1"/>
+                            <text x="368" y="119" fill="#e5e7eb" font-size="10" font-weight="bold" id="marker-capital-text">盛京</text>
+                        </g>
+                    </svg>
+
+                    <!-- 地圖說明浮窗 -->
+                    <div class="mt-4 p-4 bg-stone-900/90 rounded-lg border border-amber-900/20 w-full">
+                        <h4 class="text-sm font-bold text-amber-500 mb-1" id="map-period-title">後金割據時期（1616 - 1644 前夕）</h4>
+                        <p class="text-xs text-stone-300 leading-relaxed" id="map-period-desc">
+                            勢力範圍主要集中在薩爾滸以東、白山黑水之間。努爾哈赤與皇太極在此階段統一女真各部，佔領遼東大片土地，並建都盛京（今瀋陽），對山海關外的明朝形成合圍之勢。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="system-sec" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-amber-400 mb-4 tracking-wider"><i class="fas fa-book-open mr-3"></i>典章制度與社會</h2>
+                <p class="text-stone-400 max-w-xl mx-auto">清朝之所以能統治如此龐大的多民族帝國近三百年，其獨特的制度設計與文化控制至關重要。點擊卡片翻面閱讀詳情！</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 卡片 1: 八旗制度 -->
+                <div class="flip-card h-80 cursor-pointer" onclick="toggleFlipCard(this)">
+                    <div class="flip-card-inner rounded-xl shadow-lg border border-stone-800 bg-stone-900/60 p-6 flex flex-col justify-between transition-all duration-500 hover:border-amber-700/50">
+                        <!-- 正面 -->
+                        <div class="flip-card-front flex flex-col justify-between h-full">
+                            <div class="text-left">
+                                <span class="text-amber-500 text-xs font-bold uppercase tracking-widest block mb-2">軍政合一</span>
+                                <h3 class="text-xl font-bold text-stone-100 font-serif">八旗制度</h3>
+                                <p class="text-stone-400 text-xs mt-3 leading-relaxed">
+                                    「以旗統人，以旗統兵」。清朝最核心的軍事、社會結構體系。
+                                </p>
+                            </div>
+                            <div class="flex justify-between items-center text-stone-500 text-xs">
+                                <span><i class="fas fa-shield-alt mr-1"></i>軍事命脈</span>
+                                <span class="text-amber-600">點擊翻看詳情 <i class="fas fa-sync-alt ml-1"></i></span>
+                            </div>
+                        </div>
+                        <!-- 背面 -->
+                        <div class="flip-card-back flex flex-col justify-between h-full text-left">
+                            <div>
+                                <h3 class="text-lg font-bold text-amber-500 mb-2">八旗與旗人制度</h3>
+                                <p class="text-xs text-stone-300 leading-relaxed">
+                                    由努爾哈赤創立，分為黃、白、紅、藍四色（各分正、鑲）。入關後擴編為滿洲、蒙古、漢軍八旗。旗人享有祿米、免稅等特權，世代從軍，但也導致晚期八旗子弟不思進取、戰鬥力退化的惡果。
+                                </p>
+                            </div>
+                            <span class="text-stone-500 text-xs"><i class="fas fa-undo mr-1"></i> 點擊返回</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 卡片 2: 軍機處 -->
+                <div class="flip-card h-80 cursor-pointer" onclick="toggleFlipCard(this)">
+                    <div class="flip-card-inner rounded-xl shadow-lg border border-stone-800 bg-stone-900/60 p-6 flex flex-col justify-between transition-all duration-500 hover:border-amber-700/50">
+                        <!-- 正面 -->
+                        <div class="flip-card-front flex flex-col justify-between h-full">
+                            <div class="text-left">
+                                <span class="text-amber-500 text-xs font-bold uppercase tracking-widest block mb-2">高度集權</span>
+                                <h3 class="text-xl font-bold text-stone-100 font-serif">軍機處</h3>
+                                <p class="text-stone-400 text-xs mt-3 leading-relaxed">
+                                    清代中央決策的中樞。起初為應對西北用兵而設，後成為皇帝高度集權的象徵。
+                                </p>
+                            </div>
+                            <div class="flex justify-between items-center text-stone-500 text-xs">
+                                <span><i class="fas fa-feather mr-1"></i>中樞決策</span>
+                                <span class="text-amber-600">點擊翻看詳情 <i class="fas fa-sync-alt ml-1"></i></span>
+                            </div>
+                        </div>
+                        <!-- 背面 -->
+                        <div class="flip-card-back flex flex-col justify-between h-full text-left">
+                            <div>
+                                <h3 class="text-lg font-bold text-amber-500 mb-2">軍機處運作機制</h3>
+                                <p class="text-xs text-stone-300 leading-relaxed">
+                                    雍正年間設立。軍機大臣由皇帝親信大臣兼任，其特點是「跪受筆錄」，直接奉皇帝旨意起草詔書，繞過內閣。辦事講求極高效率與保密（「速、密、簡」），使君主專制達到中國歷史的巔峰。
+                                </p>
+                            </div>
+                            <span class="text-stone-500 text-xs"><i class="fas fa-undo mr-1"></i> 點擊返回</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 卡片 3: 文字獄與思想 -->
+                <div class="flip-card h-80 cursor-pointer" onclick="toggleFlipCard(this)">
+                    <div class="flip-card-inner rounded-xl shadow-lg border border-stone-800 bg-stone-900/60 p-6 flex flex-col justify-between transition-all duration-500 hover:border-amber-700/50">
+                        <!-- 正面 -->
+                        <div class="flip-card-front flex flex-col justify-between h-full">
+                            <div class="text-left">
+                                <span class="text-amber-500 text-xs font-bold uppercase tracking-widest block mb-2">思想控制</span>
+                                <h3 class="text-xl font-bold text-stone-100 font-serif">剃髮易服與文字獄</h3>
+                                <p class="text-stone-400 text-xs mt-3 leading-relaxed">
+                                    清廷實施的民族與思想壓制政策，以鞏固少數滿族統治的多數漢人政權。
+                                </p>
+                            </div>
+                            <div class="flex justify-between items-center text-stone-500 text-xs">
+                                <span><i class="fas fa-eye mr-1"></i>思想鉗制</span>
+                                <span class="text-amber-600">點擊翻看詳情 <i class="fas fa-sync-alt ml-1"></i></span>
+                            </div>
+                        </div>
+                        <!-- 背面 -->
+                        <div class="flip-card-back flex flex-col justify-between h-full text-left">
+                            <div>
+                                <h3 class="text-lg font-bold text-amber-500 mb-2">高壓思想統治</h3>
+                                <p class="text-xs text-stone-300 leading-relaxed">
+                                    入關初期實行「留頭不留髮，留髮不留頭」，強迫漢人剃髮易服。康雍乾三代更頻繁爆發「文字獄」，文人常因隻言片語中涉及滿明情懷而被處死抄家，嚴重打擊知識分子，催生了只鑽研古籍的「考據學」。
+                                </p>
+                            </div>
+                            <span class="text-stone-500 text-xs"><i class="fas fa-undo mr-1"></i> 點擊返回</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 卡片 4: 閉關鎖國 -->
+                <div class="flip-card h-80 cursor-pointer" onclick="toggleFlipCard(this)">
+                    <div class="flip-card-inner rounded-xl shadow-lg border border-stone-800 bg-stone-900/60 p-6 flex flex-col justify-between transition-all duration-500 hover:border-amber-700/50">
+                        <!-- 正面 -->
+                        <div class="flip-card-front flex flex-col justify-between h-full">
+                            <div class="text-left">
+                                <span class="text-amber-500 text-xs font-bold uppercase tracking-widest block mb-2">外交防備</span>
+                                <h3 class="text-xl font-bold text-stone-100 font-serif">海禁與廣州一口通商</h3>
+                                <p class="text-stone-400 text-xs mt-3 leading-relaxed">
+                                    對西方殖民擴張的戒心，導致清朝實行防禦性外交政策，與世界潮流逐漸脫節。
+                                </p>
+                            </div>
+                            <div class="flex justify-between items-center text-stone-500 text-xs">
+                                <span><i class="fas fa-anchor mr-1"></i>對外關係</span>
+                                <span class="text-amber-600">點擊翻看詳情 <i class="fas fa-sync-alt ml-1"></i></span>
+                            </div>
+                        </div>
+                        <!-- 背面 -->
+                        <div class="flip-card-back flex flex-col justify-between h-full text-left">
+                            <div>
+                                <h3 class="text-lg font-bold text-amber-500 mb-2">廣州一口通商政策</h3>
+                                <p class="text-xs text-stone-300 leading-relaxed">
+                                    為防止西方勢力滲透及東南沿海反清，乾隆年間下令僅限「廣州」一口對外通商，並由官方壟斷的「十三行」代為打交道。此舉雖一定程度保護國家安全，卻使中國失去接觸西方工業革命與科學進步的黃金期。
+                                </p>
+                            </div>
+                            <span class="text-stone-500 text-xs"><i class="fas fa-undo mr-1"></i> 點擊返回</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="quiz-sec" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-amber-400 mb-4 tracking-wider"><i class="fas fa-graduation-cap mr-3"></i>歷史知識大考驗</h2>
+                <p class="text-stone-400 max-w-xl mx-auto">完成了以上的歷史探索，現在來檢驗你的大清歷史造詣吧！</p>
+            </div>
+
+            <div class="bg-stone-900 border border-amber-900/40 rounded-2xl p-6 md:p-8 max-w-3xl mx-auto">
+                <div id="quiz-intro" class="text-center py-8">
+                    <div class="w-20 h-20 bg-amber-950/40 border border-amber-500/40 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl text-amber-500">
+                        <i class="fas fa-feather-alt"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-stone-100 mb-2">朝代科舉考場</h3>
+                    <p class="text-stone-400 text-sm mb-6">本考場共有 5 題精選單選題，考驗你對清代帝王、制度與近代事件的理解。準備好進京趕考了嗎？</p>
+                    <button onclick="startQuiz()" class="px-8 py-3 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-lg transition transform hover:-translate-y-0.5">
+                        開始挑戰 <i class="fas fa-scroll ml-2"></i>
+                    </button>
+                </div>
+
+                <div id="quiz-play" class="hidden space-y-6">
+                    <!-- 進度與計分 -->
+                    <div class="flex justify-between items-center text-xs text-stone-400 border-b border-stone-800 pb-3">
+                        <span>題目：<strong class="text-amber-500" id="quiz-current-num">1</strong> / 5</span>
+                        <span>當前得分：<strong class="text-emerald-400" id="quiz-score">0</strong> 分</span>
+                    </div>
+
+                    <!-- 問題區 -->
+                    <div>
+                        <span id="quiz-category" class="text-xs bg-amber-950/60 text-amber-400 border border-amber-800/30 px-2 py-0.5 rounded">政治制度</span>
+                        <h3 id="quiz-question" class="text-lg md:text-xl font-semibold text-stone-100 mt-3 leading-relaxed">
+                            大清中央決策核心「軍機處」，最初是在哪位皇帝統治時期，因西北軍務緊急而設立的？
+                        </h3>
+                    </div>
+
+                    <!-- 選項區 -->
+                    <div class="grid grid-cols-1 gap-3" id="quiz-options">
+                        <!-- 選項由 JS 生成 -->
+                    </div>
+
+                    <!-- 回饋與解析區 -->
+                    <div id="quiz-feedback" class="hidden p-4 rounded-lg text-sm transition duration-300">
+                        <div class="flex items-center space-x-2 font-bold mb-1">
+                            <span id="feedback-icon"></span>
+                            <span id="feedback-title">回答正確！</span>
+                        </div>
+                        <p id="feedback-text" class="text-xs text-stone-300 leading-relaxed">
+                            解析內容
+                        </p>
+                    </div>
+
+                    <!-- 控制按鈕 -->
+                    <div class="flex justify-end pt-4">
+                        <button id="quiz-next-btn" onclick="nextQuestion()" class="hidden px-6 py-2.5 bg-amber-600 hover:bg-amber-500 text-black font-semibold rounded-lg text-sm transition">
+                            下一題 <i class="fas fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 測驗結算畫面 -->
+                <div id="quiz-result" class="hidden text-center py-8 space-y-6">
+                    <div class="w-24 h-24 rounded-full mx-auto flex items-center justify-center border-4" id="result-badge-border">
+                        <span class="text-4xl" id="result-icon">🎓</span>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-stone-100" id="result-rank">恭喜考取「翰林院編修」！</h3>
+                        <p class="text-stone-400 text-sm mt-2">你答對了 <span class="text-amber-500 font-bold" id="result-correct-count">4</span> 題，獲得 <span class="text-emerald-400 font-bold" id="result-score-final">80</span> 分！</p>
+                    </div>
+                    <p class="text-stone-300 text-xs max-w-md mx-auto leading-relaxed italic" id="result-evaluation">
+                        「對清代史實有相當深刻的理解，文治武功了得！若是身在大清，必定是皇帝倚重的中流砥柱。」
+                    </p>
+                    <div class="flex justify-center gap-4 pt-4">
+                        <button onclick="startQuiz()" class="px-6 py-2.5 bg-amber-600 hover:bg-amber-500 text-black font-semibold rounded-lg text-sm transition">
+                            重新挑戰
+                        </button>
+                        <a href="#timeline-sec" class="px-6 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-lg text-sm transition">
+                            複習歷史
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-950 border-t border-amber-950/40 py-12 px-6 mt-24 text-center text-sm text-stone-500">
+        <div class="max-w-7xl mx-auto space-y-4">
+            <div class="flex justify-center space-x-6 text-xl text-stone-400 mb-2">
+                <a href="#" class="hover:text-amber-500 transition"><i class="fab fa-wikipedia-w"></i></a>
+                <a href="#" class="hover:text-amber-500 transition"><i class="fas fa-book-open"></i></a>
+                <a href="#" class="hover:text-amber-500 transition"><i class="fas fa-university"></i></a>
+            </div>
+            <p>© 2026 大清帝國歷史互動探索平台．僅供學習與文化學術研究參考</p>
+            <p class="text-xs text-stone-600">本網頁採用現代 RWD 設計，支援所有行動裝置與主流瀏覽器</p>
+        </div>
+    </footer>
+
+    <script>
+        /* === 1. 歷史長河 (時間軸) 資料與邏輯 === */
+        const timelineData = [
+            {
+                year: "1616 年",
+                title: "后金建國：女真崛起於白山黑水",
+                period: "前清時期",
+                desc: "努爾哈赤在赫圖阿拉（今遼寧新賓）建國稱汗，國號「大金」（史稱後金），定年號為天命。這標誌著建州女真統一各部後，正式向明朝政權發出挑戰，為日後清軍入關奠定了堅實的軍事與政治基礎。",
+                trivia: "「後金」之所以叫金，是為了繼承宋代女真人建立的「金朝」，代表著女真民族的復興與榮耀。",
+                impact: [
+                    "<strong>核心人物：</strong> 努爾哈赤（清太祖）",
+                    "<strong>重大制度：</strong> 創立「八旗制度」，實行軍政合一，極大提升女真戰鬥力。",
+                    "<strong>歷史轉折：</strong> 隨後頒布「七大恨」誓師伐明，發動薩爾滸之戰，明廷在遼東控制力徹底崩潰。"
+                ],
+                progress: 0
+            },
+            {
+                year: "1636 年",
+                title: "改元大清：皇太極建號開國",
+                period: "前清時期",
+                desc: "皇太極在盛京（今瀋陽）稱帝，改國號為「大清」，改族名「女真」為「滿洲」。大清帝國正式成形，擺脫了單純地方割據少數民族政權的形象，展現了吞併中原、爭奪天下正統的宏大政治抱負。",
+                trivia: "改國號「清」在五行學說上「清」屬水，而明朝的「明」屬火，水能克火，蘊含克制明朝的玄學意圖。",
+                impact: [
+                    "<strong>核心人物：</strong> 皇太極（清太宗）",
+                    "<strong>制度建設：</strong> 仿明制設立六部，開科取士，吸納大批漢族知識分子與將領。",
+                    "<strong>戰略外交：</strong> 兩征朝鮮（使其臣服）、征服漠南蒙古，解除了入關的後顧之憂。"
+                ],
+                progress: 14.3
+            },
+            {
+                year: "1644 年",
+                title: "清兵入關：山海關之戰與定鼎北京",
+                period: "定鼎中原",
+                desc: "李自成攻陷北京，明思宗崇禎帝自縊。駐守山海關的明將吳三桂投降清軍。攝政王多爾袞率清朝大軍協同吳三桂擊敗李自成，隨後遷都北京，順治帝在天壇祭天，宣告清朝正式成為中原之主。",
+                trivia: "崇禎帝自縊時曾寫下「朕涼德藐躬，上干天咎」，而清朝對其以帝王禮儀安葬，以宣示自己「替明復仇、正統繼承」的合理性。",
+                impact: [
+                    "<strong>核心人物：</strong> 多爾袞（攝政王）、順治帝",
+                    "<strong>主要衝突：</strong> 爆發揚州十日、嘉定三屠等血腥鎮壓，並強力推行「剃髮易服」與「圈地令」。",
+                    "<strong>政權穩固：</strong> 清朝開始由東北地方政權轉變為統治全中國的全國性龐大帝國。"
+                ],
+                progress: 28.5
+            },
+            {
+                year: "1661 年",
+                title: "康熙登基：開啟康乾盛世之基",
+                period: "康乾盛世",
+                desc: "年僅八歲的康熙帝（玄燁）即位。他在成年後展現驚人智謀，智擒權臣鰲拜、平定吳三桂等三藩之亂、統一台灣、驅逐沙俄並簽署《尼布楚條約》，奠定了清朝遼闊版圖的基礎，開啟了長達百餘年的「康乾盛世」。",
+                trivia: "康熙帝天花痊癒後留下了麻子，但正是因為他出過天花具有免疫力，才被順治帝選為繼承人。",
+                impact: [
+                    "<strong>核心人物：</strong> 康熙帝",
+                    "<strong>重大舉措：</strong> 實行「滋生人丁，永不加賦」，極大刺激了人口增長與經濟復甦。",
+                    "<strong>文化建設：</strong> 主導編纂《康熙字典》、《明史》等巨作，籠絡漢族士大夫人心。"
+                ],
+                progress: 42.8
+            },
+            {
+                year: "1796 年",
+                title: "盛極而衰：白蓮教起義與貪腐溫床",
+                period: "盛極而衰",
+                desc: "乾隆帝禪位給嘉慶帝，自稱太上皇但仍掌控大權。此時「和珅跌倒，嘉慶吃飽」的貪腐大案爆发，朝政極度腐敗。同年爆發席捲川楚陝的白蓮教大起義，清廷耗費數年、巨額軍費才平定，帝國元氣大傷，從此走下坡路。",
+                trivia: "和珅被抄家時，其財產估值相當於清政府十五年財政收入的總和，堪稱「史上第一巨貪」。",
+                impact: [
+                    "<strong>核心人物：</strong> 乾隆帝、嘉慶帝、和珅",
+                    "<strong>軍事實力退化：</strong> 八旗與綠營兵在鎮壓起義中表現疲軟，地方團練鄉勇開始抬頭。",
+                    "<strong>社會危機：</strong> 人口激增導致人均耕地劇減，社會矛盾白熱化，步入動盪期。"
+                ],
+                progress: 57.1
+            },
+            {
+                year: "1840 年",
+                title: "鴉片戰爭：天朝上國的幻滅與百年屈辱",
+                period: "晚清危機",
+                desc: "英國因禁煙運動發動鴉片戰爭。清朝引以為傲的木船大砲在西方工業國家的蒸汽鐵甲艦前不堪一擊。清廷戰敗，被迫簽訂中國歷史上第一個不平等條約——《南京條約》，割讓香港島、開放五口通商，中國滑向半殖民地半封建社會。",
+                trivia: "在戰前，清朝朝野普遍認為英國人因為雙腿綁著綁腿，倒地後便無法站立，且不吃茶葉和大黃就會因便秘而死。",
+                impact: [
+                    "<strong>核心人物：</strong> 道光帝、林則徐",
+                    "<strong>條約簽署：</strong> 《南京條約》割地、賠款、協定關稅，破壞了中國的主權完整。",
+                    "<strong>思潮轉變：</strong> 「睜眼看世界」的第一代知識分子（如魏源《海國圖志》）提出「師夷長技以制夷」。"
+                ],
+                progress: 71.4
+            },
+            {
+                year: "1898 年",
+                title: "百日維新：變法改良的夭折",
+                period: "晚清危機",
+                desc: "面對甲午戰爭慘敗的割地危局，光緒帝起用康有為、梁啟超，發動「戊戌變法」（百日維新），意圖實行君主立憲。然而觸動了以慈禧太后為首的守舊派利益，引發戊戌政變，光緒帝被幽禁，變法宣告失敗。",
+                trivia: "戊戌六君子之一的譚嗣同拒絕逃亡，慷慨就義前留下「我自橫刀向天笑，去留肝膽兩昆侖」的千古名句。",
+                impact: [
+                    "<strong>核心人物：</strong> 光緒帝、慈禧太后、康有為、譚嗣同",
+                    "<strong>改良路斷：</strong> 體制內改良嘗試遭到重創，越來越多知識分子轉向支持孫中山領導的暴力革命。",
+                    "<strong>列強瓜分：</strong> 變法失敗後，清廷更加虛弱，列強在華劃分勢力範圍，民族危機達到頂點。"
+                ],
+                progress: 85.7
+            },
+            {
+                year: "1912 年",
+                title: "宣統退位：帝制終結與大清落幕",
+                period: "帝國終結",
+                desc: "1911年武昌起義爆發，辛亥革命席捲全國，多省宣告獨立。1912年2月12日，袁世凱威逼利誘下，隆裕太后代替宣統帝溥儀頒布《退位詔書》，正式宣告大清帝國滅亡，也結束了中國歷史長達兩千多年的君主專制制度。",
+                trivia: "宣統帝溥儀退位時年僅六歲，詔書起草者為清末狀元、實業家張謇。",
+                impact: [
+                    "<strong>核心人物：</strong> 溥儀、隆裕太后、袁世凱、孫中山",
+                    "<strong>歷史意義：</strong> 共和政體建立，民主共和觀念漸入人心。",
+                    "<strong>善後處置：</strong> 根據《清室優待條件》，溥儀仍暫居紫禁城，保留皇帝尊號，直至1924年被馮玉祥驅逐。"
+                ],
+                progress: 100
+            }
+        ];
+
+        let currentTimelineIndex = 0;
+
+        function selectTimeline(index) {
+            currentTimelineIndex = index;
+            updateTimelineUI();
+        }
+
+        function updateTimelineUI() {
+            const data = timelineData[currentTimelineIndex];
+            
+            // 更新進度條
+            document.getElementById('timeline-progress').style.width = data.progress + "%";
+            
+            // 更新按鈕樣式
+            const buttons = document.querySelectorAll('.timeline-btn');
+            buttons.forEach(btn => {
+                const btnIdx = parseInt(btn.getAttribute('data-index'));
+                if (btnIdx === currentTimelineIndex) {
+                    btn.classList.add('border-amber-500', 'text-amber-500', 'scale-110');
+                    btn.classList.remove('border-stone-600', 'text-stone-400');
+                } else if (btnIdx < currentTimelineIndex) {
+                    btn.classList.add('border-amber-700', 'text-amber-700');
+                    btn.classList.remove('border-stone-600', 'text-stone-400', 'border-amber-500', 'text-amber-500', 'scale-110');
+                } else {
+                    btn.classList.add('border-stone-600', 'text-stone-400');
+                    btn.classList.remove('border-amber-500', 'text-amber-500', 'border-amber-700', 'text-amber-700', 'scale-110');
+                }
+            });
+
+            // 卡片動畫
+            const card = document.getElementById('timeline-card');
+            card.classList.add('opacity-0', 'translate-y-4');
+            
+            setTimeout(() => {
+                document.getElementById('timeline-year').innerText = data.year;
+                document.getElementById('timeline-title').innerText = data.title;
+                document.getElementById('timeline-period').innerText = data.period;
+                document.getElementById('timeline-desc').innerText = data.desc;
+                document.getElementById('timeline-trivia').innerText = data.trivia;
+                
+                // 渲染影響清單
+                const impactList = document.getElementById('timeline-impact');
+                impactList.innerHTML = '';
+                const icons = ['fa-user-crown', 'fa-scroll', 'fa-history'];
+                data.impact.forEach((imp, i) => {
+                    const li = document.createElement('li');
+                    li.className = "flex items-start";
+                    li.innerHTML = `<i class="fas ${icons[i]} text-amber-600 mt-1 mr-2 text-xs"></i><span>${imp}</span>`;
+                    impactList.appendChild(li);
+                });
+
+                card.classList.remove('opacity-0', 'translate-y-4');
+            }, 250);
+        }
+
+        function nextTimeline() {
+            if (currentTimelineIndex < timelineData.length - 1) {
+                currentTimelineIndex++;
+                updateTimelineUI();
+            } else {
+                currentTimelineIndex = 0; // 循環
+                updateTimelineUI();
+            }
+        }
+
+        function prevTimeline() {
+            if (currentTimelineIndex > 0) {
+                currentTimelineIndex--;
+                updateTimelineUI();
+            } else {
+                currentTimelineIndex = timelineData.length - 1; // 循環
+                updateTimelineUI();
+            }
+        }
+
+
+        /* === 2. 帝王群像 資料與邏輯 === */
+        const emperorsData = [
+            {
+                name: "努爾哈赤",
+                temple: "廟號：太祖 ． 姓名：愛新覺羅．努爾哈赤",
+                reign: "1616 - 1626",
+                duration: "在位 10 年 (汗位)",
+                motto: "建州統一，締造八旗",
+                rating: "大清開國奠基者 / 軍事天才",
+                no: "起兵創業代",
+                achievements: "統一建州女真各部，創立八旗制度，實行軍政合一。薩爾滸之戰以少勝多擊敗明軍主力。頒布「七大恨」誓師伐明，奠定了清朝崛起的基石。",
+                cultural: "命人創立無圈點的老滿文，結束了女真族無文字的歷史。建元天命，創立後金汗國，使女真族擺脫部落狀態走向國家形態。",
+                anecdote: "在寧遠之戰中，努爾哈赤遭遇明將袁崇煥架設的紅夷大炮轟擊，受傷退兵，不久後含恨病逝，終生未能跨越山海關。",
+                quote: "「憑爾幾路來，我只一路去。」—— 薩爾滸之戰中展現的高超集中兵力戰略。"
+            },
+            {
+                name: "皇太極",
+                temple: "廟號：太宗 ． 姓名：愛新覺羅．皇太極",
+                reign: "1626 - 1643",
+                duration: "在位 17 年",
+                motto: "改元大清，滿漢兼蓄",
+                rating: "國家體制確立者 / 遠見政治家",
+                no: "入關前第2代",
+                achievements: "改國號為「大清」，改族名為「滿洲」，正式稱帝。征服漠南蒙古，兩征朝鮮使其臣服，解除後顧之憂，多次率軍繞道入關侵襲明朝。",
+                cultural: "創立漢軍八旗與蒙古八旗，廣招明朝降將（如孔有德、耿仲明等）。仿照明制設立內三院和六部，極大完善了大清的國家機器。",
+                anecdote: "皇太極深諳反間計，故意放出偽造密信，使生性多疑的崇禎帝將守關大將袁崇煥逮捕並處以極刑，自毀長城。",
+                quote: "「參漢制、崇儒術，實乃定天下之根本。」"
+            },
+            {
+                name: "順治帝",
+                temple: "廟號：世祖 ． 姓名：愛新覺羅．福臨",
+                reign: "1643 - 1661",
+                duration: "在位 18 年",
+                motto: "入主中原，天下定鼎",
+                rating: "首位入關君主 / 悲劇色彩帝王",
+                no: "入關後第1代",
+                achievements: "六歲即位，由攝政王多爾袞輔政。1644年清軍入關定鼎北京，順治帝親政後致力於撫平戰爭創傷，推行招撫政策，任用漢官，逐步穩定中原局勢。",
+                cultural: "極度推崇漢文化與佛教，重用大太監吳良輔及外國傳教士湯若望（尊稱其為「阿瑪」），甚至親自修習佛法，思想極具包容性。",
+                anecdote: "民間傳說順治帝因摯愛的董鄂妃病逝，悲痛欲絕下並未死於天花，而是前往五台山出家為僧，成為清宮四大謎案之首。",
+                quote: "「朕本西方一衲子，無奈落入帝王家。」"
+            },
+            {
+                name: "康熙帝",
+                temple: "廟號：聖祖 ． 姓名：愛新覺羅．玄燁",
+                reign: "1661 - 1722",
+                duration: "在位 61 年 (史上最長)",
+                motto: "萬民康寧，天下熙盛",
+                rating: "千古一帝 / 奠基盛世",
+                no: "入關後第2代",
+                achievements: "八歲登基，少擒鰲拜奪回大權。平定三藩之亂、統一台灣並設立台灣府、驅逐沙俄侵略簽訂《尼布楚條約》、三征噶爾丹鞏固西北邊疆。開創「康乾盛世」的輝煌基業，展現高超的文治武功。",
+                cultural: "編纂《康熙字典》、重視理學，同時對西方科學（如天文、數學、醫學）展現高度興趣並親自學習。實行「滋生人丁，永不加賦」，為中國人口暴增奠定基礎。",
+                anecdote: "晚年深陷「九子奪嫡」的皇位繼承危機，導致朝政一度怠惰。康熙每日勤政，批閱奏摺至深夜，甚至精通微積分與拉丁文，是位真正的「學霸皇帝」。",
+                quote: "「鞠躬盡瘁，死而後已。朕身不隕，其政不懈。」"
+            },
+            {
+                name: "雍正帝",
+                temple: "廟號：世宗 ． 姓名：愛新覺羅．胤禛",
+                reign: "1722 - 1735",
+                duration: "在位 13 年",
+                motto: "雍和公正，肅清吏治",
+                rating: "最勤政的改革者 / 承先啟後",
+                no: "入關後第3代",
+                achievements: "在「九子奪嫡」中勝出。親政後推行雷厲風行的改革：整頓吏治、設立「軍機處」極大加強君權；推行「攤丁入地」、「改土歸流」及「火耗歸公」，徹底充實了國庫。",
+                cultural: "極度推崇禪宗，創立「秘密立儲」制度，避免了皇子爭位慘劇。大規模推行奏摺制度，密折直達天聽，加強對全國官員的監控。",
+                anecdote: "傳聞他是清代最疲憊的皇帝，每天睡眠不足4小時，批改奏摺多達數十件，留下數百萬字的硃批。民間更傳聞他是被俠女呂四娘刺殺斬首。",
+                quote: "「朕就是這樣漢子！就是這樣秉性！實心辦事之人朕決不負他！」—— 雍正於臣下奏摺上的經典霸氣硃批。"
+            },
+            {
+                name: "乾隆帝",
+                temple: "廟號：高宗 ． 姓名：愛新覺羅．弘曆",
+                reign: "1735 - 1796",
+                duration: "在位 60 年 (實際掌權最長)",
+                motto: "天朝鼎盛，自號十全",
+                rating: "盛世頂峰與衰落轉折",
+                no: "入關後第4代",
+                achievements: "承接康雍遺業，國家財政與人口達到歷史極峰。平定大小和卓之亂、準噶爾部，將新疆納入版圖。自詡「十全老人」，創下「十全武功」。然而晚年重用和珅，朝政腐敗，帝國開始由盛轉衰。",
+                cultural: "主持編纂中國歷史上最大規模的叢書《四庫全書》，但同時也藉此大興「文字獄」，銷毀了大批反清思想的書籍。六下江南，耗費極大。",
+                anecdote: "乾隆極其熱愛在名家書畫上蓋章和題字，王羲之的《快雪時晴帖》就被他蓋滿了幾十個印章並寫下碩大的「神」字，被戲稱為「蓋章狂魔」。",
+                quote: "「天朝物產豐盈，無所不有，原不藉外夷貨物以通有無。」—— 乾隆回絕英國使臣馬戛爾尼時展現的傲慢自大。"
+            },
+            {
+                name: "慈禧太后 (幕後)",
+                temple: "諡號：孝欽顯皇后 (同治光緒朝掌權者)",
+                reign: "1861 - 1908",
+                duration: "實際掌控朝政 47 年",
+                motto: "垂簾聽政，大權獨攬",
+                rating: "晚清政局實際主宰 / 守舊勢力代表",
+                no: "晚清實際掌權者",
+                achievements: "咸豐帝死後發動辛酉政變，與慈安太后共同「垂簾聽政」。起用曾國藩、李鴻章等漢臣平定太平天國運動。支持「洋務運動」引進西方軍事，但在政治體制上極度守舊，扼殺了戊戌變法。",
+                cultural: "挪用海軍經費重修頤和園，導致甲午戰爭海軍戰敗。晚年因盲目信任義和團對萬國宣戰，引發八國聯軍侵華，簽訂《辛丑條約》徹底淪為列強傀儡。",
+                anecdote: "慈禧生活極度奢華，每日膳食多達百道菜。她極其熱愛拍照，曾裝扮成「觀音菩薩」讓太監李蓮英扮成童子合影留念。",
+                quote: "「量中華之物力，結與國之歡心。」—— 令人扼腕嘆息的賣國妥協外交政策表態。"
+            },
+            {
+                name: "溥儀 (宣統帝)",
+                temple: "廟號：無 (末代皇帝) ． 姓名：愛新覺羅．溥儀",
+                reign: "1908 - 1912",
+                duration: "在位 3 年 (退位)",
+                motto: "宣示帝制統治的終結",
+                rating: "歷史洪流中的傀儡末代君王",
+                no: "入關後第10代",
+                achievements: "三歲登基，年號宣統。1912年辛亥革命爆發後，由隆裕太后宣告退位，標誌著大清帝國與中國兩千多年封建帝制的終結。後曾於九一八事變後被日本扶植為偽滿洲國皇帝。",
+                cultural: "新中國成立後接受特赦與勞動改造，成為一名普通的全國政協委員，撰寫自傳《我的前半生》，詳實記錄了宮廷秘辛與個人傳奇一生。",
+                anecdote: "溥儀是清朝唯一一位會騎自行車、剪掉辮子、穿西裝、戴眼鏡、甚至吃西餐的皇帝，在故宮裡他為了騎自行車還下令鋸掉了多處宮殿的門檻。",
+                quote: "「在前半生，我是皇帝；在後半生，我成了一個真正的『人』。」"
+            }
+        ];
+
+        let currentEmpIndex = 3; // 預設展示康熙
+
+        // 動態生成皇帝按鈕
+        function initEmperorSelector() {
+            const selector = document.getElementById('emperor-selector');
+            selector.innerHTML = '';
+            emperorsData.forEach((emp, index) => {
+                const button = document.createElement('button');
+                button.onclick = () => selectEmperor(index);
+                button.className = `emperor-btn flex-none flex flex-col items-center p-3 rounded-xl border-2 transition-all duration-300 ${index === currentEmpIndex ? 'border-amber-500 bg-amber-950/20' : 'border-stone-800 bg-stone-900/40 hover:border-stone-600'}`;
+                button.id = `emp-btn-${index}`;
+                button.innerHTML = `
+                    <div class="w-12 h-12 rounded-full bg-stone-800 border border-amber-900/30 flex items-center justify-center mb-2">
+                        <i class="fas fa-user-circle text-2xl text-stone-400"></i>
+                    </div>
+                    <span class="text-xs font-bold text-stone-300">${emp.name}</span>
+                    <span class="text-[10px] text-stone-500 mt-1">${emp.reign.split(' ')[0]}</span>
+                `;
+                selector.appendChild(button);
+            });
+        }
+
+        function selectEmperor(index) {
+            // 清除前一個按鈕選取樣式
+            document.getElementById(`emp-btn-${currentEmpIndex}`).classList.remove('border-amber-500', 'bg-amber-950/20');
+            document.getElementById(`emp-btn-${currentEmpIndex}`).classList.add('border-stone-800', 'bg-stone-900/40');
+            
+            currentEmpIndex = index;
+
+            // 套用新選取樣式
+            document.getElementById(`emp-btn-${currentEmpIndex}`).classList.remove('border-stone-800', 'bg-stone-900/40');
+            document.getElementById(`emp-btn-${currentEmpIndex}`).classList.add('border-amber-500', 'bg-amber-950/20');
+
+            // 滾動選取區使選中項居中
+            const activeBtn = document.getElementById(`emp-btn-${currentEmpIndex}`);
+            activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+
+            updateEmperorDetail();
+        }
+
+        function updateEmperorDetail() {
+            const emp = emperorsData[currentEmpIndex];
+            
+            // 卡片動畫
+            const detailCard = document.getElementById('emperor-detail-card');
+            detailCard.classList.add('opacity-0', 'scale-95');
+
+            setTimeout(() => {
+                document.getElementById('emp-dynast-no').innerText = emp.no;
+                document.getElementById('emp-reign-years').innerText = emp.reign;
+                document.getElementById('emp-name').innerText = emp.name;
+                document.getElementById('emp-temple-name').innerText = emp.temple;
+                document.getElementById('emp-duration').innerText = emp.duration;
+                document.getElementById('emp-motto').innerText = emp.motto;
+                document.getElementById('emp-rating').innerText = emp.rating;
+                document.getElementById('emp-achievements').innerText = emp.achievements;
+                document.getElementById('emp-cultural').innerText = emp.cultural;
+                document.getElementById('emp-anecdote').innerText = emp.anecdote;
+                document.getElementById('emp-quote').innerText = emp.quote;
+
+                detailCard.classList.remove('opacity-0', 'scale-95');
+            }, 200);
+        }
+
+        function changeEmperor(direction) {
+            let nextIdx = currentEmpIndex + direction;
+            if (nextIdx < 0) nextIdx = emperorsData.length - 1;
+            if (nextIdx >= emperorsData.length) nextIdx = 0;
+            selectEmperor(nextIdx);
+        }
+
+
+        /* === 3. 疆域變遷 資料與邏輯 === */
+        const mapPeriods = [
+            {
+                title: "後金割據時期（1616 - 1644 前夕）",
+                desc: "勢力範圍主要集中在薩爾滸以東、白山黑水之間。努爾哈赤與皇太極在此階段統一女真各部，佔領遼東大片土地，並建都盛京（今瀋陽），對山海關外的明朝形成合圍之勢。",
+                area: "約 120 萬平方公里",
+                capital: "赫圖阿拉 ➔ 盛京(瀋陽)",
+                rival: "大明王朝 / 朝鮮",
+                path: "M 320,60 C 350,55 380,50 400,60 C 410,80 430,110 390,120 C 350,110 320,100 320,60 Z", // 小範圍東北部
+                color: "rgba(245, 158, 11, 0.4)",
+                stroke: "#f59e0b",
+                markerX: 380,
+                markerY: 85,
+                markerText: "盛京"
+            },
+            {
+                title: "大清入關定鼎與平叛（1644 - 1683）",
+                desc: "清軍入關後迅速奪取中原北京。康熙繼位後，派遣大軍平定南方吳三桂、尚之信、耿精忠「三藩之亂」，並於1683年派遣施琅收復台灣。國土自此延伸至中原、華南及沿海各島。",
+                area: "約 650 萬平方公里",
+                capital: "北京（順天府）",
+                rival: "南明政權 / 三藩 / 明鄭台灣",
+                path: "M 220,90 C 280,60 380,50 440,65 C 460,90 470,160 450,230 C 400,260 320,290 280,260 C 250,220 200,180 220,90 Z", // 中等範圍
+                color: "rgba(217, 119, 6, 0.5)",
+                stroke: "#d97706",
+                markerX: 350,
+                markerY: 120,
+                markerText: "北京"
+            },
+            {
+                title: "乾嘉極盛疆域（1759 - 1840 前夕）",
+                desc: "經過康雍乾三代經營，平定準噶爾與大小和卓叛亂。大清帝國版圖達到鼎盛：北接西伯利亞、南至南海、西越蔥嶺、東臨庫頁島，奠定了現代中國的疆域大勢。大批藩屬國前來朝貢。",
+                area: "約 1316 萬平方公里",
+                capital: "北京 / 承德避暑山莊",
+                rival: "噶爾丹蒙古 / 沙皇俄國",
+                path: "M 120,60 C 220,50 350,40 450,60 C 480,100 490,180 460,280 C 420,310 320,325 250,320 C 180,320 130,270 100,280 C 80,240 70,160 90,110 C 110,80 110,70 120,60 Z", // 最大範圍
+                color: "rgba(220, 38, 38, 0.4)",
+                stroke: "#dc2626",
+                markerX: 350,
+                markerY: 120,
+                markerText: "北京"
+            },
+            {
+                title: "晚清割地危局（1842 - 1912）",
+                desc: "兩次鴉片戰爭、甲午戰爭及八國聯軍侵華，導致大清帝國被迫割讓領土：香港島（英）、外東北與外西北大片土地（俄）、台灣及澎湖（日），並開放大量租界。版圖大幅縮水，主權淪喪。",
+                area: "約 1100 萬平方公里 (大幅割讓)",
+                capital: "北京",
+                rival: "英、法、日、俄等列強",
+                path: "M 130,80 C 210,75 340,65 430,80 C 450,110 460,180 440,260 C 410,290 320,300 260,300 C 190,300 140,260 120,260 C 100,220 90,160 100,120 C 110,100 120,90 130,80 Z", // 縮小版
+                color: "rgba(120, 113, 108, 0.5)",
+                stroke: "#78716c",
+                markerX: 350,
+                markerY: 120,
+                markerText: "北京"
+            }
+        ];
+
+        function setMapPeriod(index) {
+            document.getElementById('map-slider').value = index;
+            updateMapPeriod(index);
+        }
+
+        function updateMapPeriod(index) {
+            index = parseInt(index);
+            const period = mapPeriods[index];
+
+            // 更新按鈕樣式
+            for (let i = 0; i < 4; i++) {
+                const btn = document.getElementById(`map-btn-${i}`);
+                if (i === index) {
+                    btn.className = "py-2 px-3 bg-amber-600 text-black font-bold text-xs rounded-lg transition";
+                } else {
+                    btn.className = "py-2 px-3 bg-stone-800 text-stone-300 font-semibold text-xs rounded-lg hover:bg-stone-700 transition";
+                }
+            }
+
+            // 更新地圖 SVG 屬性
+            const pathEl = document.getElementById('qing-territory-path');
+            pathEl.setAttribute('d', period.path);
+            pathEl.setAttribute('fill', period.color);
+            pathEl.setAttribute('stroke', period.stroke);
+
+            // 更新城市標記
+            const markerGroup = document.getElementById('city-markers');
+            markerGroup.innerHTML = `
+                <circle cx="${period.markerX}" cy="${period.markerY}" r="5" fill="#f59e0b" stroke="#000" stroke-width="1"/>
+                <text x="${period.markerX + 8}" y="${period.markerY + 4}" fill="#e5e7eb" font-size="10" font-weight="bold">${period.markerText}</text>
+            `;
+
+            // 更新資訊面板文字
+            document.getElementById('map-period-title').innerText = period.title;
+            document.getElementById('map-period-desc').innerText = period.desc;
+            document.getElementById('map-area').innerText = period.area;
+            document.getElementById('map-capital').innerText = period.capital;
+            document.getElementById('map-rival').innerText = period.rival;
+        }
+
+
+        /* === 4. 典章制度 卡片翻轉邏輯 === */
+        function toggleFlipCard(card) {
+            card.classList.toggle('flip-card-active');
+        }
+
+
+        /* === 5. 知識大挑戰 (Quiz) 資料與邏輯 === */
+        const quizQuestions = [
+            {
+                category: "政治制度",
+                question: "大清中央決策核心「軍機處」，最初是在哪位皇帝統治時期，因西北軍事緊急需要迅速處理機密而設立的？",
+                options: ["康熙帝", "雍正帝", "乾隆帝", "同治帝"],
+                correct: 1,
+                explanation: "「軍機處」於雍正七年（1729年）因用兵西北而設立。其特色為「辦事迅速、保密性強」，直接奉皇帝旨意起草詔書，使君主專制達到頂峰。"
+            },
+            {
+                category: "軍事社會",
+                question: "清朝最核心的、集軍事、政治和生產於一體的社會組織制度，且依顏色分為八種旗幟的是什麼制度？",
+                options: ["行省制度", "府兵制度", "八旗制度", "衛所制度"],
+                correct: 2,
+                explanation: "「八旗制度」由太祖努爾哈赤創立，是清朝軍政合一的社會結構，旗人世代從軍。入關後分為滿洲、蒙古、漢軍八旗。"
+            },
+            {
+                category: "近代條約",
+                question: "清朝被迫簽訂的中國歷史上第一個不平等條約、割讓香港島給英國的是哪一個條約？",
+                options: ["《北京條約》", "《馬關條約》", "《南京條約》", "《辛丑條約》"],
+                correct: 2,
+                explanation: "1842年鴉片戰爭戰敗後，清政府被迫與英國簽訂《南京條約》，內容包括割讓香港島、賠款2100萬銀元、開放五口通商等。"
+            },
+            {
+                category: "晚清政局",
+                question: "1898年，光緒帝起用維新派人士推行改良運動，意圖建立君主立憲政體，這場歷時僅103天的變法史稱？",
+                options: ["自強運動", "辛亥革命", "戊戌變法 (百日維新)", "清末新政"],
+                correct: 2,
+                explanation: "「戊戌變法」（又稱百日維新）在1898年由光緒帝主導、康梁推行，但因觸及以慈禧為首的保守派利益，最終爆發政變而流產。"
+            },
+            {
+                category: "帝王政績",
+                question: "清朝在位時間最長（共61年），且平定三藩之亂、統一台灣設立台灣府、簽署《尼布楚條約》的皇帝是？",
+                options: ["順治帝", "康熙帝", "乾隆帝", "咸豐帝"],
+                correct: 1,
+                explanation: "「康熙帝」在位61年，平三藩、平噶爾丹、統一台灣，開創了康乾盛世的宏大基業，被後世譽為「千古一帝」。"
+            }
+        ];
+
+        let quizCurrentIndex = 0;
+        let quizScore = 0;
+        let hasAnswered = false;
+
+        function startQuiz() {
+            quizCurrentIndex = 0;
+            quizScore = 0;
+            hasAnswered = false;
+            
+            document.getElementById('quiz-intro').classList.add('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-play').classList.remove('hidden');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            hasAnswered = false;
+            const q = quizQuestions[quizCurrentIndex];
+            
+            // 更新計分與題號
+            document.getElementById('quiz-current-num').innerText = quizCurrentIndex + 1;
+            document.getElementById('quiz-score').innerText = quizScore;
+            
+            // 載入問題與分類
+            document.getElementById('quiz-category').innerText = q.category;
+            document.getElementById('quiz-question').innerText = q.question;
+            
+            // 隱藏回饋與「下一題」按鈕
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('quiz-next-btn').classList.add('hidden');
+            
+            // 生成選項
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.onclick = () => checkAnswer(idx);
+                btn.className = "quiz-opt-btn w-full text-left p-4 bg-stone-950/60 hover:bg-stone-850 border border-stone-800 hover:border-amber-700/50 rounded-xl transition-all duration-200 text-stone-300 flex justify-between items-center";
+                btn.innerHTML = `
+                    <span>${idx + 1}. ${opt}</span>
+                    <i class="far fa-circle text-stone-600"></i>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            if (hasAnswered) return; // 防止重複作答
+            hasAnswered = true;
+            
+            const q = quizQuestions[quizCurrentIndex];
+            const isCorrect = selectedIndex === q.correct;
+            
+            if (isCorrect) {
+                quizScore += 20;
+                document.getElementById('quiz-score').innerText = quizScore;
+            }
+            
+            // 更新選項按鈕樣式
+            const buttons = document.querySelectorAll('.quiz-opt-btn');
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === q.correct) {
+                    btn.classList.remove('bg-stone-950/60', 'border-stone-800');
+                    btn.classList.add('bg-emerald-950/30', 'border-emerald-500', 'text-emerald-400');
+                    btn.innerHTML = `<span>${idx + 1}. ${q.options[idx]}</span> <i class="fas fa-check-circle text-emerald-500"></i>`;
+                } else if (idx === selectedIndex && !isCorrect) {
+                    btn.classList.remove('bg-stone-950/60', 'border-stone-800');
+                    btn.classList.add('bg-rose-950/30', 'border-rose-500', 'text-rose-400');
+                    btn.innerHTML = `<span>${idx + 1}. ${q.options[idx]}</span> <i class="fas fa-times-circle text-rose-500"></i>`;
+                } else {
+                    btn.classList.add('opacity-40');
+                }
+            });
+            
+            // 顯示即時回饋
+            const feedbackBox = document.getElementById('quiz-feedback');
+            const fIcon = document.getElementById('feedback-icon');
+            const fTitle = document.getElementById('feedback-title');
+            const fText = document.getElementById('feedback-text');
+            
+            feedbackBox.classList.remove('hidden');
+            if (isCorrect) {
+                feedbackBox.className = "p-4 rounded-lg text-sm bg-emerald-950/20 border border-emerald-900/30 text-emerald-300 transition duration-300";
+                fIcon.className = "fas fa-trophy text-emerald-500";
+                fTitle.innerText = "回答正確！太棒了！";
+            } else {
+                feedbackBox.className = "p-4 rounded-lg text-sm bg-rose-950/20 border border-rose-900/30 text-rose-300 transition duration-300";
+                fIcon.className = "fas fa-times-circle text-rose-500";
+                fTitle.innerText = `答錯了！正確答案是: ${q.correct + 1}. ${q.options[q.correct]}`;
+            }
+            fText.innerHTML = q.explanation;
+            
+            // 顯示下一步按鈕
+            const nextBtn = document.getElementById('quiz-next-btn');
+            nextBtn.classList.remove('hidden');
+            if (quizCurrentIndex === quizQuestions.length - 1) {
+                nextBtn.innerHTML = `觀看考生成績 <i class="fas fa-graduation-cap ml-1"></i>`;
+            } else {
+                nextBtn.innerHTML = `下一題 <i class="fas fa-chevron-right ml-1"></i>`;
+            }
+        }
+
+        function nextQuestion() {
+            if (quizCurrentIndex < quizQuestions.length - 1) {
+                quizCurrentIndex++;
+                loadQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            document.getElementById('quiz-play').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+            
+            document.getElementById('result-correct-count').innerText = quizScore / 20;
+            document.getElementById('result-score-final').innerText = quizScore;
+            
+            const rankEl = document.getElementById('result-rank');
+            const evalEl = document.getElementById('result-evaluation');
+            const badgeEl = document.getElementById('result-badge-border');
+            const iconEl = document.getElementById('result-icon');
+            
+            if (quizScore === 100) {
+                rankEl.innerText = "震驚朝野！考取「文華殿大學士」！";
+                evalEl.innerText = "「功蓋當朝，滿分金榜提名！你對大清的政治、軍事、變法及外交歷史瞭若指掌。若身處彼時，定能輔佐君王，經邦濟世！」";
+                badgeEl.className = "w-24 h-24 rounded-full mx-auto flex items-center justify-center border-4 border-amber-500 bg-amber-950/20";
+                iconEl.innerText = "👑";
+            } else if (quizScore >= 80) {
+                rankEl.innerText = "成績優異！考取「翰林院編修」！";
+                evalEl.innerText = "「學識淵博，才高八斗！你對清朝歷史有着極其深刻的理解，文治武功了得，是朝廷極力招攬的棟樑之材。」";
+                badgeEl.className = "w-24 h-24 rounded-full mx-auto flex items-center justify-center border-4 border-yellow-600 bg-yellow-950/10";
+                iconEl.innerText = "🎓";
+            } else if (quizScore >= 60) {
+                rankEl.innerText = "考取功名！賜「同進士出身」！";
+                evalEl.innerText = "「順利登科，及格通過！你已掌握了大清歷史的核心脈絡，但若再仔細複習一下『歷史長河』與『帝王群像』，必能百尺竿頭更進一步！」";
+                badgeEl.className = "w-24 h-24 rounded-full mx-auto flex items-center justify-center border-4 border-stone-400 bg-stone-900";
+                iconEl.innerText = "📜";
+            } else {
+                rankEl.innerText = "名落孫山！「落第秀才」再接再厲！";
+                evalEl.innerText = "「名落孫山，仍需磨礪。大清二百九十六載興衰風雲多幻，建議你重新滑動『歷史長河』、閱讀『典章制度』，必定能於下次科舉大放異彩！」";
+                badgeEl.className = "w-24 h-24 rounded-full mx-auto flex items-center justify-center border-4 border-amber-900 bg-stone-950";
+                iconEl.innerText = "✍️";
+            }
+        }
+
+
+        /* === 6. 初始化執行 === */
+        window.onload = function() {
+            // 初始化時間軸
+            updateTimelineUI();
+            
+            // 初始化帝王探索
+            initEmperorSelector();
+            updateEmperorDetail();
+
+            // 初始化疆域圖
+            updateMapPeriod(0);
+        }
+    </script>
+</body>
+</html>

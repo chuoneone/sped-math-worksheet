@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>綠色奇蹟：探索光合作用的微觀世界</title>
+    <!-- 引入 Tailwind CSS 與 FontAwesome 圖標 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;750;900&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #040d0a;
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+        
+        /* 綠色霓虹與光影特效 */
+        .neon-glow-green {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+        .neon-text-green {
+            text-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        
+        /* 隱藏滾動條但保持滾動功能 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 脈衝動畫效果 */
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 3s infinite ease-in-out;
+        }
+
+        /* 泡泡漂浮動畫 */
+        @keyframes float-up {
+            0% { transform: translateY(20px); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-100px); opacity: 0; }
+        }
+        .floating-bubble {
+            animation: float-up 2.5s infinite linear;
+        }
+
+        /* 水平面波浪動畫 */
+        @keyframes wave {
+            0%, 100% { transform: translateX(0) translateZ(0) scaleY(1); }
+            50% { transform: translateX(-25%) translateZ(0) scaleY(0.85); }
+        }
+        .wave-effect {
+            animation: wave 12s infinite linear;
+        }
+    </style>
+</head>
+<body class="bg-[#030907] min-h-screen">
+
+    <!-- 導覽列 -->
+    <nav class="sticky top-0 z-50 bg-[#040d0a]/90 border-b border-emerald-900/40 backdrop-blur-md px-6 py-4 transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-lg flex items-center justify-center neon-glow-green animate-pulse-soft">
+                    <i class="fas fa-leaf text-slate-900 text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-emerald-400 text-2xl font-black tracking-widest neon-text-green">綠色奇蹟</span>
+                    <span class="text-xs text-emerald-500/80 block font-light tracking-wider">探索光合作用的微觀世界</span>
+                </div>
+            </div>
+            <div class="flex flex-wrap justify-center gap-2 sm:gap-4 text-sm md:text-base">
+                <a href="#equation-sec" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-emerald-400 hover:bg-emerald-950/30 transition">反應方程式</a>
+                <a href="#structure-sec" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-emerald-400 hover:bg-emerald-950/30 transition">細胞工廠</a>
+                <a href="#stages-sec" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-emerald-400 hover:bg-emerald-950/30 transition">能量雙重奏</a>
+                <a href="#lab-sec" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-emerald-400 hover:bg-emerald-950/30 transition">虛擬實驗室</a>
+                <a href="#quiz-sec" class="px-3 py-1.5 rounded-lg text-emerald-400 border border-emerald-500/30 bg-emerald-950/20 hover:bg-emerald-500 hover:text-slate-950 transition font-medium">知識檢定</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄版位 -->
+    <header class="relative overflow-hidden py-24 md:py-32 flex items-center justify-center border-b border-emerald-950/50">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.12),transparent_70%)]"></div>
+        <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
+            <div class="inline-block p-1 border border-emerald-500/30 rounded-full mb-6 animate-pulse-soft">
+                <span class="block px-4 py-1 text-xs tracking-widest text-emerald-400 bg-emerald-950/40 rounded-full font-semibold">
+                    <i class="fas fa-sun mr-1.5"></i> 地球生命的能量之源
+                </span>
+            </div>
+            <h1 class="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-6 tracking-wide text-slate-100 font-serif leading-tight">
+                光合作用的<span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-green-500 font-sans">奇幻旅程</span>
+            </h1>
+            <p class="text-base md:text-lg text-slate-400 max-w-3xl mx-auto mb-10 leading-relaxed font-light">
+                從一縷陽光到一個葡萄糖分子，綠色植物如何在細胞內將光能轉化為生命之火？透過高互動性的實時模擬、虛擬實驗室與微觀解構，揭開光與生命的秘密。
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#lab-sec" class="px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold rounded-xl shadow-lg shadow-emerald-950/30 transition-all transform hover:-translate-y-0.5 flex items-center justify-center">
+                    <i class="fas fa-flask mr-2"></i> 進入虛擬實驗室
+                </a>
+                <a href="#structure-sec" class="px-8 py-3.5 bg-slate-900 border border-emerald-800/30 hover:border-emerald-500/50 text-slate-300 font-semibold rounded-xl transition-all flex items-center justify-center">
+                    探索細胞微觀結構
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 md:px-6 py-12 space-y-24">
+
+        <!-- 區段 1：反應方程式互動解析 -->
+        <section id="equation-sec" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-emerald-400 mb-4 tracking-wider">
+                    <i class="fas fa-vial mr-3"></i>化學反應方程式的祕密
+                </h2>
+                <p class="text-slate-400 max-w-2xl mx-auto">光合作用並非一蹴可幾，而是涉及原料輸入與產物輸出的複雜轉化。點擊下方反應式的各個分子來探索它的角色！</p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 md:p-10">
+                <!-- 互動方程式核心區域 -->
+                <div class="flex flex-wrap justify-center items-center gap-4 md:gap-6 text-center py-6 border-b border-emerald-950/40">
+                    <!-- 反應物 1: 二氧化碳 -->
+                    <button id="mol-btn-co2" onclick="inspectMolecule('co2')" class="molecule-btn group p-4 rounded-xl border border-emerald-500/20 bg-emerald-950/10 hover:bg-emerald-500/20 transition duration-300 text-slate-200 hover:scale-105 min-w-[120px]">
+                        <span class="text-xs text-emerald-500 block mb-1">原料 (氣體)</span>
+                        <div class="text-2xl md:text-3xl font-extrabold tracking-wider group-hover:text-emerald-300">6 CO₂</div>
+                        <span class="text-xs text-slate-400">二氧化碳</span>
+                    </button>
+
+                    <div class="text-2xl text-slate-500 font-bold">+</div>
+
+                    <!-- 反應物 2: 水 -->
+                    <button id="mol-btn-h2o" onclick="inspectMolecule('h2o')" class="molecule-btn group p-4 rounded-xl border border-emerald-500/20 bg-emerald-950/10 hover:bg-emerald-500/20 transition duration-300 text-slate-200 hover:scale-105 min-w-[120px]">
+                        <span class="text-xs text-emerald-500 block mb-1">原料 (液體)</span>
+                        <div class="text-2xl md:text-3xl font-extrabold tracking-wider group-hover:text-emerald-300">6 H₂O</div>
+                        <span class="text-xs text-slate-400">水</span>
+                    </button>
+
+                    <div class="flex flex-col items-center justify-center min-w-[80px]">
+                        <div class="text-emerald-400 animate-pulse text-xl"><i class="fas fa-sun"></i></div>
+                        <i class="fas fa-long-arrow-alt-right text-slate-400 text-3xl"></i>
+                        <span class="text-[10px] text-emerald-400 tracking-widest font-semibold">葉綠素</span>
+                    </div>
+
+                    <!-- 產物 1: 葡萄糖 -->
+                    <button id="mol-btn-sugar" onclick="inspectMolecule('sugar')" class="molecule-btn group p-4 rounded-xl border border-emerald-500/20 bg-emerald-950/10 hover:bg-emerald-500/20 transition duration-300 text-slate-200 hover:scale-105 min-w-[140px]">
+                        <span class="text-xs text-emerald-400 block mb-1">核心能量產物</span>
+                        <div class="text-2xl md:text-3xl font-extrabold tracking-wider group-hover:text-emerald-300">C₆H₁₂O₆</div>
+                        <span class="text-xs text-slate-400">葡萄糖 (有機物)</span>
+                    </button>
+
+                    <div class="text-2xl text-slate-500 font-bold">+</div>
+
+                    <!-- 產物 2: 氧氣 -->
+                    <button id="mol-btn-o2" onclick="inspectMolecule('o2')" class="molecule-btn group p-4 rounded-xl border border-emerald-500/20 bg-emerald-950/10 hover:bg-emerald-500/20 transition duration-300 text-slate-200 hover:scale-105 min-w-[120px]">
+                        <span class="text-xs text-emerald-500 block mb-1">副產物 (釋放)</span>
+                        <div class="text-2xl md:text-3xl font-extrabold tracking-wider group-hover:text-emerald-300">6 O₂</div>
+                        <span class="text-xs text-slate-400">氧氣</span>
+                    </button>
+                </div>
+
+                <!-- 互動內容面板 -->
+                <div id="molecule-panel" class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 transition-all duration-500">
+                    <div class="md:col-span-1 bg-emerald-950/30 p-6 rounded-xl border border-emerald-800/30 flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 bg-emerald-900/50 rounded-lg flex items-center justify-center mb-4 border border-emerald-700/30 text-emerald-400 text-xl">
+                                <i id="mol-icon" class="fas fa-cloud-sun"></i>
+                            </div>
+                            <h3 id="mol-name" class="text-2xl font-bold text-emerald-400">點擊上方分子</h3>
+                            <p class="text-xs text-emerald-500 mt-1 font-semibold" id="mol-type">互動探索</p>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-4 leading-relaxed">提示：點擊化學方程式中的任意分子，了解它在光合作用旅程中的進出途徑與關鍵化學流向。</p>
+                    </div>
+
+                    <div class="md:col-span-2 space-y-4">
+                        <div class="bg-slate-950/50 p-5 rounded-xl border border-slate-800">
+                            <h4 class="text-emerald-500 font-bold text-sm mb-2"><i class="fas fa-sign-in-alt mr-2"></i>物質來源與進入路徑</h4>
+                            <p id="mol-source" class="text-sm text-slate-300 leading-relaxed">
+                                請選擇分子以查看其來源與進入途徑。
+                            </p>
+                        </div>
+                        <div class="bg-slate-950/50 p-5 rounded-xl border border-slate-800">
+                            <h4 class="text-emerald-500 font-bold text-sm mb-2"><i class="fas fa-sign-out-alt mr-2"></i>化學命運與生命去向</h4>
+                            <p id="mol-fate" class="text-sm text-slate-300 leading-relaxed">
+                                請選擇分子以查看其在生命週期中的最終化學去向。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 區段 2：細胞解構（微觀結構導覽） -->
+        <section id="structure-sec" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-emerald-400 mb-4 tracking-wider">
+                    <i class="fas fa-microscope mr-3"></i>細胞微觀工廠
+                </h2>
+                <p class="text-slate-400 max-w-2xl mx-auto">光合作用發生在由大到小、層層嵌套的微觀結構中。點擊左側結構階層，觀察各部位的作用原理。</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                <!-- 左側：多層級結構切換按鈕 -->
+                <div class="lg:col-span-4 flex flex-col gap-3 justify-center">
+                    <button onclick="switchAnatomy(0)" id="ana-btn-0" class="anatomy-tab text-left p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/20 text-slate-200 transition-all duration-300 hover:border-emerald-500 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-full bg-emerald-900/60 flex items-center justify-center text-xs text-emerald-300 font-bold">1</span>
+                            <div>
+                                <h3 class="font-bold text-sm">葉片橫切面 (Leaf)</h3>
+                                <p class="text-[10px] text-slate-400">柵欄組織、表皮與氣孔</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-emerald-500 text-xs"></i>
+                    </button>
+                    
+                    <button onclick="switchAnatomy(1)" id="ana-btn-1" class="anatomy-tab text-left p-4 rounded-xl border border-slate-800 bg-slate-900/40 text-slate-400 transition-all duration-300 hover:border-emerald-500/50 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs text-slate-400 font-bold">2</span>
+                            <div>
+                                <h3 class="font-bold text-sm">保衛細胞與氣孔 (Stomata)</h3>
+                                <p class="text-[10px] text-slate-400">控制二氧化碳進出與蒸散</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-slate-600 text-xs"></i>
+                    </button>
+
+                    <button onclick="switchAnatomy(2)" id="ana-btn-2" class="anatomy-tab text-left p-4 rounded-xl border border-slate-800 bg-slate-900/40 text-slate-400 transition-all duration-300 hover:border-emerald-500/50 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs text-slate-400 font-bold">3</span>
+                            <div>
+                                <h3 class="font-bold text-sm">葉綠體 (Chloroplast)</h3>
+                                <p class="text-[10px] text-slate-400">雙層膜結構、基質與基粒</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-slate-600 text-xs"></i>
+                    </button>
+
+                    <button onclick="switchAnatomy(3)" id="ana-btn-3" class="anatomy-tab text-left p-4 rounded-xl border border-slate-800 bg-slate-900/40 text-slate-400 transition-all duration-300 hover:border-emerald-500/50 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs text-slate-400 font-bold">4</span>
+                            <div>
+                                <h3 class="font-bold text-sm">類囊體與基質 (Thylakoid)</h3>
+                                <p class="text-[10px] text-slate-400">光反應與卡爾文循環戰場</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-slate-600 text-xs"></i>
+                    </button>
+                </div>
+
+                <!-- 右側：詳情卡片與概念視覺化 -->
+                <div class="lg:col-span-8 glass-panel rounded-2xl p-6 md:p-8 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4 border-b border-emerald-950/40 pb-3">
+                            <span id="ana-header-step" class="text-xs bg-emerald-900/50 text-emerald-400 border border-emerald-700/30 px-3 py-1 rounded-full font-bold">結構解析 1/4</span>
+                            <span class="text-xs text-slate-500 font-mono"><i class="fas fa-search-plus mr-1"></i>微觀縮放中</span>
+                        </div>
+                        
+                        <h3 id="ana-title" class="text-3xl font-extrabold text-emerald-400 mb-4 font-serif">葉片橫切面</h3>
+                        <p id="ana-desc" class="text-sm text-slate-300 leading-relaxed mb-6">
+                            葉片是進行光合作用的主要器官。上表皮有透明防護的角質層，其下緊挨著富含葉綠體的「柵欄組織」（主戰場），而下方的「海綿組織」結構鬆散，利於氣體擴散與儲存。
+                        </p>
+
+                        <!-- 精美 SVG/CSS 圖形解說區 -->
+                        <div id="ana-diagram-container" class="bg-slate-950/60 rounded-xl p-4 border border-slate-800/80 min-h-[180px] flex items-center justify-center relative overflow-hidden">
+                            <!-- 動態 SVG 由 JS 切換 -->
+                            <div id="ana-diagram-svg" class="w-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- 備註說明 -->
+                    <div class="mt-6 p-4 bg-emerald-950/20 rounded-xl border-l-4 border-emerald-500 text-xs text-slate-400">
+                        <i class="fas fa-info-circle text-emerald-400 mr-2"></i>
+                        <span id="ana-info">角質層（保護水份）與柵欄組織（捕捉最大光能）的協同是植物適應陸地生活的結晶。</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 區段 3：能量雙重奏（光反應與卡爾文循環） -->
+        <section id="stages-sec" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-emerald-400 mb-4 tracking-wider">
+                    <i class="fas fa-exchange-alt mr-3"></i>光合作用能量雙重奏
+                </h2>
+                <p class="text-slate-400 max-w-2xl mx-auto">光合作用主要分為兩大階段：進行光反應的「類囊體膜」與進行卡爾文循環的「基質」，兩者透過高能載體緊密相連。點擊按鈕啟動能量傳遞！</p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 md:p-8 space-y-8">
+                <!-- 能量循環互動圖 -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative">
+                    <!-- 左：光反應 -->
+                    <div class="lg:col-span-5 bg-emerald-950/10 border border-emerald-500/20 rounded-2xl p-6 text-center space-y-4 hover:border-emerald-500/40 transition duration-300">
+                        <div class="inline-flex items-center justify-center w-12 h-12 bg-amber-500/20 rounded-full text-amber-400 mb-2 border border-amber-500/30">
+                            <i class="fas fa-sun text-2xl animate-pulse"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-amber-400 font-serif">第一階段：光反應 (Light Reaction)</h3>
+                        <p class="text-xs text-slate-400">位置：類囊體薄膜 (Thylakoid)</p>
+                        <div class="bg-slate-950/40 p-4 rounded-xl text-left text-xs space-y-2">
+                            <div class="flex justify-between border-b border-slate-800 pb-1.5"><span class="text-slate-400">驅動源：</span><span class="text-amber-400">日光照射</span></div>
+                            <div class="flex justify-between border-b border-slate-800 pb-1.5"><span class="text-slate-400">消耗物質：</span><span class="text-slate-200">水 (H₂O)</span></div>
+                            <div class="flex justify-between border-b border-slate-800 pb-1.5"><span class="text-slate-400">釋放產物：</span><span class="text-emerald-400">氧氣 (O₂) ➔ 逸散</span></div>
+                            <div class="flex justify-between"><span class="text-slate-400">輸出能量：</span><span class="text-cyan-400 font-bold">ATP & NADPH</span></div>
+                        </div>
+                    </div>
+
+                    <!-- 中：動態能量載體流動 -->
+                    <div class="lg:col-span-2 flex flex-row lg:flex-col items-center justify-center gap-6 py-4">
+                        <!-- 充電 -->
+                        <div class="flex flex-col items-center text-center">
+                            <span class="text-[10px] text-cyan-400 font-bold tracking-widest uppercase mb-1">充電中 ➔</span>
+                            <div class="flex items-center space-x-1 bg-cyan-950/30 border border-cyan-500/30 px-3 py-1.5 rounded-lg">
+                                <i class="fas fa-bolt text-cyan-400 text-xs animate-bounce"></i>
+                                <span class="text-xs text-slate-200 font-semibold">ATP + NADPH</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 循環指針 -->
+                        <div class="hidden lg:flex flex-col items-center gap-1">
+                            <i class="fas fa-arrow-right text-emerald-500/40 text-lg rotate-90"></i>
+                            <span class="text-[10px] text-slate-500 font-mono">能量耦合</span>
+                            <i class="fas fa-arrow-left text-emerald-500/40 text-lg rotate-90"></i>
+                        </div>
+
+                        <!-- 放電 -->
+                        <div class="flex flex-col items-center text-center">
+                            <div class="flex items-center space-x-1 bg-rose-950/20 border border-rose-500/20 px-3 py-1.5 rounded-lg">
+                                <i class="fas fa-battery-empty text-rose-400 text-xs"></i>
+                                <span class="text-xs text-slate-400 font-semibold">ADP + NADP⁺</span>
+                            </div>
+                            <span class="text-[10px] text-rose-400 font-bold tracking-widest uppercase mt-1">⮌ 需重新充電</span>
+                        </div>
+                    </div>
+
+                    <!-- 右：碳反應 (卡爾文循環) -->
+                    <div class="lg:col-span-5 bg-teal-950/10 border border-teal-500/20 rounded-2xl p-6 text-center space-y-4 hover:border-teal-500/40 transition duration-300">
+                        <div class="inline-flex items-center justify-center w-12 h-12 bg-teal-500/20 rounded-full text-teal-400 mb-2 border border-teal-500/30">
+                            <i class="fas fa-circle-notch text-2xl animate-spin" style="animation-duration: 10s;"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-teal-400 font-serif">第二階段：卡爾文循環 (Calvin Cycle)</h3>
+                        <p class="text-xs text-slate-400">位置：葉綠體基質 (Stroma)</p>
+                        <div class="bg-slate-950/40 p-4 rounded-xl text-left text-xs space-y-2">
+                            <div class="flex justify-between border-b border-slate-800 pb-1.5"><span class="text-slate-400">驅動源：</span><span class="text-cyan-400">ATP & NADPH (光反應提供)</span></div>
+                            <div class="flex justify-between border-b border-slate-800 pb-1.5"><span class="text-slate-400">消耗物質：</span><span class="text-slate-200">二氧化碳 (CO₂)</span></div>
+                            <div class="flex justify-between border-b border-slate-800 pb-1.5"><span class="text-slate-400">合成產物：</span><span class="text-teal-400 font-bold">葡萄糖 (有機糖類)</span></div>
+                            <div class="flex justify-between"><span class="text-slate-400">輸出廢能：</span><span class="text-rose-400">ADP & NADP⁺ ➔ 回流</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 互動控制引導 -->
+                <div class="flex flex-col sm:flex-row justify-center gap-3 pt-4 border-t border-emerald-950/40">
+                    <button onclick="stageExplain('light')" class="px-5 py-2.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-xl text-sm font-semibold transition">
+                        <i class="fas fa-sun mr-1.5"></i> 查看「光反應」細節
+                    </button>
+                    <button onclick="stageExplain('dark')" class="px-5 py-2.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded-xl text-sm font-semibold transition">
+                        <i class="fas fa-moon mr-1.5"></i> 查看「卡爾文循環」細節
+                    </button>
+                    <button onclick="stageExplain('coupling')" class="px-5 py-2.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 rounded-xl text-sm font-semibold transition">
+                        <i class="fas fa-sync mr-1.5"></i> 了解兩者如何協同
+                    </button>
+                </div>
+
+                <!-- 回饋展示板 -->
+                <div id="stage-explain-box" class="p-5 bg-slate-950/70 rounded-xl border border-slate-800 text-sm text-slate-300 leading-relaxed min-h-[100px]">
+                    請點擊上方按鈕，查看光合作用兩階段分子與能量載體流轉的極限細節！
+                </div>
+            </div>
+        </section>
+
+        <!-- 區段 4：水蘊草虛擬實驗室（Canvas 實時模擬） -->
+        <section id="lab-sec" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-emerald-400 mb-4 tracking-wider">
+                    <i class="fas fa-flask mr-3"></i>水蘊草虛擬實驗室
+                </h2>
+                <p class="text-slate-400 max-w-2xl mx-auto">調控光照、二氧化碳、溫度與光源顏色，實時觀察水蘊草的光合作用速率。上方泡泡代表釋放的氧氣，波形圖展現即時活性！</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- 左側：實驗儀器控制面板 (Col-4) -->
+                <div class="lg:col-span-4 glass-panel rounded-2xl p-6 flex flex-col justify-between space-y-6">
+                    <h3 class="text-xl font-bold text-emerald-400 border-b border-emerald-950/40 pb-2"><i class="fas fa-sliders-h mr-2"></i>變因控制台</h3>
+                    
+                    <!-- 1. 光照強度 -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs text-slate-400">
+                            <span><i class="fas fa-sun mr-1 text-amber-500"></i> 光照強度</span>
+                            <span class="font-bold text-amber-400" id="val-light">50 Lux</span>
+                        </div>
+                        <input type="range" id="input-light" min="0" max="100" value="50" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500" oninput="updateLabParams()">
+                    </div>
+
+                    <!-- 2. 二氧化碳濃度 -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs text-slate-400">
+                            <span><i class="fas fa-cloud mr-1 text-sky-400"></i> CO₂ 濃度</span>
+                            <span class="font-bold text-sky-400" id="val-co2">400 ppm</span>
+                        </div>
+                        <input type="range" id="input-co2" min="0" max="100" value="40" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500" oninput="updateLabParams()">
+                    </div>
+
+                    <!-- 3. 環境溫度 -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs text-slate-400">
+                            <span><i class="fas fa-thermometer-half mr-1 text-rose-500"></i> 環境溫度</span>
+                            <span class="font-bold text-rose-400" id="val-temp">25 °C</span>
+                        </div>
+                        <input type="range" id="input-temp" min="0" max="50" value="25" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500" oninput="updateLabParams()">
+                    </div>
+
+                    <!-- 4. 光源顏色/波長 -->
+                    <div class="space-y-2">
+                        <label class="text-xs text-slate-400 block"><i class="fas fa-palette mr-1 text-teal-400"></i> 光源顏色 (波長)</label>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button onclick="setLightColor('white', this)" class="color-btn py-2 px-1 bg-emerald-950/40 hover:bg-emerald-500/20 text-slate-100 font-bold text-[10px] rounded-lg border-2 border-emerald-500 transition">日光</button>
+                            <button onclick="setLightColor('red', this)" class="color-btn py-2 px-1 bg-slate-900 text-rose-500 font-bold text-[10px] rounded-lg border border-slate-800 hover:border-rose-500 transition">紅光</button>
+                            <button onclick="setLightColor('blue', this)" class="color-btn py-2 px-1 bg-slate-900 text-blue-500 font-bold text-[10px] rounded-lg border border-slate-800 hover:border-blue-500 transition">藍光</button>
+                            <button onclick="setLightColor('green', this)" class="color-btn py-2 px-1 bg-slate-900 text-green-500 font-bold text-[10px] rounded-lg border border-slate-800 hover:border-green-500 transition">綠光</button>
+                        </div>
+                    </div>
+
+                    <!-- 儀表與重置 -->
+                    <div class="pt-4 border-t border-emerald-950/40 flex gap-2">
+                        <button onclick="triggerCarbonPill()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs rounded-lg transition">
+                            <i class="fas fa-plus-circle mr-1"></i> 加入碳酸氫鈉 (增加 CO₂)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 右側：模擬畫面 (Col-8) -->
+                <div class="lg:col-span-8 bg-slate-950 rounded-2xl p-4 flex flex-col justify-between items-center relative overflow-hidden border border-emerald-900/30">
+                    <div class="absolute top-4 left-4 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800 text-xs text-emerald-400 z-10 font-bold">
+                        <i class="fas fa-play mr-1.5 animate-pulse"></i> 實時生命狀態模擬器
+                    </div>
+                    
+                    <!-- 虛擬反應杯與水蘊草繪製容器 -->
+                    <div class="w-full relative min-h-[350px] flex justify-center items-center">
+                        <canvas id="lab-canvas" class="w-full h-full max-h-[360px] bg-slate-950 rounded-xl"></canvas>
+                    </div>
+
+                    <!-- 實時狀態面板 -->
+                    <div class="mt-4 p-4 bg-emerald-950/20 rounded-xl border border-emerald-900/30 w-full grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="text-center md:text-left border-r border-emerald-950/40 last:border-0 pr-2">
+                            <span class="text-[10px] text-slate-400 block">每分鐘氧氣泡泡產生速率</span>
+                            <span class="text-2xl font-black text-emerald-400" id="stat-rate">32 個/分</span>
+                        </div>
+                        <div class="text-center md:text-left border-r border-emerald-950/40 last:border-0 pr-2">
+                            <span class="text-[10px] text-slate-400 block">光學轉換效率 (E.T.C.)</span>
+                            <span class="text-2xl font-black text-amber-400" id="stat-efficiency">64 %</span>
+                        </div>
+                        <div class="text-center md:text-left">
+                            <span class="text-[10px] text-slate-400 block">酵素活性溫度比</span>
+                            <span class="text-2xl font-black text-rose-400" id="stat-temp-act">良好 (85%)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 區段 5：光能大師 Quiz -->
+        <section id="quiz-sec" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-emerald-400 mb-4 tracking-wider">
+                    <i class="fas fa-graduation-cap mr-3"></i>光能大師知識檢定
+                </h2>
+                <p class="text-slate-400 max-w-2xl mx-auto">完成這段精彩的光合作用探索，現在是證明自己擁有「綠意智慧」的時刻了！</p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 md:p-8 max-w-3xl mx-auto border border-emerald-500/20">
+                <!-- 1. 開始畫面 -->
+                <div id="quiz-intro" class="text-center py-8">
+                    <div class="w-20 h-20 bg-emerald-950/40 border border-emerald-500/40 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl text-emerald-400 neon-glow-green">
+                        <i class="fas fa-feather-alt"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-100 mb-2">綠色殿堂檢定所</h3>
+                    <p class="text-slate-400 text-sm mb-6 max-w-md mx-auto">本考卷共有 5 題精選題目，考驗您對光反應、卡爾文循環、物質流向與環境變因的理解力。</p>
+                    <button onclick="startQuiz()" class="px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5">
+                        開始挑戰檢定 <i class="fas fa-scroll ml-2"></i>
+                    </button>
+                </div>
+
+                <!-- 2. 答題中畫面 -->
+                <div id="quiz-play" class="hidden space-y-6">
+                    <!-- 進度與計分 -->
+                    <div class="flex justify-between items-center text-xs text-slate-400 border-b border-emerald-950/40 pb-3">
+                        <span>題目：第 <strong class="text-emerald-400" id="quiz-current-num">1</strong> / 5 題</span>
+                        <span>目前分數：<strong class="text-cyan-400" id="quiz-score">0</strong> 分</span>
+                    </div>
+
+                    <!-- 問題區 -->
+                    <div>
+                        <span id="quiz-category" class="text-xs bg-emerald-950/60 text-emerald-400 border border-emerald-800/30 px-2.5 py-1 rounded-full font-bold">反應機制</span>
+                        <h3 id="quiz-question" class="text-lg md:text-xl font-bold text-slate-100 mt-4 leading-relaxed">
+                            光合作用光反應分裂水分子，其最根本的目的是？
+                        </h3>
+                    </div>
+
+                    <!-- 選項區 -->
+                    <div class="grid grid-cols-1 gap-3" id="quiz-options">
+                        <!-- 由 JS 動態生成選項 -->
+                    </div>
+
+                    <!-- 解析回饋區 -->
+                    <div id="quiz-feedback" class="hidden p-4 rounded-xl text-sm transition duration-300">
+                        <div class="flex items-center space-x-2 font-bold mb-1">
+                            <span id="feedback-icon"></span>
+                            <span id="feedback-title">正確！</span>
+                        </div>
+                        <p id="feedback-text" class="text-xs text-slate-300 leading-relaxed">
+                            解析內容
+                        </p>
+                    </div>
+
+                    <!-- 控制按鈕 -->
+                    <div class="flex justify-end pt-4">
+                        <button id="quiz-next-btn" onclick="nextQuestion()" class="hidden px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-lg text-sm transition">
+                            下一題 <i class="fas fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. 結算畫面 -->
+                <div id="quiz-result" class="hidden text-center py-8 space-y-6">
+                    <div class="w-24 h-24 rounded-full mx-auto flex items-center justify-center border-4" id="result-badge-border">
+                        <span class="text-4xl" id="result-icon">🎓</span>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-100" id="result-rank">恭喜榮獲「葉綠素學者」稱號！</h3>
+                        <p class="text-slate-400 text-sm mt-2">您答對了 <span class="text-emerald-400 font-bold" id="result-correct-count">4</span> 題，獲得 <span class="text-cyan-400 font-bold" id="result-score-final">80</span> 分！</p>
+                    </div>
+                    <p class="text-slate-300 text-xs max-w-md mx-auto leading-relaxed italic" id="result-evaluation">
+                        「對光合作用的生化機制有極高程度的掌握，堪稱大自然光能轉換機制的轉譯者！」
+                    </p>
+                    <div class="flex justify-center gap-4 pt-4">
+                        <button onclick="startQuiz()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-lg text-sm transition">
+                            重新挑戰
+                        </button>
+                        <a href="#lab-sec" class="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 rounded-lg text-sm transition">
+                            進入實驗室複習
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#020604] border-t border-emerald-950/40 py-12 px-6 mt-24 text-center text-sm text-slate-500">
+        <div class="max-w-7xl mx-auto space-y-4">
+            <div class="flex justify-center space-x-6 text-xl text-slate-400 mb-2">
+                <a href="#" class="hover:text-emerald-500 transition"><i class="fas fa-book-open"></i></a>
+                <a href="#" class="hover:text-emerald-500 transition"><i class="fas fa-seedling"></i></a>
+                <a href="#" class="hover:text-emerald-500 transition"><i class="fas fa-dna"></i></a>
+            </div>
+            <p>© 2026 綠色奇蹟：光合作用互動探索平台 ． 僅供生物學術學習與研究參考</p>
+            <p class="text-xs text-slate-600">本網頁基於響應式 RWD 框架設計，支持行動觸控與精密 Canvas 實時渲染</p>
+        </div>
+    </footer>
+
+    <script>
+        /* === 1. 反應式互動解析數據 === */
+        const moleculeData = {
+            co2: {
+                name: "二氧化碳 (6 CO₂)",
+                type: "關鍵原料（碳來源）",
+                icon: "fa-cloud",
+                source: "主要來自大氣。陸生植物透過葉片下表皮的「氣孔」擴散吸入；水生植物則直接溶解吸收水中的溶解 CO₂。",
+                fate: "進入葉綠體基質，參與「卡爾文循環」（碳反應）。在 RuBisCO 酵素的催化下被「固定」，並利用光反應產生的高能載體進行化學還原，最終組裝成高能量的葡萄糖分子的碳骨架。"
+            },
+            h2o: {
+                name: "水 (6 H₂O)",
+                type: "關鍵原料（電子與氫供體）",
+                icon: "fa-tint",
+                source: "陸生植物主要透過根部毛細血管，藉由蒸散作用產生的拉力，自土壤中吸收水分，經由木質部導管一路向上輸送至葉肉細胞。",
+                fate: "進入類囊體膜，參與光反應。在光系統 II (PSII) 的催化中心被「光解」分裂成電子(e⁻)、氫離子(H⁺)與氧氣。產生的電子用來填補葉綠素流失的電子空缺，H⁺ 用來建立質子濃度差以產生 ATP。"
+            },
+            sugar: {
+                name: "葡萄糖 (C₆H₁₂O₆)",
+                type: "核心能量產物",
+                icon: "fa-cookie-bite",
+                source: "不直接來自大自然。而是卡爾文循環中，利用 6 個 CO₂，配合 18 個 ATP 與 12 個 NADPH 的化學鍵能，最終縮合而成的六碳糖有機化合物。",
+                fate: "植物細胞呼吸作用的主要底物。多餘的葡萄糖會轉化為不溶於水的「澱粉」暫時儲存於葉綠體，或轉化為「蔗糖」經由篩管（韌皮部）輸送到根、莖、果實，供植物生長、開花與修補構造使用。"
+            },
+            o2: {
+                name: "氧氣 (6 O₂)",
+                type: "生存副產物（釋放）",
+                icon: "fa-wind",
+                source: "並非來自二氧化碳，而是完全來自於光反應中「水分子光解」分裂後的剩餘產物。當兩個 H₂O 光解時，會釋出 1 個 O₂ 氣體分子。",
+                fate: "除了少部分留給植物自身的線粒體進行呼吸作用外，絕大部分會通過氣孔擴散釋放到大氣中，成為地球上所有需氧生物（包含人類）賴以生存的呼吸氣體基礎。"
+            }
+        };
+
+        function inspectMolecule(id) {
+            const data = moleculeData[id];
+            if (!data) return;
+            
+            // 點選按鈕高亮
+            const btns = document.querySelectorAll('.molecule-btn');
+            btns.forEach(btn => btn.classList.remove('border-emerald-400', 'bg-emerald-950/40'));
+            
+            // 找到點擊的按鈕並高亮（透過 id 取代危險的 event.currentTarget）
+            const targetBtn = document.getElementById(`mol-btn-${id}`);
+            if (targetBtn) {
+                targetBtn.classList.add('border-emerald-400', 'bg-emerald-950/40');
+            }
+
+            const panel = document.getElementById('molecule-panel');
+            if (panel) {
+                panel.classList.add('opacity-0', 'scale-95');
+
+                setTimeout(() => {
+                    document.getElementById('mol-icon').className = `fas ${data.icon}`;
+                    document.getElementById('mol-name').innerText = data.name;
+                    document.getElementById('mol-type').innerText = data.type;
+                    document.getElementById('mol-source').innerText = data.source;
+                    document.getElementById('mol-fate').innerText = data.fate;
+                    
+                    panel.classList.remove('opacity-0', 'scale-95');
+                }, 200);
+            }
+        }
+
+        /* === 2. 細胞微觀結構導覽 === */
+        const anatomyData = [
+            {
+                title: "葉片橫切面 (Leaf)",
+                step: "結構解析 1/4",
+                desc: "葉片是進行光合作用的主要器官。上表皮有透明防護的角質層，其下緊挨著富含葉綠體的「柵欄組織」（主戰場），而下方的「海綿組織」結構鬆散，利於氣體擴散與儲存。",
+                info: "角質層（保護水份）與柵欄組織（捕捉最大光能）的協同是植物適應陸地生活的結晶。",
+                svg: `<svg viewBox="0 0 400 180" class="w-full h-auto">
+                    <!-- 上表皮/角質層 -->
+                    <rect x="10" y="10" width="380" height="15" fill="#10b981" rx="4" opacity="0.4"/>
+                    <rect x="10" y="5" width="380" height="5" fill="#34d399" rx="2" opacity="0.6"/>
+                    <text x="20" y="22" fill="#a7f3d0" font-size="10" font-weight="bold">上表皮 & 角質層</text>
+                    
+                    <!-- 柵欄組織 -->
+                    <rect x="20" y="35" width="40" height="70" fill="#065f46" rx="4" stroke="#059669" stroke-width="1.5"/>
+                    <rect x="70" y="35" width="40" height="70" fill="#065f46" rx="4" stroke="#059669" stroke-width="1.5"/>
+                    <rect x="120" y="35" width="40" height="70" fill="#065f46" rx="4" stroke="#059669" stroke-width="1.5"/>
+                    <rect x="170" y="35" width="40" height="70" fill="#065f46" rx="4" stroke="#059669" stroke-width="1.5"/>
+                    <rect x="220" y="35" width="40" height="70" fill="#065f46" rx="4" stroke="#059669" stroke-width="1.5"/>
+                    <rect x="270" y="35" width="40" height="70" fill="#065f46" rx="4" stroke="#059669" stroke-width="1.5"/>
+                    <rect x="320" y="35" width="40" height="70" fill="#065f46" rx="4" stroke="#059669" stroke-width="1.5"/>
+                    <!-- 內含葉綠體點綴 -->
+                    <circle cx="30" cy="50" r="3" fill="#10b981"/><circle cx="30" cy="70" r="3" fill="#10b981"/><circle cx="30" cy="90" r="3" fill="#10b981"/>
+                    <circle cx="130" cy="50" r="3" fill="#10b981"/><circle cx="130" cy="70" r="3" fill="#10b981"/><circle cx="130" cy="90" r="3" fill="#10b981"/>
+                    <circle cx="280" cy="50" r="3" fill="#10b981"/><circle cx="280" cy="70" r="3" fill="#10b981"/><circle cx="280" cy="90" r="3" fill="#10b981"/>
+                    <text x="140" y="75" fill="#f1f5f9" font-size="12" font-weight="bold">柵欄組織 (密布葉綠體)</text>
+
+                    <!-- 下表皮 -->
+                    <rect x="10" y="145" width="380" height="15" fill="#10b981" rx="4" opacity="0.3"/>
+                    <text x="20" y="157" fill="#a7f3d0" font-size="10" font-weight="bold">下表皮</text>
+                    
+                    <!-- 氣孔通道 -->
+                    <rect x="195" y="140" width="10" height="25" fill="#040d0a"/>
+                    <circle cx="190" cy="152" r="5" fill="#34d399"/>
+                    <circle cx="210" cy="152" r="5" fill="#34d399"/>
+                    <text x="225" y="157" fill="#34d399" font-size="9">下表皮氣孔通道</text>
+                </svg>`
+            },
+            {
+                title: "保衛細胞與氣孔 (Stomata)",
+                step: "結構解析 2/4",
+                desc: "氣孔主要分布於陸生植物下表皮，由兩組「保衛細胞」圍合而成。當水分充足時，保衛細胞吸水膨脹彎曲，氣孔隨之張開，允许二氧化碳（原料）進入與氧氣（副產物）排出，但也伴隨水分的蒸散。",
+                info: "乾旱或烈日下，保衛細胞會因缺水而關閉氣孔，以防植物脫水致死，但這同時也會限制光合作用速率。",
+                svg: `<svg viewBox="0 0 400 180" class="w-full h-auto">
+                    <!-- 左保衛細胞 -->
+                    <path d="M 160 30 Q 120 90 160 150 Q 185 90 160 30 Z" fill="#047857" stroke="#34d399" stroke-width="2"/>
+                    <!-- 右保衛細胞 -->
+                    <path d="M 240 30 Q 280 90 240 150 Q 215 90 240 30 Z" fill="#047857" stroke="#34d399" stroke-width="2"/>
+                    <!-- 氣孔中央空隙 -->
+                    <ellipse cx="200" cy="90" rx="15" ry="50" fill="#040d0a" stroke="#10b981" stroke-width="1" stroke-dasharray="2"/>
+                    <!-- 氣流動線 -->
+                    <path d="M 200 10 L 200 50" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="3,3"/>
+                    <polygon points="200,55 196,48 204,48" fill="#38bdf8"/>
+                    
+                    <!-- 標記 -->
+                    <text x="200" y="94" fill="#38bdf8" font-size="12" font-weight="bold" text-anchor="middle">CO₂ 進</text>
+                    <text x="70" y="90" fill="#a7f3d0" font-size="11" font-weight="bold">保衛細胞</text>
+                    <text x="290" y="90" fill="#a7f3d0" font-size="11" font-weight="bold">保衛細胞</text>
+                </svg>`
+            },
+            {
+                title: "葉綠體 (Chloroplast)",
+                step: "結構解析 3/4",
+                desc: "半自主性雙層膜細胞器。內部充盈著膠狀「基質」，裡面懸浮著多層扁平膜囊堆疊而成的「基粒（葉綠餅）」，這些膜囊結構便稱為「類囊體」，光合作用的所有關鍵生化路徑皆由此完成。",
+                info: "科學家相信葉綠體源自遠古被吞噬的光合藍綠菌，因此它擁有自己獨立的 DNA 與核糖體。",
+                svg: `<svg viewBox="0 0 400 180" class="w-full h-auto">
+                    <!-- 雙層外膜 -->
+                    <ellipse cx="200" cy="90" rx="180" ry="80" fill="#064e3b" opacity="0.3"/>
+                    <ellipse cx="200" cy="90" rx="185" ry="85" fill="none" stroke="#059669" stroke-width="2.5"/>
+                    <ellipse cx="200" cy="90" rx="178" ry="78" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4"/>
+                    
+                    <!-- 基粒堆疊 (類囊體疊加) -->
+                    <!-- 堆疊 1 -->
+                    <rect x="70" y="80" width="40" height="8" fill="#10b981" rx="2" stroke="#047857"/>
+                    <rect x="70" y="90" width="40" height="8" fill="#10b981" rx="2" stroke="#047857"/>
+                    <rect x="70" y="100" width="40" height="8" fill="#10b981" rx="2" stroke="#047857"/>
+                    <!-- 堆疊 2 -->
+                    <rect x="180" y="60" width="40" height="8" fill="#10b981" rx="2" stroke="#047857"/>
+                    <rect x="180" y="70" width="40" height="8" fill="#10b981" rx="2" stroke="#047857"/>
+                    <rect x="180" y="80" width="40" height="8" fill="#10b981" rx="2" stroke="#047857"/>
+                    <rect x="180" y="90" width="40" height="8" fill="#10b981" rx="2" stroke="#047857"/>
+                    <!-- 堆疊 3 -->
+                    <rect x="290" y="80" width="40" height="8" fill="#10b981" rx="2" stroke="#047857"/>
+                    <rect x="290" y="90" width="40" height="8" fill="#10b981" rx="2" stroke="#047857"/>
+                    
+                    <!-- 基質 -->
+                    <text x="200" y="130" fill="#a7f3d0" font-size="11" font-weight="bold" text-anchor="middle">基質 (Stroma)</text>
+                    <text x="180" y="45" fill="#f1f5f9" font-size="11" font-weight="bold">基粒 (Granum)</text>
+                    <text x="20" y="94" fill="#a7f3d0" font-size="10">外膜 & 內膜</text>
+                </svg>`
+            },
+            {
+                title: "類囊體與基質 (Thylakoid)",
+                step: "結構解析 4/4",
+                desc: "類囊體膜是光學捕收裝置的極限戰場，鑲嵌著「葉綠素」和「電子傳遞鏈」，負責捕捉光能並將其轉化為化學能。隨後，這股能量回流至膠狀的「基質」中，驅動卡爾文循環組裝出高能糖類。",
+                info: "葉綠素之所以呈現綠色，是因為它吸收藍光與紅光，唯獨反射與散射了綠色波長。",
+                svg: `<svg viewBox="0 0 400 180" class="w-full h-auto">
+                    <!-- 類囊體膜剖面 -->
+                    <rect x="10" y="60" width="380" height="50" fill="#047857" stroke="#34d399" stroke-width="2" rx="6"/>
+                    <rect x="10" y="70" width="380" height="30" fill="#022c22" rx="4"/>
+                    
+                    <!-- 鑲嵌的光系統 (色素蛋白複合體) -->
+                    <circle cx="80" cy="60" r="15" fill="#a7f3d0" stroke="#10b981" stroke-width="2"/>
+                    <text x="80" y="63" fill="#064e3b" font-size="8" font-weight="bold" text-anchor="middle">光系統 II</text>
+                    
+                    <circle cx="280" cy="60" r="15" fill="#a7f3d0" stroke="#10b981" stroke-width="2"/>
+                    <text x="280" y="63" fill="#064e3b" font-size="8" font-weight="bold" text-anchor="middle">光系統 I</text>
+                    
+                    <!-- ATP 合成酶 -->
+                    <rect x="180" y="30" width="20" height="35" fill="#f59e0b" rx="2"/>
+                    <circle cx="190" cy="25" r="10" fill="#f59e0b"/>
+                    <text x="190" y="28" fill="#78350f" font-size="7" font-weight="bold" text-anchor="middle">ATP酶</text>
+                    
+                    <text x="200" y="145" fill="#a7f3d0" font-size="11" font-weight="bold" text-anchor="middle">外側：基質 (進行卡爾文循環)</text>
+                    <text x="200" y="88" fill="#10b981" font-size="10" font-weight="bold" text-anchor="middle">內腔：質子(H⁺)累積池</text>
+                </svg>`
+            }
+        ];
+
+        let activeAnatomyIndex = 0;
+
+        function switchAnatomy(index) {
+            // 清除現有 Active 按鈕樣式
+            const tabs = document.querySelectorAll('.anatomy-tab');
+            tabs.forEach((tab, i) => {
+                if (i === index) {
+                    tab.className = "anatomy-tab text-left p-4 rounded-xl border border-emerald-500 bg-emerald-950/20 text-slate-200 transition-all duration-300 flex items-center justify-between";
+                    tab.querySelector('span').className = "w-8 h-8 rounded-full bg-emerald-900 flex items-center justify-center text-xs text-emerald-300 font-bold";
+                    tab.querySelector('i').className = "fas fa-chevron-right text-emerald-500 text-xs";
+                } else {
+                    tab.className = "anatomy-tab text-left p-4 rounded-xl border border-slate-800 bg-slate-900/40 text-slate-400 transition-all duration-300 hover:border-emerald-500/50 flex items-center justify-between";
+                    tab.querySelector('span').className = "w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs text-slate-400 font-bold";
+                    tab.querySelector('i').className = "fas fa-chevron-right text-slate-600 text-xs";
+                }
+            });
+
+            activeAnatomyIndex = index;
+            updateAnatomyCard();
+        }
+
+        function updateAnatomyCard() {
+            const data = anatomyData[activeAnatomyIndex];
+            
+            document.getElementById('ana-header-step').innerText = data.step;
+            document.getElementById('ana-title').innerText = data.title;
+            document.getElementById('ana-desc').innerText = data.desc;
+            document.getElementById('ana-info').innerText = data.info;
+            document.getElementById('ana-diagram-svg').innerHTML = data.svg;
+        }
+
+        /* === 3. 雙階段反應耦合解釋 === */
+        const stageExplanations = {
+            light: `<strong>【第一階段：光反應詳細運作】</strong><br><br>
+            光反應發生在<strong>類囊體薄膜</strong>上。當陽光（尤其是紅光與藍光波段）照射在光系統 II (PSII) 上時，葉綠素分子內的電子被激發跳出，進入電子傳遞鏈。
+            為了補充這個電子空缺，PSII 催化中心會立即將<strong>水分子 (H₂O) 分裂（光解）</strong>：
+            <div class="my-2 p-2 bg-slate-900 rounded font-mono text-xs text-amber-300">2 H₂O ➔ 4 H⁺ + 4 e⁻ + O₂ ↑</div>
+            釋放出來的<strong>氧氣 (O₂)</strong> 作為副產物釋放到外界。高能電子在傳遞鏈中流動時，釋放出的能量用來將 H⁺ 從基質泵入類囊體內腔，建立極大的「質子濃度差」。
+            這個濃度差會驅動 <strong>ATP 合成酶</strong>，如同水力發電廠般旋轉，將 ADP 轉化為 <strong>ATP</strong>。
+            同時，電子流到光系統 I (PSI) 被再次激發，最後與 NADP⁺ 結合，合成高還原能的 <strong>NADPH</strong>。這兩者就是進入第二階段的「高能彈藥」。`,
+            
+            dark: `<strong>【第二階段：卡爾文循環詳細運作】</strong><br><br>
+            卡爾文循環（亦稱暗反應或碳反應）發生在<strong>葉綠體基質</strong>中，它不需要直接的光照，但極度依賴光反應源源不絕提供的 <strong>ATP</strong> 與 <strong>NADPH</strong>。<br>
+            循環主要分為三個主要生化階段：
+            <ul class="list-decimal pl-5 space-y-1.5 my-2 text-xs">
+                <li><strong>固定 (Carbon Fixation)：</strong> 來自大氣的 1 個 <strong>CO₂</strong> 分子與五碳酮糖 RuBP 在酵素 <strong>RuBisCO</strong> 催化下結合，分裂成兩個三碳分子 (3-PGA)。</li>
+                <li><strong>還原 (Reduction)：</strong> 消耗來自光反應的 <strong>ATP</strong> 與 <strong>NADPH</strong>，將 3-PGA 還原成高能的三碳糖 (G3P)。每 6 個循環會輸出 1 個 G3P，可用於縮合合成高能量的<strong>葡萄糖 (C₆H₁₂O₆)</strong>、澱粉或脂質。</li>
+                <li><strong>再生 (Regeneration)：</strong> 剩餘的 G3P 分子利用剩餘的 ATP，重新再生成 RuBP，以準備捕捉下一個二氧化碳分子，確保循環運轉不息。</li>
+            </ul>`,
+            
+            coupling: `<strong>【能量耦合與協同共生】</strong><br><br>
+            光合作用的兩個階段是<strong>絕對互相依存</strong>的！
+            沒有光反應產生的 ATP 與 NADPH，卡爾文循環就沒有能量動力來源，碳固定會立即停擺。<br>
+            相反地，如果卡爾文循環停止運作（例如環境中完全沒有二氧化碳原料，或者遇到逆境導致酵素活性全失），那麼用光的 ATP 會積累，而 <strong>ADP 和 NADP⁺ 就無法回收再生</strong>。<br>
+            缺乏了 ADP 與 NADP⁺ 來作為接收電子的載體，光反應的電子傳遞鏈就會被塞車卡死，進而產生對植物體細胞致命的活性氧自由基，導致葉綠體結構損毀。
+            兩階段的完美耦合，展現了生化自然結構最精妙、最高效的自我調控系統。`
+        };
+
+        function stageExplain(key) {
+            const container = document.getElementById('stage-explain-box');
+            container.innerHTML = stageExplanations[key];
+        }
+
+
+        /* === 4. 虛擬實驗室 Canvas 實時模擬 === */
+        const canvas = document.getElementById('lab-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // 實驗狀態
+        let labState = {
+            light: 50,      // 0-100
+            co2: 40,        // 0-100 (ppm / 10)
+            temp: 25,       // 0-50 °C
+            color: 'white', // white, red, blue, green
+            bubbles: [],
+            lastBubbleTime: 0
+        };
+
+        // 適配 Canvas 寬度
+        function resizeCanvas() {
+            const parent = canvas.parentElement;
+            canvas.width = parent.clientWidth;
+            canvas.height = 350;
+        }
+
+        // 計算即時泡泡產生速率 (個/分) 與效率
+        function calculatePhotosynthesis() {
+            // 1. 溫度影響活性 (Bell curve, 最適溫為 25~32°C)
+            let tempFactor = 0;
+            if (labState.temp >= 10 && labState.temp <= 45) {
+                // 高斯/二次曲線模擬
+                tempFactor = 1 - Math.pow((labState.temp - 28) / 18, 2);
+                tempFactor = Math.max(0, tempFactor);
+            } else {
+                tempFactor = 0.05; // 接近極限瀕死
+            }
+
+            // 2. 光波長對色素吸收的影響因子
+            let colorFactor = 1.0;
+            if (labState.color === 'red') colorFactor = 0.9;   // 紅光吸收良好
+            else if (labState.color === 'blue') colorFactor = 1.0;  // 藍光最優
+            else if (labState.color === 'green') colorFactor = 0.12; // 綠光反射，吸收極低
+            else colorFactor = 1.0; // 日光全波段
+
+            // 3. 雙變因限制定律 (Limiting factor) - 光與二氧化碳
+            // 光合速率取決於光照與CO2中最差的那個，加上飽和現象
+            let lightEfficiency = labState.light / 100;
+            let co2Efficiency = labState.co2 / 100;
+            
+            // 結合限制因子與饱和效應
+            let rawRate = Math.min(lightEfficiency, co2Efficiency * 1.2) * colorFactor * tempFactor;
+            
+            // 轉換為具體物理數值
+            let bubbleRate = Math.round(rawRate * 80); // 最高 80 泡泡/分
+            let etcEfficiency = Math.round(rawRate * 100);
+
+            return {
+                bubbleRate: Math.max(0, bubbleRate),
+                etcEfficiency: Math.max(0, etcEfficiency),
+                tempAct: tempFactor
+            };
+        }
+
+        // 更新 UI 各項指標與滑桿值
+        function updateLabParams() {
+            labState.light = parseInt(document.getElementById('input-light').value);
+            labState.co2 = parseInt(document.getElementById('input-co2').value);
+            labState.temp = parseInt(document.getElementById('input-temp').value);
+
+            document.getElementById('val-light').innerText = `${labState.light} Lux`;
+            document.getElementById('val-co2').innerText = `${labState.co2 * 10} ppm`;
+            document.getElementById('val-temp').innerText = `${labState.temp} °C`;
+
+            const stats = calculatePhotosynthesis();
+            document.getElementById('stat-rate').innerText = `${stats.bubbleRate} 個/分`;
+            document.getElementById('stat-efficiency').innerText = `${stats.etcEfficiency} %`;
+
+            let tempText = "良好";
+            let tempColor = "text-rose-400";
+            if (stats.tempAct > 0.8) {
+                tempText = `極佳 (${Math.round(stats.tempAct * 100)}%)`;
+                tempColor = "text-emerald-400";
+            } else if (stats.tempAct > 0.5) {
+                tempText = `普通 (${Math.round(stats.tempAct * 100)}%)`;
+                tempColor = "text-amber-400";
+            } else {
+                tempText = `低落 (${Math.round(stats.tempAct * 100)}%)`;
+                tempColor = "text-rose-500";
+            }
+            const tempStatEl = document.getElementById('stat-temp-act');
+            tempStatEl.innerText = tempText;
+            tempStatEl.className = `text-2xl font-black ${tempColor}`;
+        }
+
+        // 光源切換
+        function setLightColor(color, btn) {
+            labState.color = color;
+            
+            const btns = document.querySelectorAll('.color-btn');
+            btns.forEach(b => {
+                b.className = "color-btn py-2 px-1 bg-slate-900 text-slate-400 font-bold text-[10px] rounded-lg border border-slate-800 hover:border-emerald-500/50 transition";
+            });
+
+            if (color === 'white') {
+                btn.className = "color-btn py-2 px-1 bg-emerald-950/40 hover:bg-emerald-500/20 text-slate-100 font-bold text-[10px] rounded-lg border-2 border-emerald-500 transition";
+            } else if (color === 'red') {
+                btn.className = "color-btn py-2 px-1 bg-rose-950/40 hover:bg-rose-500/20 text-rose-400 font-bold text-[10px] rounded-lg border-2 border-rose-500 transition";
+            } else if (color === 'blue') {
+                btn.className = "color-btn py-2 px-1 bg-blue-950/40 hover:bg-blue-500/20 text-blue-400 font-bold text-[10px] rounded-lg border-2 border-blue-500 transition";
+            } else if (color === 'green') {
+                btn.className = "color-btn py-2 px-1 bg-emerald-950/40 hover:bg-emerald-500/20 text-emerald-400 font-bold text-[10px] rounded-lg border-2 border-emerald-500 transition";
+            }
+
+            updateLabParams();
+        }
+
+        // 加入小蘇打(NaHCO3)增加二氧化碳
+        function triggerCarbonPill() {
+            const co2Slider = document.getElementById('input-co2');
+            let current = parseInt(co2Slider.value);
+            co2Slider.value = Math.min(100, current + 25);
+            updateLabParams();
+        }
+
+        // Canvas 實時動畫循環
+        function animateLab(timestamp) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const stats = calculatePhotosynthesis();
+            
+            // 1. 繪製背景投射光源 (依照當前光源波長)
+            let lightGradient = ctx.createRadialGradient(20, 20, 10, 120, 150, 300);
+            if (labState.color === 'white') {
+                lightGradient.addColorStop(0, `rgba(255, 255, 255, ${labState.light / 250})`);
+                lightGradient.addColorStop(1, 'rgba(0,0,0,0)');
+            } else if (labState.color === 'red') {
+                lightGradient.addColorStop(0, `rgba(239, 68, 68, ${labState.light / 250})`);
+                lightGradient.addColorStop(1, 'rgba(0,0,0,0)');
+            } else if (labState.color === 'blue') {
+                lightGradient.addColorStop(0, `rgba(59, 130, 246, ${labState.light / 250})`);
+                lightGradient.addColorStop(1, 'rgba(0,0,0,0)');
+            } else if (labState.color === 'green') {
+                lightGradient.addColorStop(0, `rgba(16, 185, 129, ${labState.light / 250})`);
+                lightGradient.addColorStop(1, 'rgba(0,0,0,0)');
+            }
+            ctx.fillStyle = lightGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 2. 繪製量筒/燒杯主體
+            const bx = canvas.width / 2 - 80;
+            const by = 80;
+            const bw = 160;
+            const bh = 220;
+
+            // 水
+            ctx.fillStyle = 'rgba(14, 116, 144, 0.25)';
+            ctx.fillRect(bx + 10, by + 40, bw - 20, bh - 45);
+
+            // 水波紋頂線
+            ctx.beginPath();
+            ctx.moveTo(bx + 10, by + 40);
+            for (let x = bx + 10; x <= bx + bw - 10; x += 5) {
+                let waveY = by + 40 + Math.sin(timestamp * 0.003 + x * 0.1) * 3;
+                ctx.lineTo(x, waveY);
+            }
+            ctx.strokeStyle = 'rgba(34, 211, 238, 0.4)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 燒杯玻璃框
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.4)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(bx, by);
+            ctx.lineTo(bx, by + bh);
+            ctx.lineTo(bx + bw, by + bh);
+            ctx.lineTo(bx + bw, by);
+            ctx.stroke();
+
+            // 3. 繪製水蘊草 (在水中)
+            const plantX = canvas.width / 2;
+            const plantBottomY = by + bh - 10;
+            const plantTopY = by + 80;
+
+            ctx.strokeStyle = '#047857';
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(plantX, plantBottomY);
+            ctx.bezierCurveTo(plantX - 10, plantBottomY - 50, plantX + 15, plantBottomY - 100, plantX, plantTopY);
+            ctx.stroke();
+
+            // 繪製左右葉片
+            ctx.fillStyle = '#059669';
+            for (let py = plantBottomY - 20; py >= plantTopY; py -= 20) {
+                let waveX = plantX + Math.sin(timestamp * 0.002 + py * 0.05) * 5;
+                // 左葉
+                ctx.beginPath();
+                ctx.ellipse(waveX - 15, py, 12, 5, -0.4, 0, Math.PI * 2);
+                ctx.fill();
+                // 右葉
+                ctx.beginPath();
+                ctx.ellipse(waveX + 15, py, 12, 5, 0.4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // 4. 動態產生氣泡邏輯 (取決於光合速率)
+            if (stats.bubbleRate > 0) {
+                // bubbleRate 轉成產生週期 (毫秒/個)
+                let spawnInterval = (60 / stats.bubbleRate) * 1000;
+                if (timestamp - labState.lastBubbleTime > spawnInterval) {
+                    // 在水蘊草的多個分支節點上，隨機誕生一個小氧氣泡泡
+                    let randomY = plantTopY + Math.random() * (plantBottomY - plantTopY - 40);
+                    let plantOffset = Math.sin(timestamp * 0.002 + randomY * 0.05) * 5;
+                    
+                    labState.bubbles.push({
+                        x: plantX + plantOffset + (Math.random() * 10 - 5),
+                        y: randomY,
+                        r: 2 + Math.random() * 4,
+                        speed: 1 + Math.random() * 1.5,
+                        amplitude: 0.5 + Math.random() * 1.5,
+                        phase: Math.random() * Math.PI
+                    });
+                    labState.lastBubbleTime = timestamp;
+                }
+            }
+
+            // 5. 更新與繪製氧氣泡泡
+            for (let i = labState.bubbles.length - 1; i >= 0; i--) {
+                let b = labState.bubbles[i];
+                b.y -= b.speed;
+                b.x += Math.sin(timestamp * 0.01 + b.phase) * b.amplitude;
+
+                // 畫泡泡
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(224, 242, 254, 0.6)';
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.8)';
+                ctx.lineWidth = 1;
+                ctx.fill();
+                ctx.stroke();
+
+                // 邊界/到頂部移除
+                if (b.y < by + 40) {
+                    labState.bubbles.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animateLab);
+        }
+
+
+        /* === 5. 知識大挑戰 Quiz === */
+        const quizQuestions = [
+            {
+                category: "反應機制",
+                question: "光合作用的光反應中，分裂水分子的「最主要目的」是什麼？",
+                options: [
+                    "為了產生副產物氧氣，供全球動物呼吸",
+                    "為了獲得氫離子(H⁺)與高能電子，來提供光傳遞與建立能量載體所需",
+                    "為了吸收水分防止植物體溫過高過熱",
+                    "為了直接在基質中生成葡萄糖分子"
+                ],
+                correct: 1,
+                explanation: "水分子分裂的核心任務並不是為了製造氧氣（那只是副產物），而是為了釋放高能電子(e⁻)來重置光系統 II 的反應中心，並提供質子(H⁺)以在類囊體膜內外建立高濃度差，驅動 ATP 合成酶以製造能量。"
+            },
+            {
+                category: "能量載體",
+                question: "在光合作用的「光反應」中所生產的哪兩種物質，會作為能量與還原力被送到「卡爾文循環」中使用？",
+                options: [
+                    "葡萄糖與氧氣",
+                    "二氧化碳與水",
+                    "ATP 與 NADPH",
+                    "ADP 與 NADP⁺"
+                ],
+                correct: 2,
+                explanation: "光反應在類囊體膜上捕獲光能，將其儲存在 ATP（能量載體）與 NADPH（還原能載體）中。這兩者就像是充飽電的「生化電池」，被立刻送到基質中提供卡爾文循環（固碳反應）組裝糖類。"
+            },
+            {
+                category: "色素吸光",
+                question: "如果您在溫室中，僅使用「單一綠色波長」的雷射燈照射水蘊草，對其光合作用的產氧速率有何影響？",
+                options: [
+                    "產氧速率將急遽下跌甚至趨近於零，因為葉綠素幾乎完全反射綠光而不吸收",
+                    "產氧速率會達到歷史顛峰，因為綠色是植物最熱愛的顏色",
+                    "沒有任何變化，任何顏色的光效果都一樣",
+                    "產氧速率會輕微提升，但僅限在中午時分"
+                ],
+                correct: 0,
+                explanation: "光合色素（如葉綠素 a 和 b）主要吸收紅光和藍光，而對於綠光則主要反射和散射。因此，如果只給予綠色光波，植物將無法進行光合作用，產氧速率會接近於 0。"
+            },
+            {
+                category: "細胞工廠",
+                question: "進行光合作用第二階段——「卡爾文循環」的具體位置是在葉綠體的哪裡？",
+                options: [
+                    "類囊體薄膜 (Thylakoid Membrane)",
+                    "葉綠體外膜 (Outer Membrane)",
+                    "葉綠體基質 (Stroma)",
+                    "細胞壁與氣孔孔道中"
+                ],
+                correct: 2,
+                explanation: "卡爾文循環不需要光色素，但充滿了可溶性的固定碳酵素。其發生的場所是充盈著膠狀溶質的「葉綠體基質 (Stroma)」。"
+            },
+            {
+                category: "環境限制",
+                question: "若大氣中 CO₂ 濃度極高、光照極度充足，但此時環境溫度突然飆升到 52°C，光合作用速率會如何演變？",
+                options: [
+                    "速率繼續呈線性無限飆升",
+                    "速率會劇烈下降甚至停擺，因為負責催化反應的活性「酵素」在過高溫度下會變性失活",
+                    "速率會完全不受影響，只與光照和 CO₂ 有關",
+                    "植物會主動將葡萄糖轉換為水分子來抵抗高溫"
+                ],
+                correct: 1,
+                explanation: "光合作用是一連串精密的「酵素促成反應」（例如 RuBisCO 酵素）。高溫（超過 45°C）會造成蛋白質三度空間立體結構解體（變性失活），使生化化學機制徹底失去功效，即使原料、光照再多也無法運作。"
+            }
+        ];
+
+        let quizCurrentIndex = 0;
+        let quizScore = 0;
+        let hasAnswered = false;
+
+        function startQuiz() {
+            quizCurrentIndex = 0;
+            quizScore = 0;
+            hasAnswered = false;
+            
+            document.getElementById('quiz-intro').classList.add('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-play').classList.remove('hidden');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            hasAnswered = false;
+            const q = quizQuestions[quizCurrentIndex];
+            
+            // 更新計分與題號
+            document.getElementById('quiz-current-num').innerText = quizCurrentIndex + 1;
+            document.getElementById('quiz-score').innerText = quizScore;
+            
+            // 載入問題與分類
+            document.getElementById('quiz-category').innerText = q.category;
+            document.getElementById('quiz-question').innerText = q.question;
+            
+            // 隱藏解析與「下一題」按鈕
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('quiz-next-btn').classList.add('hidden');
+            
+            // 生成選項
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.onclick = () => checkAnswer(idx);
+                btn.className = "quiz-opt-btn w-full text-left p-4 bg-slate-950/60 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/50 rounded-xl transition-all duration-200 text-slate-300 flex justify-between items-center";
+                btn.innerHTML = `
+                    <span>${idx + 1}. ${opt}</span>
+                    <i class="far fa-circle text-slate-600"></i>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            if (hasAnswered) return; // 防止重複作答
+            hasAnswered = true;
+            
+            const q = quizQuestions[quizCurrentIndex];
+            const isCorrect = selectedIndex === q.correct;
+            
+            if (isCorrect) {
+                quizScore += 20;
+                document.getElementById('quiz-score').innerText = quizScore;
+            }
+            
+            // 更新選項按鈕樣式
+            const buttons = document.querySelectorAll('.quiz-opt-btn');
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === q.correct) {
+                    btn.className = "quiz-opt-btn w-full text-left p-4 bg-emerald-950/30 border border-emerald-500 text-emerald-400 rounded-xl transition-all duration-200 flex justify-between items-center";
+                    btn.innerHTML = `<span>${idx + 1}. ${q.options[idx]}</span> <i class="fas fa-check-circle text-emerald-500"></i>`;
+                } else if (idx === selectedIndex && !isCorrect) {
+                    btn.className = "quiz-opt-btn w-full text-left p-4 bg-rose-950/30 border border-rose-500 text-rose-400 rounded-xl transition-all duration-200 flex justify-between items-center";
+                    btn.innerHTML = `<span>${idx + 1}. ${q.options[idx]}</span> <i class="fas fa-times-circle text-rose-500"></i>`;
+                } else {
+                    btn.classList.add('opacity-40');
+                }
+            });
+            
+            // 顯示即時回饋
+            const feedbackBox = document.getElementById('quiz-feedback');
+            const fIcon = document.getElementById('feedback-icon');
+            const fTitle = document.getElementById('feedback-title');
+            const fText = document.getElementById('feedback-text');
+            
+            feedbackBox.classList.remove('hidden');
+            if (isCorrect) {
+                feedbackBox.className = "p-4 rounded-xl text-sm bg-emerald-950/20 border border-emerald-900/30 text-emerald-300 transition duration-300";
+                fIcon.className = "fas fa-trophy text-emerald-500";
+                fTitle.innerText = "回答正確！太棒了！";
+            } else {
+                feedbackBox.className = "p-4 rounded-xl text-sm bg-rose-950/20 border border-rose-900/30 text-rose-300 transition duration-300";
+                fIcon.className = "fas fa-times-circle text-rose-500";
+                fTitle.innerText = `答錯了！正確答案是: ${q.correct + 1}`;
+            }
+            fText.innerHTML = q.explanation;
+            
+            // 顯示下一步按鈕
+            const nextBtn = document.getElementById('quiz-next-btn');
+            nextBtn.classList.remove('hidden');
+            if (quizCurrentIndex === quizQuestions.length - 1) {
+                nextBtn.innerHTML = `觀看考生成績 <i class="fas fa-graduation-cap ml-1"></i>`;
+            } else {
+                nextBtn.innerHTML = `下一題 <i class="fas fa-chevron-right ml-1"></i>`;
+            }
+        }
+
+        function nextQuestion() {
+            if (quizCurrentIndex < quizQuestions.length - 1) {
+                quizCurrentIndex++;
+                loadQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            document.getElementById('quiz-play').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+            
+            document.getElementById('result-correct-count').innerText = quizScore / 20;
+            document.getElementById('result-score-final').innerText = quizScore;
+            
+            const rankEl = document.getElementById('result-rank');
+            const evalEl = document.getElementById('result-evaluation');
+            const badgeEl = document.getElementById('result-badge-border');
+            const iconEl = document.getElementById('result-icon');
+            
+            if (quizScore === 100) {
+                rankEl.innerText = "綠光頂點！榮獲「光合作用大師」！";
+                evalEl.innerText = "「驚為天人！您對光系統（PSII & PSI）、電子鏈、卡爾文碳固定等頂尖分子機制瞭若指掌。若您是植物，必定是能將日光發揮到 100% 轉換極致的最強綠色奇蹟！」";
+                badgeEl.className = "w-24 h-24 rounded-full mx-auto flex items-center justify-center border-4 border-emerald-400 bg-emerald-950/20 neon-glow-green animate-pulse-soft";
+                iconEl.innerText = "🌱";
+            } else if (quizScore >= 80) {
+                rankEl.innerText = "功力非凡！榮膺「葉綠體專家」！";
+                evalEl.innerText = "「功力非凡，成績極佳！您對光反應和碳反應的協同配合有深厚的科學認知，能完美掌握水分子的電子還原命運！」";
+                badgeEl.className = "w-24 h-24 rounded-full mx-auto flex items-center justify-center border-4 border-teal-500 bg-teal-950/10";
+                iconEl.innerText = "🔬";
+            } else if (quizScore >= 60) {
+                rankEl.innerText = "格物致知！榮獲「資深園丁學士」！";
+                evalEl.innerText = "「及格登科！您已經清楚理解了光合作用的宏觀方程式與運作，但在微觀色素吸收與環境限制（如溫度對酵素的影響）部分，若再重溫實驗室必能大成！」";
+                badgeEl.className = "w-24 h-24 rounded-full mx-auto flex items-center justify-center border-4 border-amber-500 bg-amber-950/10";
+                iconEl.innerText = "🍂";
+            } else {
+                rankEl.innerText = "能量不足！「光合作用幼苗」再接再厲！";
+                evalEl.innerText = "「還未開花，仍需灌溉。光與生命的結合藏著無限奧秘，建議回到『虛擬實驗室』調控各項變因，多觀察幾顆泡泡產生的軌跡，下次必能大放異彩！」";
+                badgeEl.className = "w-24 h-24 rounded-full mx-auto flex items-center justify-center border-4 border-slate-700 bg-slate-900";
+                iconEl.innerText = "💧";
+            }
+        }
+
+
+        /* === 6. 初始化執行 === */
+        window.onload = function() {
+            // A. 初始化反應式
+            inspectMolecule('co2');
+
+            // B. 初始化細胞解構導覽
+            switchAnatomy(0);
+
+            // C. 初始化雙階段展示
+            stageExplain('light');
+
+            // D. 初始化 Canvas 實驗室
+            resizeCanvas();
+            updateLabParams();
+            requestAnimationFrame(animateLab);
+
+            // 響應式 Canvas Resize
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+            });
+        }
+    </script>
+</body>
+</html>
