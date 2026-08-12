@@ -1,0 +1,35 @@
+# 忽略所有非 sped-math-worksheet 相關的檔案
+# 只追蹤：examples/, .agents/, SKILL.md, README.md
+
+# 影片 / 音訊
+*.mp4
+*.m4v
+*.mov
+*.avi
+*.mp3
+*.wav
+
+# 圖片（根目錄，examples/ 內的不受影響）
+/*.png
+/*.jpg
+/*.jpeg
+/*.gif
+/*.webp
+
+# 文件（根目錄）
+/*.pdf
+/*.zip
+/*.docx
+/*.html
+/*.srt
+/*.py
+/*.tsx
+/*.ts
+/*.md
+!README.md
+!SKILL.md
+
+# 系統檔
+desktop.ini
+.DS_Store
+Thumbs.db
